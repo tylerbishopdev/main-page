@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/scroll-based-velocity"
 
 const projects = [
-    { imgUrl: "/imageone.png", href: "/project-one" },
+    { imgUrl: "/imageone.png", href: "https://videos.nottyler.org" },
     // Add more project objects here
 ];
 
