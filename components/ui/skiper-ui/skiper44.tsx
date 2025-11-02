@@ -59,7 +59,7 @@ const Skiper44 = () => {
         <div className="grid w-full max-w-xl grid-cols-2 gap-5">
           <p className="text-right text-background/70 font-mono font-bold text-2xl">Artist info:</p>
           <ul>
-            {Names.slice(0, 7).map((name, index) => (
+            {Names.slice(0, 7).map((name) => (
               <li className="text-background/70 font-mono font-bold text-lg" key={name}>{name}</li>
 
             ))}

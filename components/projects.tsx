@@ -5,19 +5,17 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import {
-    ScrollVelocityContainer,
-    ScrollVelocityRow,
-} from "@/components/ui/scroll-based-velocity";
 import ProjectHeader from "./project-header";
 
 type Project = {
     title: string;
     description: string;
+    imgUrl: string;
+    href: string;
 };
 
-const projects = [
-    { imgUrl: "/imageone.png", href: "https://videos.nottyler.org" },
+const projects: Project[] = [
+    { title: "Project Title", description: "Project description.", imgUrl: "/imageone.png", href: "https://videos.nottyler.org" },
     // Add more project objects here
 ];
 

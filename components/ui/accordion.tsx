@@ -153,7 +153,6 @@ interface AccordionItemProps {
  */
 export function AccordionItem({
     children,
-    value,
     className,
 }: AccordionItemProps) {
     const { isActive } = useAccordion();
