@@ -18,9 +18,9 @@ interface LayeredTextProps {
 export function LayeredText({
     lines = [
         { top: "warning", bottom: "appreciate" },
-        { top: "Pure", bottom: "those" },
-        { top: "Genius", bottom: "genius" },
-        { top: "Ahead", bottom: "can" },
+        { top: "Pure", bottom: "crazy" },
+        { top: "Genius", bottom: "people" },
+        { top: "Ahead", bottom: "alas they" },
         { top: "youre", bottom: "understand" },
         { top: "welcome", bottom: "our" },
         { top: "-tyler", bottom: "absurdity" },
