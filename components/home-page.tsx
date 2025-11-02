@@ -59,8 +59,8 @@ export default function HomePage() {
                 </div>
             </header>
 
-            <main className="grow flex items-center justify-center relative pb-6  px-6 ">
-                <div className="w-full h-full" style={{
+            <main className="grow flex items-center justify-center relative  px-6  ">
+                <div className="w-full h-full " style={{
                     maskImage: "url(/mainclip.png)",
                     maskSize: "contain",
                     maskRepeat: "no-repeat",
@@ -69,9 +69,11 @@ export default function HomePage() {
                     WebkitMaskSize: "contain",
                     WebkitMaskRepeat: "no-repeat",
                     WebkitMaskPosition: "center",
+
+
                 }}>
                     <motion.div
-                        className="w-[120%] h-[110%] -translate-x-1/2 -translate-y-1/2 mx-auto"
+                        className="w-[120%] h-[110%] -translate-x-1/2 -translate-y-1/2 mx-auto shadow-2xl shadow-primary/10"
                         style={{
                             backgroundImage: backgroundImage,
                             backgroundSize: "cover",
@@ -80,14 +82,16 @@ export default function HomePage() {
                             y: yTransform,
                             left: '50%',
                             top: '50%',
-                            position: 'relative'
+                            position: 'relative',
+                            borderRadius: '100px',
+                            boxShadow: '30px 30px 30px 30px rgba(750, 49, 40, 1)',
                         }}
                     />
 
                 </div>
 
             </main>
-            <p className="relative items-center mx-auto text-center justify-center font-mono text-xs"> (scroll) <ChevronDown className="w-4 mx-auto text-center h-4" /> </p>
+
 
         </div>
     );

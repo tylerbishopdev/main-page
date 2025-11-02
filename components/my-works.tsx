@@ -27,7 +27,7 @@ const experienceData: ExperienceItem[] = [
     {
         company: "Music",
         year: "audio project",
-        title: "People Are Saying I Saved Soul Music",
+        title: "Why People Are Saying not Tyler Soul Music",
         position: "Spotify® verified artist",
         imgSrc: "/promo.png",
         projectLink: "https://open.spotify.com/artist/4BhWvEo85DhqdhG8An3x3n",
@@ -38,13 +38,35 @@ const experienceData: ExperienceItem[] = [
     {
         company: "Tylers.wtf ",
         year: "software made for me by me",
-        title: "People Are Saying I Saved Soul Music",
+        title: "Good Tools Remove The Complexity From Work",
         position: "tylers.wtf®  ai media generation",
         imgSrc: "/tylerwtf.png",
         projectLink: "https://tylers.wtf",
         buttonText: "Make something",
         answer:
             "I got tired of showing people how to do dev work or use disparate AI tools to make cools stuff that anyone could make themselves. So I made a tool that brings everything that that I am using currently available in one place.",
+    },
+    {
+        company: "lil Toast",
+        year: "RIP ",
+        title: "She was but a mighty titan forever in our memories",
+        position: "liltoast.com",
+        imgSrc: "/toaster.png",
+        projectLink: "https://www.liltoast.com/",
+        buttonText: "Play The Game",
+        answer:
+            "A simple and straighforward game that's as care-free and tenacious as Toast. Toast wil never be forgotten. Somewhere she is a tiny, but fierce, ghost watching over us.",
+    },
+    {
+        company: "Time Travel",
+        year: "speak to me as a time travler ",
+        title: "Have a real voice conversation with me in the future",
+        position: "tylerbot.io",
+        imgSrc: "/time.png",
+        projectLink: "https://tylerbot.io",
+        buttonText: "Start Video Call",
+        answer:
+            " I have provided the first voice interface in which you can talk to a real person from the future. You can ask me anything but beware for the future may be bizarre and difficult for you to comprehend.",
     },
     {
         company: "Coming soon",
@@ -123,10 +145,10 @@ export default function Experience6() {
                                     customIcon
                                     className="hover:no-underline gap-5 border-t-2 border-background p-0 flex justify-between items-center py-2 relative data-active:bg-transparent hover:bg-transparent text-background sm:text-base text-sm"
                                 >
-                                    <h1 className="text-[20px]  font-lcd  text-background/70 uppercase">
+                                    <h1 className="text-[50px]  font-advancedled  text-muted uppercase">
                                         {item.company}
                                     </h1>
-                                    <p className="text-xs tracking-tighter space-x-2 px-2 text-center gap-10 w-[50%] py-6 rounded-[4px] bg-background/80   text-primary/50 font-lcd">
+                                    <p className="text-xl tracking-tighter space-x-2 px-2 text-right gap-10 w-[50%] py-6 rounded-[4px]  font-sans">
                                         {item.title}
                                     </p>
                                 </AccordionHeader>
@@ -168,11 +190,9 @@ export default function Experience6() {
                                                 src={item.imgSrc}
                                                 alt={item.company}
                                                 fill
-                                                className="object-cover rounded-md"
+                                                className="object-cover rounded-[10px] opacity-80 border-muted border-2 shadow-2xl shadow-muted/20"
                                             />
-                                            <span className="absolute bottom-4 left-4 sm:w-20 sm:h-20 w-12 h-12 bg-white z-10 rounded-lg flex items-center justify-center">
-                                                <ArrowUpRight className="text-background sm:h-12 sm:w-12 h-8 w-8" />
-                                            </span>
+
                                         </div>
                                     </div>
                                 </AccordionPanel>

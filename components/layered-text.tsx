@@ -22,21 +22,21 @@ export function LayeredText({
         { top: "among us", bottom: "mad men" },
         { top: "are outcasts", bottom: "see our" },
         { top: "who's genius", bottom: "absurdity" },
-        { top: "we call", bottom: "that we later" },
+        { top: "we call", bottom: "that later we" },
         { top: "madness", bottom: "call genius" },
     ],
-    fontSize = "78px",
+    fontSize = "90px",
     fontSizeMd = "36px",
-    lineHeight = 76,
+    lineHeight = 92,
     lineHeightMd = 35,
-    className = "text-primary/70",
+    className = "text-muted/30 px-10 lg:px-0",
 }: LayeredTextProps) {
     const containerRef = useRef<HTMLDivElement>(null)
     const timelineRef = useRef<gsap.core.Timeline | null>(null)
 
     const calculateTranslateX = (index: number) => {
-        const baseOffset = 35
-        const baseOffsetMd = 20
+        const baseOffset = 100
+        const baseOffsetMd = 30
         const centerIndex = Math.floor(lines.length / 2)
         return {
             desktop: (index - centerIndex) * baseOffset,
@@ -53,7 +53,7 @@ export function LayeredText({
         timelineRef.current = gsap.timeline({ paused: true })
 
         timelineRef.current.to(paragraphs, {
-            y: window.innerWidth >= 768 ? -60 : -35,
+            y: window.innerWidth >= 768 ? -75 : -75,
             duration: 0.8,
             ease: "power2.out",
             stagger: 0.08,
@@ -83,7 +83,7 @@ export function LayeredText({
             className={`mx-auto py-0 font-marlboro tracking-[-0px] uppercase  antialiased cursor-pointer ${className}`}
             style={{ fontSize, "--md-font-size": fontSizeMd } as React.CSSProperties}
         >
-            <ul className="list-none p-0 m-0 flex flex-col items-center">
+            <ul className="list-none p-10 lg:p-0 m-0 flex flex-col items-center">
                 {lines.map((line, index) => {
                     const translateX = calculateTranslateX(index)
                     return (
