@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import React, { useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
+import Image from "next/image";
 
 const Skiper13 = () => {
   return (
@@ -137,16 +138,18 @@ const Main = () => {
 
       <div className="relative mt-10 flex h-full flex-col items-center justify-center">
         <div className="absolute top-0 -translate-y-[90%]">
-          <img
+          <Image
             src="/skiperv1/skiper7/bg.png"
             alt=""
+            fill
             className="size-full object-cover"
           />
         </div>
         <div className="relative z-50 h-full w-screen p-4">
-          <img
+          <Image
             src="https://cdn.eventtia.com/event_files/211719/original/seoul.webp?1747254605"
             alt=""
+            fill
             className="rounded-4xl size-full object-cover"
           />
         </div>

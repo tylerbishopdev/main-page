@@ -7,6 +7,12 @@
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: "AdvancedLCD";
+  src: url("/fonts/advanced_pixel_lcd-7.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
 
 @font-face {
   font-family: "NeuveGrotesque";
@@ -41,10 +47,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: Marlboro, sans-serif;
-  --font-neuve: NeuveGrotesque, sans-serif;
+  --font-sans: "8bitOperator", monospace;
+  --font-marlboro: Marlboro, sans-serif;
   --font-mono: "8bitOperator", monospace;
   --font-ndot: "Ndot47", sans-serif;
+  --font-lcd: "AdvancedLCD", sans-serif;
   --font-advancedled: "AdvancedLed", sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -90,7 +97,7 @@
   --popover-foreground: oklch(0.85 0.01 17.54);
   --primary: oklch(0.66 0.22 26.14);
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: oklch(0.8 0.61 184.15);
   --secondary-foreground: oklch(0.62 0.02 214.46);
   --muted: oklch(0.39 0 0);
   --muted-foreground: oklch(0.67 0.02 17.82);
@@ -124,7 +131,7 @@
   --popover-foreground: oklch(0.85 0.01 17.54);
   --primary: oklch(0.66 0.22 26.14);
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: oklch(0.65 0.22 36.85);
   --secondary-foreground: oklch(0.62 0.02 214.46);
   --muted: oklch(0.39 0 0);
   --muted-foreground: oklch(0.67 0.02 17.82);

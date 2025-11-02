@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${spaceMono.variable}`}>{children}</body>
+      <body className={"px-2 lg:px-2" + `${inter.variable} ${spaceMono.variable}`}>{children}</body>
     </html>
   );
 }

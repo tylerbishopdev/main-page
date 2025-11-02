@@ -18,7 +18,7 @@ const Menu: React.FC<MenuProps> = ({ navLinks }) => {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    useOnClickOutside(menuRef, () => {
+    useOnClickOutside(menuRef as React.RefObject<HTMLElement>, () => {
         if (isOpen) {
             setIsOpen(false);
         }
@@ -28,7 +28,7 @@ const Menu: React.FC<MenuProps> = ({ navLinks }) => {
         <div ref={menuRef} className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="text-lg font-mono text-white uppercase"
+                className="text-lg px-6 font-mono text-primary uppercase"
             >
                 {isOpen ? "Close" : "Menu"}
             </button>

@@ -1,18 +1,19 @@
 "use client";
 
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import React, { useState } from "react";
+import React from "react";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import Image from "next/image";
 import Link from "next/link";
 import Menu from "./menu";
+import { ChevronDown } from "lucide-react";
 
 
 
 const navLinks = [
-    { name: "MEDIA", href: "/media" },
+    { name: "CHANNEL", href: "https://videos.nottyler.org" },
     { name: "PROJECTS", href: "/projects" },
-    { name: "CONTACTS", href: "/contacts" },
+    { name: "CONTACT", href: "/contact" },
 ];
 
 export default function HomePage() {
@@ -35,11 +36,10 @@ export default function HomePage() {
 
     const backgroundImage = isMediumScreen ? "url(/mobileback.png)" : "url(/mainback.png)";
     const maskImage = isMediumScreen ? "url(/mobilevector.png)" : "url(/mainclip.png)";
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
-        <div className="bg-background h-screen mx-auto flex flex-col" onMouseMove={handleMouseMove}>
-            <header className="w-full p-4 text-white  font-ndot z-10 mx-auto">
+        <div className="bg-background w-full h-screen mx-auto flex flex-col" onMouseMove={handleMouseMove}>
+            <header className="w-full pt-4 lg:pt-2  text-white font-mono z-10 mx-auto">
                 <div className="flex justify-between items-center max-w-7xl mx-auto">
                     <div className="flex-1 flex justify-start">
                         <Link href="/" className="text-lg">
@@ -59,7 +59,7 @@ export default function HomePage() {
                 </div>
             </header>
 
-            <main className="flex-grow flex items-center justify-center relative">
+            <main className="grow flex items-center justify-center relative pb-6  px-6 ">
                 <div className="w-full h-full" style={{
                     maskImage: "url(/mainclip.png)",
                     maskSize: "contain",
@@ -71,7 +71,7 @@ export default function HomePage() {
                     WebkitMaskPosition: "center",
                 }}>
                     <motion.div
-                        className="w-[110%] h-[110%] -translate-x-1/2 -translate-y-1/2"
+                        className="w-[120%] h-[110%] -translate-x-1/2 -translate-y-1/2 mx-auto"
                         style={{
                             backgroundImage: backgroundImage,
                             backgroundSize: "cover",
@@ -83,9 +83,11 @@ export default function HomePage() {
                             position: 'relative'
                         }}
                     />
-                </div>
-            </main>
 
+                </div>
+
+            </main>
+            <p className="relative items-center mx-auto text-center justify-center font-mono text-xs"> (scroll) <ChevronDown className="w-4 mx-auto text-center h-4" /> </p>
 
         </div>
     );

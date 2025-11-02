@@ -1,11 +1,16 @@
 import HomePage from "@/components/home-page";
 import Footer from "@/components/footer";
-import Projects from "@/components/projects";
+
+import MyWorks from "@/components/my-works";
+import LayeredTextAdd from "@/components/ui/layered-text-add";
+
 export default function Page() {
   return (
     <div>
       <HomePage />
-      <Projects />
+      <LayeredTextAdd />
+
+      <MyWorks />
       <Footer />
 
     </div>

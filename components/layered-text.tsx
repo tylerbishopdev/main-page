@@ -1,0 +1,136 @@
+
+
+"use client"
+
+import { useEffect, useRef } from "react"
+import { gsap } from "gsap"
+import type React from "react"
+
+interface LayeredTextProps {
+    lines?: Array<{ top: string; bottom: string }>
+    fontSize?: string
+    fontSizeMd?: string
+    lineHeight?: number
+    lineHeightMd?: number
+    className?: string
+}
+
+export function LayeredText({
+    lines = [
+        { top: "warning", bottom: "appreciate" },
+        { top: "Pure", bottom: "those" },
+        { top: "Genius", bottom: "genius" },
+        { top: "Ahead", bottom: "can" },
+        { top: "youre", bottom: "understand" },
+        { top: "welcome", bottom: "our" },
+        { top: "-tyler", bottom: "absurdity" },
+    ],
+    fontSize = "78px",
+    fontSizeMd = "36px",
+    lineHeight = 76,
+    lineHeightMd = 35,
+    className = "text-primary/70",
+}: LayeredTextProps) {
+    const containerRef = useRef<HTMLDivElement>(null)
+    const timelineRef = useRef<gsap.core.Timeline | null>(null)
+
+    const calculateTranslateX = (index: number) => {
+        const baseOffset = 35
+        const baseOffsetMd = 20
+        const centerIndex = Math.floor(lines.length / 2)
+        return {
+            desktop: (index - centerIndex) * baseOffset,
+            mobile: (index - centerIndex) * baseOffsetMd,
+        }
+    }
+
+    useEffect(() => {
+        if (!containerRef.current) return
+
+        const container = containerRef.current
+        const paragraphs = container.querySelectorAll("p")
+
+        timelineRef.current = gsap.timeline({ paused: true })
+
+        timelineRef.current.to(paragraphs, {
+            y: window.innerWidth >= 768 ? -60 : -35,
+            duration: 0.8,
+            ease: "power2.out",
+            stagger: 0.08,
+        })
+
+        const handleMouseEnter = () => {
+            timelineRef.current?.play()
+        }
+
+        const handleMouseLeave = () => {
+            timelineRef.current?.reverse()
+        }
+
+        container.addEventListener("mouseenter", handleMouseEnter)
+        container.addEventListener("mouseleave", handleMouseLeave)
+
+        return () => {
+            container.removeEventListener("mouseenter", handleMouseEnter)
+            container.removeEventListener("mouseleave", handleMouseLeave)
+            timelineRef.current?.kill()
+        }
+    }, [lines])
+
+    return (
+        <div
+            ref={containerRef}
+            className={`mx-auto py-0 font-marlboro tracking-[-0px] uppercase  antialiased cursor-pointer ${className}`}
+            style={{ fontSize, "--md-font-size": fontSizeMd } as React.CSSProperties}
+        >
+            <ul className="list-none p-0 m-0 flex flex-col items-center">
+                {lines.map((line, index) => {
+                    const translateX = calculateTranslateX(index)
+                    return (
+                        <li
+                            key={index}
+                            className={`
+                overflow-hidden relative
+                ${index % 2 === 0
+                                    ? "transform-[skew(60deg,-30deg)_scaleY(0.66667)]"
+                                    : "transform-[skew(0deg,-30deg)_scaleY(1.33333)]"
+                                }
+              `}
+                            style={
+                                {
+                                    height: `${lineHeight}px`,
+                                    transform: `translateX(${translateX.desktop}px) skew(${index % 2 === 0 ? "60deg, -30deg" : "0deg, -30deg"}) scaleY(${index % 2 === 0 ? "0.66667" : "1.33333"})`,
+                                    "--md-height": `${lineHeightMd}px`,
+                                    "--md-translateX": `${translateX.mobile}px`,
+                                } as React.CSSProperties
+                            }
+                        >
+                            <p
+                                className="leading-[55px] md:leading-[30px] px-[15px] align-top whitespace-nowrap m-0"
+                                style={
+                                    {
+                                        height: `${lineHeight}px`,
+                                        lineHeight: `${lineHeight - 5}px`,
+                                    } as React.CSSProperties
+                                }
+                            >
+                                {line.top}
+                            </p>
+                            <p
+                                className="leading-[55px] md:leading-[30px] px-[15px] align-top whitespace-nowrap m-0"
+                                style={
+                                    {
+                                        height: `${lineHeight}px`,
+                                        lineHeight: `${lineHeight - 5}px`,
+                                    } as React.CSSProperties
+                                }
+                            >
+                                {line.bottom}
+                            </p>
+                        </li>
+                    )
+                })}
+            </ul>
+        </div>
+    )
+}

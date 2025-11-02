@@ -26,7 +26,7 @@ const Skiper34 = () => {
           </span>
         </div>
         {images.map((img, idx) => (
-          <StickyCard_003 key={idx} imgUrl={img} />
+          <StickyCard_003 key={idx} imgUrl={img} href="#" />
         ))}
       </section>
     </ReactLenis>
@@ -65,7 +65,7 @@ const StickyCard_003 = ({ imgUrl, href }: { imgUrl: string, href: string }) => {
     if (isInView) {
       setMaxScrollY(scrollY.get());
     }
-  }, [isInView]);
+  }, [isInView, scrollY]);
 
   return (
     <Link href={href} passHref>
