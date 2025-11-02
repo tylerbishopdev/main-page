@@ -17,13 +17,13 @@ interface LayeredTextProps {
 
 export function LayeredText({
     lines = [
-        { top: "warning", bottom: "appreciate" },
-        { top: "Pure", bottom: "crazy" },
-        { top: "Genius", bottom: "people" },
-        { top: "Ahead", bottom: "alas they" },
-        { top: "youre", bottom: "understand" },
-        { top: "welcome", bottom: "our" },
-        { top: "-tyler", bottom: "absurdity" },
+        { top: "The most", bottom: "but alas" },
+        { top: "creative", bottom: "these" },
+        { top: "among us", bottom: "mad men" },
+        { top: "are outcasts", bottom: "see our" },
+        { top: "who's genius", bottom: "absurdity" },
+        { top: "we call", bottom: "that we later" },
+        { top: "madness", bottom: "call genius" },
     ],
     fontSize = "78px",
     fontSizeMd = "36px",
