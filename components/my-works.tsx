@@ -27,7 +27,7 @@ const experienceData: ExperienceItem[] = [
     {
         company: "Music",
         year: "audio project",
-        title: "Why People Are Saying not Tyler Soul Music",
+        title: "People Are Saying I Saved Soul Music",
         position: "Spotify® verified artist",
         imgSrc: "/promo.png",
         projectLink: "https://open.spotify.com/artist/4BhWvEo85DhqdhG8An3x3n",
@@ -101,105 +101,107 @@ export default function Experience6() {
         },
     };
     return (
-        <div
-            className="sm:p-10 p-6 mx-auto bg-primary min-h-screen w-full shadow-sm"
-            ref={heroRef}
-        >
-            <article className="max-w-[90%] md:max-w-7xl mx-auto sm:flex  items-end py-10 gap-4 justify-between align-center">
-                <h1 className="md:text-8xl pb-2 text-4xl font-ndot tracking-tight uppercase text-background/80  justify-center align-center py-12">
-                    <VerticalCutReveal
-                        splitBy="characters"
-                        staggerDuration={0.025}
-                        staggerFrom="first"
-                        transition={{
-                            type: "spring",
-                            stiffness: 200,
-                            damping: 21,
-                        }}
-                    >
-                        {`Creative works`}
-                    </VerticalCutReveal>
-                </h1>
-                <div className="sm:w-96 space-y-1.5 sm:pt-0 pt-4">
-                    <p className="text-justify sm:text-sm text-xs text-background font-mono">
-                        Described as painfully creative, I believe myself to be better at articulating my thoughts, opinions, and ideas through artistic works. This is a incomplete list that I feel currently represent some component of my vision of the world, humanity, and absurd.
-                    </p>
-                </div>
-            </article>
-
-            <div className="mt-3 max-w-7xl mx-auto">
-                <Accordion defaultValue="item-2">
-                    {experienceData.map((item, index) => (
-                        <AccordionItem
-                            key={index}
-                            value={`item-${index}`}
-                            className="mb-0 rounded-none overflow-visible bg-transparent  w-full py-2"
+        <div id="my-works" className="min-h-screen backdrop-blur-sm px-4 bg-linear-to-b from-background to-primary flex mt-20 flex-col items-center justify-center z-20">
+            <div
+                className="sm:p-10 p-6 mx-auto bg-primary min-h-screen w-full shadow-sm"
+                ref={heroRef}
+            >
+                <article className="max-w-[90%] md:max-w-7xl mx-auto sm:flex items-end py-10 gap-4 justify-between align-center">
+                    <h1 className="md:text-8xl pb-2 text-4xl font-mono tracking-tight uppercase text-black  justify-center align-center py-12">
+                        <VerticalCutReveal
+                            splitBy="characters"
+                            staggerDuration={0.025}
+                            staggerFrom="first"
+                            transition={{
+                                type: "spring",
+                                stiffness: 200,
+                                damping: 21,
+                            }}
                         >
-                            <TimelineContent
-                                key={`timeline-header-${index}`}
-                                animationNum={index}
-                                timelineRef={heroRef}
-                                customVariants={revealVariants}
+                            {`Creative works`}
+                        </VerticalCutReveal>
+                    </h1>
+                    <div className="sm:w-96 space-y-1.5 sm:pt-0 pt-4">
+                        <p className="text-justify sm:text-sm text-xs text-background font-mono backdrop-blur-xl p-4">
+                            Described as painfully creative, I believe myself to be better at articulating my thoughts, opinions, and ideas through artistic works. This is a incomplete list that I feel currently represent some component of my vision of the world, humanity, and absurd.
+                        </p>
+                    </div>
+                </article>
+
+                <div className="mt-3 lg:w-3/4 mx-auto">
+                    <Accordion defaultValue="item-2">
+                        {experienceData.map((item, index) => (
+                            <AccordionItem
+                                key={index}
+                                value={`item-${index}`}
+                                className="mb-0 rounded-none px-2 py-2"
                             >
-                                <AccordionHeader
-                                    customIcon
-                                    className="hover:no-underline gap-5 border-t-2 border-background p-0 flex justify-between items-center py-2 relative data-active:bg-transparent hover:bg-transparent text-background sm:text-base text-sm"
+                                <TimelineContent
+                                    key={`timeline-header-${index}`}
+                                    animationNum={index}
+                                    timelineRef={heroRef}
+                                    customVariants={revealVariants}
                                 >
-                                    <h1 className="text-[50px]  font-advancedled  text-muted uppercase">
-                                        {item.company}
-                                    </h1>
-                                    <p className="text-xl tracking-tighter space-x-2 px-2 text-right gap-10 w-[50%] py-6 rounded-[4px]  font-sans">
-                                        {item.title}
-                                    </p>
-                                </AccordionHeader>
-                            </TimelineContent>
-                            <TimelineContent
-                                key={`timeline-panel-${index}`}
-                                animationNum={index}
-                                timelineRef={heroRef}
-                                customVariants={revealVariants}
-                            >
-                                <AccordionPanel
-                                    className="space-y-4 w-full mx-auto bg-primary data-active:bg-primary px-0 rounded-lg"
-                                    articleClassName="pt-2 px-0 bg-primary sm:p-10 p-4 rounded-lg"
+                                    <AccordionHeader
+                                        customIcon
+                                        className="hover:no-underline gap-3 border-t-2 border-background p-2 flex justify-between items-center py-2 relative bg-background/90 hover:bg-bg-muted/90 data-active:bg-background/90 text-background sm:text-base text-xs"
+                                    >
+                                        <h1 className="lg:text-[50px] text-2xl font-advancedled px-6 text-primary uppercase">
+                                            {item.company}
+                                        </h1>
+                                        <p className="lg:text-xl text-xs tracking-tighter space-x-1 px-2 text-right gap-6  py-6 rounded-[4px] text-muted-foreground pr-4 font-sans">
+                                            {item.title}
+                                        </p>
+                                    </AccordionHeader>
+                                </TimelineContent>
+                                <TimelineContent
+                                    key={`timeline-panel-${index}`}
+                                    animationNum={index}
+                                    timelineRef={heroRef}
+                                    customVariants={revealVariants}
                                 >
-                                    <div className="gap-4 justify-between grid sm:grid-cols-2">
-                                        <div className="sm:w-[80%] w-full space-y-10">
-                                            <span className="flex flex-col space-y-2">
-                                                <span className="text-sm sm:text-base italic font-normal">
-                                                    ({item.year})
+                                    <AccordionPanel
+                                        className="space-y-4 w-full mx-auto bg-primary data-active:bg-primary px-0 rounded-lg"
+                                        articleClassName="pt-2 px-0 bg-primary sm:p-10 p-4 rounded-lg"
+                                    >
+                                        <div className="gap-4 justify-between grid sm:grid-cols-2">
+                                            <div className="sm:w-[80%] w-full space-y-10">
+                                                <span className="flex flex-col space-y-2">
+                                                    <span className="text-sm sm:text-base italic font-normal">
+                                                        ({item.year})
+                                                    </span>
+                                                    <span className="sm:text-xl uppercase font-medium">
+                                                        {item.position}
+                                                    </span>
                                                 </span>
-                                                <span className="sm:text-xl uppercase font-medium">
-                                                    {item.position}
-                                                </span>
-                                            </span>
-                                            <p className="text-sm sm:text-base">{item.answer}</p>
-                                            <div className="flex gap-2 text-sm">
-                                                <Link
-                                                    href={item.projectLink}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="px-4 py-2 rounded-md bg-accent text-background border border-accent hover:bg-accent/80 transition-colors"
-                                                >
-                                                    {item.buttonText}
-                                                </Link>
+                                                <p className="text-sm sm:text-base">{item.answer}</p>
+                                                <div className="flex gap-2 text-sm">
+                                                    <Link
+                                                        href={item.projectLink}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="px-4 py-2 rounded-md bg-accent text-background border border-accent hover:bg-accent/80 transition-colors"
+                                                    >
+                                                        {item.buttonText}
+                                                    </Link>
+                                                </div>
+                                            </div>
+                                            <div className="relative sm:h-96 h-64">
+                                                <Image
+                                                    src={item.imgSrc}
+                                                    alt={item.company}
+                                                    fill
+                                                    className="object-cover rounded-[10px] opacity-80 border-muted border-2 shadow-2xl shadow-muted/20"
+                                                />
+
                                             </div>
                                         </div>
-                                        <div className="relative sm:h-96 h-64">
-                                            <Image
-                                                src={item.imgSrc}
-                                                alt={item.company}
-                                                fill
-                                                className="object-cover rounded-[10px] opacity-80 border-muted border-2 shadow-2xl shadow-muted/20"
-                                            />
-
-                                        </div>
-                                    </div>
-                                </AccordionPanel>
-                            </TimelineContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
+                                    </AccordionPanel>
+                                </TimelineContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </div>
             </div>
         </div>
     );

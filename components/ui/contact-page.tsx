@@ -20,7 +20,7 @@ const ContactPage = () => {
     return (
         <main>
 
-            <header className="w-full p-4 text-white font-mono z-10 mx-auto">
+            <header className="w-full p-4 text-muted font-mono z-10 mx-auto">
                 <div className="flex justify-between items-center max-w-7xl mx-auto">
                     <div className="flex-1 flex justify-start">
                         <Link href="/" className="text-lg">

@@ -29,7 +29,7 @@ const Skiper44 = () => {
         className="sticky top-[10%] flex gap-2 pb-10 text-2xl  tracking-tighter md:text-6xl"
       >
         <div className="sticky top-[50%] h-fit">
-          <h1 className="text-6xl text-primary">not</h1>
+          <h1 className="lg:text-6xl text-primary">not</h1>
           <div className="absolute left-full top-0 z-10 h-[40vh] w-screen -translate-y-full " />
           <div className="absolute bottom-0 left-full z-10 h-[44vh] w-screen translate-y-full" />
         </div>
