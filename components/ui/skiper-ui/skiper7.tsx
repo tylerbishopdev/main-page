@@ -71,7 +71,7 @@ const Main = () => {
     <div className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden font-advancedled text-primary">
       <motion.ul
         layout
-        className="mt-0 z-10 flex w-full flex-col items-center justify-center gap-5"
+        className="mt-0 z-10 flex w-full flex-col items-center justify-center lg:pt-10 gap-5"
       >
         {list.map((item, index) => (
           <motion.li
@@ -103,9 +103,9 @@ const Main = () => {
             className="relative my-2 flex cursor-pointer flex-col items-center "
             key={index}
           >
-            <div className="relative flex items-center justify-center gap-5">
+            <div className="relative flex items-center justify-center gap-3">
               <Link href={item.value} className="hover:underline">
-                <span className="text-[7vw]  font-advancedled font-semibold text-primary/80 hover:text-accent uppercase text-center leading-[0.8] tracking-[-0.03em] hover:no-underline">
+                <span className="lg:text-9xl text-7xl font-advancedled font-semibold text-primary/80 hover:text-accent uppercase text-center leading-[0.8] tracking-[-0.01em] hover:no-underline">
                   {item.name}
                 </span>
               </Link>
@@ -118,7 +118,7 @@ const Main = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="whitespace-nowrap text-[2vw] font-bold uppercase leading-[0.9] tracking-[-0.06em]"
+                  className="lg:text-lg text-sm leading-snug font-neuve uppercase font-bold bg-linear-to-r from-secondary/5 via-background to-secondary/5 p-0  text-secondary px-4 rounded-full"
                 >
                   {item.date}
                 </motion.h2>
@@ -131,7 +131,7 @@ const Main = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeOut", delay: 0.6 }}
-          className="font-inter mt-10 font-black uppercase leading-[0.8] tracking-[-0.03em] text-muted-foreground lg:text-sm"
+          className="font-inter mt-10 font-black uppercase leading-[0.8] tracking-[-0.03em] text-foreground/50 lg:text-sm"
         >
           © Copright nottyler.org 2025
         </motion.li>
@@ -157,9 +157,9 @@ const Main = () => {
 
 const Preloader_001 = () => {
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center bg-linear-to-b from-black  to-zinc-950">
+    <div className="flex h-screen w-full flex-col items-center justify-center bg-linear-to-tr from-black  to-zinc-950">
       <div className="z-50 flex max-w-4xl flex-col items-center justify-center gap-10">
-        <h1 className="text-center font-mono text-muted/40  uppercase leading-[0.8] ">
+        <h1 className="text-center font-mono text-muted  uppercase leading-[0.8] ">
           not TYLER ©2025
         </h1>
         <div className="h-2 flex w-full items-center justify-between">

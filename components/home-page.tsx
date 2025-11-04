@@ -5,19 +5,14 @@ import React from "react";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
 import Image from "next/image";
 import Link from "next/link";
-import { LimelightNav, type NavItem } from "@/components/ui/shadcn-io/limelight-nav";
-import { Video, FolderGit2, Contact } from "lucide-react";
-import { useRouter } from "next/navigation";
-
 
 const navLinks = [
-    { name: "CHANNEL", href: "https://videos.nottyler.org", icon: <Video /> },
-    { name: "PROJECTS", href: "/projects", icon: <FolderGit2 /> },
-    { name: "CONTACT", href: "/contact", icon: <Contact /> },
+    { name: "CHANNEL", href: "https://videos.nottyler.org" },
+    { name: "PROJECTS", href: "/#my-works" },
+    { name: "CONTACT", href: "/contact" },
 ];
 
 export default function HomePage() {
-    const router = useRouter();
     const x = useMotionValue(0);
     const y = useMotionValue(0);
 
@@ -38,22 +33,9 @@ export default function HomePage() {
     const backgroundImage = isMediumScreen ? "url(/mobileback.png)" : "url(/mainback.png)";
     const maskImage = isMediumScreen ? "url(/mobilevector.png)" : "url(/mainclip.png)";
 
-    const navItems: NavItem[] = navLinks.map(link => ({
-        id: link.name,
-        icon: link.icon,
-        label: link.name,
-        onClick: () => {
-            if (link.href.startsWith("http")) {
-                window.open(link.href, "_blank");
-            } else {
-                router.push(link.href);
-            }
-        }
-    }));
-
     return (
         <div className="bg-background w-full h-screen mx-auto flex flex-col" onMouseMove={handleMouseMove}>
-            <header className="w-full pt-4 lg:pt-2 text-white font-mono z-10 mx-auto">
+            <header className="w-full pt-4 lg:pt-2  font-mono z-10 mx-auto">
                 <div className="flex justify-center items-center max-w-7xl mx-auto">
                     <Link href="/" className="text-lg">
                         <Image src="/logos2.png" alt="NotTyler" width={105} height={105} />
@@ -95,7 +77,13 @@ export default function HomePage() {
             </main>
 
             <footer className="fixed bottom-5 left-1/2 -translate-x-1/2 z-20">
-                <LimelightNav items={navItems} />
+                <div className="mx-auto flex items-center justify-center gap-x-4 rounded-full bg-background/50 px-4 py-2 text-sm text-foreground backdrop-blur-md">
+                    {navLinks.map((link) => (
+                        <Link href={link.href} key={link.name} className="hover:text-primary px-3 py-1.5 transition-colors">
+                            {link.name}
+                        </Link>
+                    ))}
+                </div>
             </footer>
         </div>
     );

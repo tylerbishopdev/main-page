@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { TimelineContent } from "@/components/ui/timeline-animation";
 import VerticalCutReveal from "@/components/ui/vertical-cut-reveal";
-import { ArrowUpRight } from "lucide-react";
+
 import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -67,6 +67,17 @@ const experienceData: ExperienceItem[] = [
         buttonText: "Start Video Call",
         answer:
             " I have provided the first voice interface in which you can talk to a real person from the future. You can ask me anything but beware for the future may be bizarre and difficult for you to comprehend.",
+    },
+    {
+        company: "Sictok Timer",
+        year: "round timer that uses words",
+        title: "SikTok AI Round Timer",
+        position: "SicTok® AI Round Timer",
+        imgSrc: "/siktok.png",
+        projectLink: "https://www.sictok.com/",
+        buttonText: "Try It Out",
+        answer:
+            "No longer do yo need an engineering degree  to use a round timer. Just explain the timer configurtion you want in plain languag and start the timer.",
     },
     {
         company: "Coming soon",
