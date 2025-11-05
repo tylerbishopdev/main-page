@@ -22,11 +22,7 @@ const openAIData = [
     { label: "Loss per $ Made", value: 7 },
 ]
 
-export default function Dashboard({
-    children,
-}: {
-    children?: React.ReactNode;
-}) {
+export default function Dashboard() {
     return (
         <div className="bg-linear-to-r from-background via-accent/5 to-backgrond w-full h-minscreen mx-auto flex flex-col" >
             <header className="w-full pt-4 lg:pt-2  font-mono z-10 mx-auto">
@@ -50,7 +46,7 @@ export default function Dashboard({
                                 <div>
                                     <h2 className="text-lg text-secondary  font-ndot uppercase tracking-wider">Will AI Kill Us All?</h2>
                                     <p className="mt-2 text-xs leading-relaxed">
-                                        Tyler's 10 year probability of AI destroying us all
+                                        Tyler&apos;s 10 year probability of AI destroying us all
                                     </p>
                                     <p className="mt-2 text-xs font-neuve text-muted py-4">Updated Nov. 2, 2025</p>
                                 </div>
