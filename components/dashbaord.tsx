@@ -97,6 +97,7 @@ export default function Dashboard() {
                                 </div>
 
                                 <div className="space-y-3">
+                                    <h2 className=" font-neuve text-sm text-background tracking-wider bg-secondary rounded-r-full w-2/3 full px-4">S&P 500 5-Year Return</h2>
                                     <div className="flex items-center justify-between">
                                         <span className="text-xs">Current</span>
                                         <span className="text-4xl font-ndot text-primary font-bold">98%</span>
