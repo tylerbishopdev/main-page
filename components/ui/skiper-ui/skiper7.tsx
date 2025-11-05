@@ -54,6 +54,11 @@ const Main = () => {
       date: "videos and music",
     },
     {
+      name: "Not®",
+      value: "/not",
+      date: "Blow your mind",
+    },
+    {
 
       name: "Contact",
       value: "/contact",
@@ -100,12 +105,12 @@ const Main = () => {
             }}
             onMouseEnter={() => setHoveredIndex(index)}
             onMouseLeave={() => setHoveredIndex(null)}
-            className="relative my-2 flex cursor-pointer flex-col items-center "
+            className="relative my-0 flex cursor-pointer flex-col items-center "
             key={index}
           >
-            <div className="relative flex items-center justify-center gap-3">
+            <div className="relative flex items-center justify-center gap-0 mt-4">
               <Link href={item.value} className="hover:underline">
-                <span className="lg:text-9xl text-7xl font-advancedled font-semibold text-primary/80 hover:text-accent uppercase text-center leading-[0.8] tracking-[-0.01em] hover:no-underline">
+                <span className="lg:text-8xl text-6xl font-advancedled font-semibold text-primary/80 hover:text-accent uppercase text-center  tracking-[-0.01em] hover:no-underline">
                   {item.name}
                 </span>
               </Link>
@@ -118,7 +123,7 @@ const Main = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
-                  className="lg:text-lg text-sm leading-snug font-neuve uppercase font-bold bg-linear-to-r from-secondary/5 via-background to-secondary/5 p-0  text-secondary px-4 rounded-full"
+                  className="lg:text-lg text-sm leading-snug font-ndot uppercase font-bold   text-accent px-4 rounded-full"
                 >
                   {item.date}
                 </motion.h2>
@@ -131,7 +136,7 @@ const Main = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeOut", delay: 0.6 }}
-          className="font-inter mt-10 font-black uppercase leading-[0.8] tracking-[-0.03em] text-foreground/50 lg:text-sm"
+          className="font-mono mt-6 uppercase tracking-[-0.03em] text-foreground/50 lg:text-sm"
         >
           © Copright nottyler.org 2025
         </motion.li>
@@ -157,7 +162,7 @@ const Main = () => {
 
 const Preloader_001 = () => {
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center bg-linear-to-tr from-black  to-zinc-950">
+    <div className="flex h-screen w-full flex-col items-center justify-center bg-radial from-accent/5 via-accent/0 to-background  ">
       <div className="z-50 flex max-w-4xl flex-col items-center justify-center gap-10">
         <h1 className="text-center font-mono text-muted  uppercase leading-[0.8] ">
           not TYLER ©2025
@@ -166,7 +171,7 @@ const Preloader_001 = () => {
 
 
         </div>
-        <h1 className="text-center text-[3vw] font-lcd  uppercase leading-[2] tracking-[-0.06em] text-primary">
+        <h1 className="text-center text-[3vw] font-lcd  uppercase leading-[2] tracking-[-0.1em] text-primary">
           absurdly
           <br /> creative vision
         </h1>
