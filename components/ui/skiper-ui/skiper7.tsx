@@ -23,9 +23,9 @@ const Skiper7 = () => {
         {showPreloader ? (
           <motion.div
             key="preloader"
-            initial={{ y: 0 }}
+            initial={{ y: 2 }}
             exit={{ y: "-100%" }}
-            transition={{ duration: 1, ease: [0.785, 0.135, 0.15, 0.86] }}
+            transition={{ duration: 1, ease: [0.785, 0.135, 0.15, 0.76] }}
           >
             <Preloader_001 />
           </motion.div>

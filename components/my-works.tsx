@@ -69,6 +69,17 @@ const experienceData: ExperienceItem[] = [
             " I have provided the first voice interface in which you can talk to a real person from the future. You can ask me anything but beware for the future may be bizarre and difficult for you to comprehend.",
     },
     {
+        company: "Macrodata Refinement",
+        year: "Lumen Industries",
+        title: "Bin em' to win em'",
+        position: "Perform Your Duties As An In'y",
+        imgSrc: "/macrodata.png",
+        projectLink: "0ffc1al.com",
+        buttonText: "Play Now",
+        answer:
+            "See if you can perform the regular benign and unmysterious work as quickly as others on your floor.",
+    },
+    {
         company: "Sictok Timer",
         year: "round timer that uses words",
         title: "SikTok AI Round Timer",
