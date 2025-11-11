@@ -69,15 +69,37 @@ const experienceData: ExperienceItem[] = [
             " I have provided the first voice interface in which you can talk to a real person from the future. You can ask me anything but beware for the future may be bizarre and difficult for you to comprehend.",
     },
     {
+        company: "Am I Hydrated?",
+        year: "AmIHydrated.com",
+        title: "Take Pic, AI Decidess",
+        position: "Take a pic of your tongue, AI Decides if you are hydrated",
+        imgSrc: "/hydrationss.png",
+        projectLink: "https://www.amihydrated.com/",
+        buttonText: "Lemme Try It",
+        answer:
+            "A simple app I made so that you can take a picture of your tongue using your phone's camera to let AI help you determine if you are hydrated or not. Takes about 6 seconds and AI will tell you how hydrated, how confident it is in it' analysis, and why it thinks you are hydrated or not. Not a doctor, duh.",
+    },
+    {
         company: "Macrodata Refinement",
         year: "Lumen Industries",
         title: "Bin em' to win em'",
         position: "Perform Your Duties As An In'y",
         imgSrc: "/macrodata.png",
-        projectLink: "0ffc1al.com",
+        projectLink: "https://0ffc1al.com",
         buttonText: "Play Now",
         answer:
             "See if you can perform the regular benign and unmysterious work as quickly as others on your floor.",
+    },
+    {
+        company: "Mario Cart® The Movie ",
+        year: "I direct and star in this future summer blockbuster",
+        title: "Trailer for Future Blockbuster ",
+        position: "Mario Cart® The Movie",
+        imgSrc: "/mariomovie.png",
+        projectLink: "/mario-cart",
+        buttonText: "Watch Now",
+        answer:
+            "A live action trailer for Mario Cart. A movie that could totally be made. Get at me Hollywood, Ninendo, whoever. Give me 8-10 hours and it's ready to go.",
     },
     {
         company: "Sictok Timer",

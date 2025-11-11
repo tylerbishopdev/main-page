@@ -5,7 +5,7 @@ import {
 
 export default function ProjectHeader() {
     return (
-        <section className="relative flex w-screen flex-col items-center py-[10vh]  bg-gradient-to-b from-background/0 via-accent/20 to-background/0">
+        <section className="relative flex w-screen flex-col items-center py-[10vh]  bg-linear-to-b from-background/0 via-accent/20 to-background/0">
             <ScrollVelocityContainer className="text-4xl font-bold md:text-7xl">
                 <ScrollVelocityRow baseVelocity={20} direction={1}>
                     <h1 className="text-9xl pt-4 py-4 font-ndot uppercase *:tracking-tighter text-foreground">

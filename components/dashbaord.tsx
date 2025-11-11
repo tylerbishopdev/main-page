@@ -18,8 +18,8 @@ const correlationData = [
 ]
 
 const openAIData = [
-    { label: "Dollar Made per $ Loss", value: 1 },
-    { label: "Loss per $ Made", value: 7 },
+    { label: "Billion$ Made", value: 1 },
+    { label: "Billion$ Lost", value: 7 },
 ]
 
 export default function Dashboard() {
@@ -48,10 +48,10 @@ export default function Dashboard() {
                                     <p className="mt-2 text-xs leading-relaxed">
                                         Tyler&apos;s 10 year probability of AI destroying us all
                                     </p>
-                                    <p className="mt-2 text-xs font-neuve text-muted py-4">Updated Nov. 2, 2025</p>
+
                                 </div>
 
-                                <div className="flex items-end justify-between pb-2">
+                                <div className="flex items-end justify-between pb-2 mt-14">
                                     <div>
                                         <div className="text-6xl  font-ndot text-primary">60%</div>
                                         <div className="mt-1 text-xs uppercase font-ndot  text-primary">YES</div>
@@ -66,6 +66,7 @@ export default function Dashboard() {
                                     <div className="h-full w-[60%] bg-primary" />
                                 </div>
                             </div>
+                            <p className="mb-1 text-xs font-neuve text-muted-foreground py-1 italic">Updated Nov. 2, 2025</p>
                         </Card>
 
                         {/* Prison Industrial Complex */}
@@ -92,8 +93,8 @@ export default function Dashboard() {
                         <Card className="p-6">
                             <div className="space-y-4">
                                 <div>
-                                    <h2 className="text-lg text-secondary  font-ndot uppercase tracking-wider">Getting richer, faster</h2>
-                                    <p className="mt-2 text-xs leading-relaxed pb-8">Data showing why everyone can more easily afford a home, healthcare, and childcare</p>
+                                    <h2 className="text-lg text-secondary  font-ndot uppercase tracking-wider">Everyone Is Rich Now</h2>
+                                    <p className="mt-2 text-xs leading-relaxed pb-8">Just not rich enough to buy a home, healthcare, or pay off loans.</p>
                                 </div>
 
                                 <div className="space-y-3">
@@ -160,7 +161,7 @@ export default function Dashboard() {
                             <div className="space-y-4">
                                 <div>
                                     <h2 className="text-xl font-ndot text-secondary uppercase tracking-wider">Intelligent Business</h2>
-                                    <p className="mt-2 pb-2 text-xs leading-relaxed">How OpenAI can afford to help so many companies reduce workforce.</p>
+                                    <p className="mt-2 pb-2 text-xs leading-relaxed">How OpenAI is helping to subsidize workfore reduction with massive profit losses</p>
                                 </div>
 
                                 <div className="h-[180px] space-y-4">
