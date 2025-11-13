@@ -100,6 +100,16 @@ const experienceData: ExperienceItem[] = [
         buttonText: "Watch Now",
         answer:
             "A live action trailer for Mario Cart. A movie that could totally be made. Get at me Hollywood, Ninendo, whoever. Give me 8-10 hours and it's ready to go.",
+    }, {
+        company: "Sound Frequency Generator",
+        year: "Generate waves by freq. type, enveope, and more",
+        title: "So THEY can't read your thoughts, or whateve",
+        position: "Soundwaving.com",
+        imgSrc: "/soundwave.png",
+        projectLink: "https://www.soundwaving.com/",
+        buttonText: "Try It Out",
+        answer:
+            "A tool that generates sound frequencies with deep customizable options. I don't care why and neither does the app, so enjot the most flexible generator there is available for free.",
     },
     {
         company: "Sictok Timer",

@@ -54,7 +54,7 @@ const Main = () => {
       date: "videos and music",
     },
     {
-      name: "Not®",
+      name: "Wut?",
       value: "/not",
       date: "Blow your mind",
     },
@@ -155,6 +155,7 @@ const Main = () => {
           height={1200}
           className=" w-full h-auto opacity-30 mask-b-from-background mask-t-to-primary"
         />
+
       </motion.div>
     </div>
   );
@@ -162,30 +163,22 @@ const Main = () => {
 
 const Preloader_001 = () => {
   return (
+
     <div className="flex h-screen w-full flex-col items-center justify-center bg-radial from-accent/5 via-accent/0 to-background  ">
+
       <div className="z-50 flex max-w-4xl flex-col items-center justify-center gap-10">
-        <h1 className="text-center font-mono text-muted  uppercase leading-[0.8] ">
-          not TYLER ©2025
-        </h1>
+
         <div className="h-2 flex w-full items-center justify-between">
 
 
         </div>
-        <h1 className="text-center text-[3vw] font-lcd  uppercase leading-[2] tracking-[-0.1em] text-primary">
+        <Image src="/shiba.png" alt="NotTyler" width={600} height={600} className="opacity-20 absolute z-auto hue-rotate-15 w-3/4 lg:w-auto " />
+        <h1 className="text-center text-6xl lg:text-9xl font-mono  uppercase tracking-tight text-primary">
           absurdly
-          <br /> creative vision
+          <br /> creative  <br /> vision
         </h1>
       </div>
-      <div className="absolute inset-0 z-20">
-        <video
-          className="h-full w-full object-cover"
-          autoPlay
-          muted
-          playsInline
-        >
-          <source src="/skiperv1/skiper7/nike.mp4" type="video/mp4" />
-        </video>
-      </div>
+
     </div>
   );
 };
