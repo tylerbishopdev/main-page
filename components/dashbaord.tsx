@@ -34,9 +34,9 @@ interface DashboardProps {
 }
 
 const SIDEBAR_ITEMS: Array<{ id: DashboardTabKey; label: string; description: string }> = [
-    { id: "maybeTrue", label: "Maybe True", description: "Default overview" },
-    { id: "notArt", label: "Not Art", description: "Curated counter-examples" },
-    { id: "notOriginals", label: "Not Originals", description: "Derivative works & riffs" },
+    { id: "maybeTrue", label: "Kinda-Facts©", description: "Default overview" },
+    { id: "notArt", label: "Mostly Arts", description: "not for sale, but maybe for sale" },
+    { id: "notOriginals", label: "Cult Resources", description: "learn how to think like a genius" },
 ]
 
 export default function Dashboard({ maybeTrue, notArt, notOriginals }: DashboardProps) {
@@ -53,7 +53,7 @@ export default function Dashboard({ maybeTrue, notArt, notOriginals }: Dashboard
 
     return (
         <div className="bg-linear-to-r from-background via-accent/5 to-backgrond flex h-minscreen min-h-screen w-full flex-col">
-            <header className="z-10 mx-auto w-full pt-4 font-mono lg:pt-2">
+            <header className="z-10 mx-auto w-full pb-2 pt-4 font-mono lg:pt-2">
                 <div className="mx-auto flex max-w-7xl items-center justify-between px-6">
                     <div className="flex items-center gap-4">
                         <Link href="/" className="text-lg">
@@ -69,11 +69,11 @@ export default function Dashboard({ maybeTrue, notArt, notOriginals }: Dashboard
                 </div>
             </header>
 
-            <div className="mx-auto flex w-full flex-1 flex-col md:flex-row md:pt-6">
-                <aside className="border-border/40 bg-background/80 px-6 py-6 backdrop-blur md:min-h-[720px] md:w-64 md:border-r">
+            <div className="mx-auto flex w-full flex-1 flex-col md:flex-row md:pt-0 border-t border-accent/10">
+                <aside className="border-accent/10 bg-background/80 px-6 py-6 backdrop-blur md:min-h-[720px] md:w-64 md:border-r">
                     <div className="mb-8 space-y-1">
-                        <span className="text-[11px] font-ndot uppercase tracking-[0.35em] text-muted-foreground">Views</span>
-                        <h2 className="text-2xl font-ndot text-secondary">Dashboard</h2>
+                        <span className="text-[11px] tracking-loosefont-ndot uppercase text-accent">status: brilliant</span>
+                        <h2 className="text-2xl font-ndot text-primary">Not Dashboard</h2>
                     </div>
                     <nav className="space-y-2">
                         {SIDEBAR_ITEMS.map((item) => {
@@ -92,11 +92,9 @@ export default function Dashboard({ maybeTrue, notArt, notOriginals }: Dashboard
                                 >
                                     <div className="flex items-center justify-between">
                                         <span className="text-sm font-ndot uppercase tracking-wide">{item.label}</span>
-                                        <span className="text-[10px] font-neuve uppercase tracking-[0.25em]">
-                                            {isActive ? "Active" : "Switch"}
-                                        </span>
+
                                     </div>
-                                    <p className="mt-1 text-xs text-muted-foreground/80">{item.description}</p>
+
                                 </button>
                             )
                         })}
@@ -125,13 +123,12 @@ export default function Dashboard({ maybeTrue, notArt, notOriginals }: Dashboard
 
 function PlaceholderPane({ label }: { label: string }) {
     return (
-        <div className="flex min-h-[420px] items-center justify-center">
-            <Card className="max-w-md space-y-3 p-8 text-center">
-                <span className="text-xs font-ndot uppercase tracking-[0.35em] text-muted-foreground">Awaiting Content</span>
-                <h3 className="text-xl font-ndot text-secondary">{label}</h3>
-                <p className="text-sm text-muted-foreground">
-                    Pass a React component to the Dashboard props to populate the{" "}
-                    <span className="font-semibold">{label}</span> view.
+        <div className="flex min-h-[500px] items-center justify-center">
+            <Card className="max-w-md space-y-1 p-8 text-center bg-primary/20">
+                <span className="text-3xl font-ndot uppercase  text-primary">Give me a sec</span>
+
+                <p className=" text-foreground/50">
+                    Check back soon. I am probably busy with something else that's awesome else you should check out until then.
                 </p>
             </Card>
         </div>
@@ -141,7 +138,7 @@ function PlaceholderPane({ label }: { label: string }) {
 function DefaultMaybeTrue() {
     return (
         <>
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid gap-3 md:grid-cols-3">
                 <Card className="p-6">
                     <div className="space-y-4">
                         <div>
@@ -184,7 +181,7 @@ function DefaultMaybeTrue() {
                     <div className="space-y-4">
                         <div>
                             <h2 className="font-ndot text-lg uppercase tracking-wider text-secondary">Everyone Is Rich Now</h2>
-                            <p className="mt-2 pb-8 text-xs leading-relaxed">Just not rich enough to buy a home, healthcare, or pay off loans.</p>
+                            <p className="mt-2 pb-8 text-xs leading-relaxed">NOT TIP: Companies Losing The Most Money Are Performing The Best.</p>
                         </div>
                         <div className="space-y-3">
                             <h2 className="font-neuve w-2/3 rounded-r-full bg-secondary px-4 text-sm tracking-wider text-background">
@@ -212,12 +209,12 @@ function DefaultMaybeTrue() {
                 </Card>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-3 md:grid-cols-2">
                 <Card className="p-6">
                     <div className="space-y-4">
                         <div>
-                            <h2 className="font-ndot text-xl uppercase tracking-wider text-secondary">DVD Sales Cause Violent Crime</h2>
-                            <p className="mt-2 pb-2 text-xs leading-relaxed">The impact of declining DVD sales on violent crime</p>
+                            <h2 className="font-ndot text-xl uppercase tracking-wider text-secondary">DVD Sales Driving People Into Theropy</h2>
+                            <p className="mt-2 pb-2 text-xs leading-relaxed">Data clearly showing impact of declining DVD sales on consumer emotional health.</p>
                         </div>
                         <div className="h-[140px]">
                             <ResponsiveContainer width="100%" height="100%">
@@ -236,7 +233,7 @@ function DefaultMaybeTrue() {
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="h-2 w-2 bg-accent" />
-                                <span>Violent Crime % of Crime Committed</span>
+                                <span>% of People In Therapy</span>
                             </div>
                         </div>
                     </div>
