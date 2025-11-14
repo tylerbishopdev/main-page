@@ -128,7 +128,7 @@ function PlaceholderPane({ label }: { label: string }) {
                 <span className="text-3xl font-ndot uppercase  text-primary">Give me a sec</span>
 
                 <p className=" text-foreground/50">
-                    Check back soon. I am probably busy with something else that's awesome else you should check out until then.
+                    Check back soon. I am probably busy with something else that&apos;s awesome else you should check out until then.
                 </p>
             </Card>
         </div>
