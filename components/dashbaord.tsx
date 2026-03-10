@@ -10,19 +10,37 @@ import Link from "next/link"
 
 import { Bar, BarChart, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 
-// Data for DVD sales vs violent crime correlation
+// Data for DVD sales vs autism diagnosis correlation
 const correlationData = [
-    { year: "2000", dvdSales: 70, violentCrime: 45 },
-    { year: "2005", dvdSales: 65, violentCrime: 48 },
-    { year: "2010", dvdSales: 45, violentCrime: 52 },
-    { year: "2015", dvdSales: 30, violentCrime: 58 },
-    { year: "2020", dvdSales: 21, violentCrime: 61 },
-    { year: "2025", dvdSales: 15, violentCrime: 63 },
+    { year: "2000", dvdSales: 70, autismRate: 15 },
+    { year: "2005", dvdSales: 65, autismRate: 22 },
+    { year: "2010", dvdSales: 45, autismRate: 35 },
+    { year: "2015", dvdSales: 30, autismRate: 48 },
+    { year: "2020", dvdSales: 21, autismRate: 58 },
+    { year: "2025", dvdSales: 15, autismRate: 68 },
 ]
 
-const openAIData = [
-    { label: "Billion$ Made", value: 1 },
-    { label: "Billion$ Lost", value: 7 },
+// Currency in circulation (trillions)
+const currencyData = [
+    { year: "1920", amount: 0.1 },
+    { year: "1940", amount: 0.3 },
+    { year: "1960", amount: 0.8 },
+    { year: "1971", amount: 1.2 },
+    { year: "1982", amount: 2.5 },
+    { year: "2000", amount: 6.5 },
+    { year: "2008", amount: 8.5 },
+    { year: "2020", amount: 18.5 },
+    { year: "2024", amount: 22.0 },
+]
+
+// AI startup investment data (in billions)
+const aiInvestmentData = [
+    { company: "OpenAI", invested: 14.0 },
+    { company: "Anthropic", invested: 4.2 },
+    { company: "Databricks", invested: 4.0 },
+    { company: "Shield AI", invested: 1.1 },
+    { company: "Figure", invested: 0.9 },
+    { company: "Mistral", invested: 0.5 },
 ]
 
 type DashboardTabKey = "maybeTrue" | "notArt" | "notOriginals"
@@ -147,19 +165,19 @@ function DefaultMaybeTrue() {
                         </div>
                         <div className="mt-14 flex items-end justify-between pb-2">
                             <div>
-                                <div className="font-ndot text-6xl text-primary">60%</div>
+                                <div className="font-ndot text-6xl text-primary">80%</div>
                                 <div className="mt-1 font-ndot text-xs uppercase text-primary">YES</div>
                             </div>
                             <div className="text-right">
-                                <div className="font-ndot text-6xl text-accent">40%</div>
+                                <div className="font-ndot text-6xl text-accent">20%</div>
                                 <div className="mt-1 font-ndot text-xs uppercase text-accent">NO</div>
                             </div>
                         </div>
                         <div className="h-10 overflow-hidden bg-accent">
-                            <div className="h-full w-[60%] bg-primary" />
+                            <div className="h-full w-[80%] bg-primary" />
                         </div>
                     </div>
-                    <p className="py-1 text-xs font-neuve italic text-muted-foreground">Updated Nov. 2, 2025</p>
+                    <p className="py-1 text-xs font-neuve italic text-muted-foreground">Updated Mar. 9, 2026</p>
                 </Card>
 
                 <Card className="p-6">
@@ -180,30 +198,27 @@ function DefaultMaybeTrue() {
                 <Card className="p-6">
                     <div className="space-y-4">
                         <div>
-                            <h2 className="font-ndot text-lg uppercase tracking-wider text-secondary">Everyone Is Rich Now</h2>
-                            <p className="mt-2 pb-8 text-xs leading-relaxed">NOT TIP: Companies Losing The Most Money Are Performing The Best.</p>
+                            <h2 className="font-ndot text-lg uppercase tracking-wider text-secondary">Currency in Circulation</h2>
+                            <p className="mt-2 text-xs leading-relaxed">U.S. currency in circulation (trillions). Source: Federal Reserve</p>
                         </div>
-                        <div className="space-y-3">
-                            <h2 className="font-neuve w-2/3 rounded-r-full bg-secondary px-4 text-sm tracking-wider text-background">
-                                S&amp;P 500 5-Year Return
-                            </h2>
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs">Current</span>
-                                <span className="font-ndot text-4xl font-bold text-primary">98%</span>
-                            </div>
-                            <div className="h-3 overflow-hidden bg-muted">
-                                <div className="h-full w-[98%] bg-primary" />
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs">Historical Avg.</span>
-                                <span className="font-ndot text-4xl font-bold text-accent">37%</span>
-                            </div>
-                            <div className="h-3 overflow-hidden bg-muted">
-                                <div className="h-full w-[37%] bg-accent" />
-                            </div>
+                        <div className="h-[140px]">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={currencyData}>
+                                    <XAxis dataKey="year" tick={{ fontSize: 9 }} />
+                                    <YAxis tick={{ fontSize: 9 }} />
+                                    <Line type="monotone" dataKey="amount" stroke="#fe4543" strokeWidth={2} dot={false} />
+                                </LineChart>
+                            </ResponsiveContainer>
                         </div>
-                        <div className="border-t pt-3">
-                            <p className="text-xs">2.6× above historical average</p>
+                        <div className="space-y-1 pt-2">
+                            <div className="flex items-center justify-between text-xs">
+                                <span>1971: Nixon ends gold standard</span>
+                                <span className="font-ndot text-primary">$1.2T</span>
+                            </div>
+                            <div className="flex items-center justify-between text-xs">
+                                <span>2020: COVID go brrr</span>
+                                <span className="font-ndot text-primary">$22T</span>
+                            </div>
                         </div>
                     </div>
                 </Card>
@@ -213,15 +228,15 @@ function DefaultMaybeTrue() {
                 <Card className="p-6">
                     <div className="space-y-4">
                         <div>
-                            <h2 className="font-ndot text-xl uppercase tracking-wider text-secondary">DVD Sales Driving People Into Theropy</h2>
-                            <p className="mt-2 pb-2 text-xs leading-relaxed">Data clearly showing impact of declining DVD sales on consumer emotional health.</p>
+                            <h2 className="font-ndot text-xl uppercase tracking-wider text-secondary">DVD Sales Drop Causing Autism</h2>
+                            <p className="mt-2 pb-2 text-xs leading-relaxed">Exposed: the undeniable correlation between declining DVD sales and rising autism diagnoses.</p>
                         </div>
                         <div className="h-[140px]">
                             <ResponsiveContainer width="100%" height="100%">
                                 <LineChart data={correlationData}>
                                     <XAxis dataKey="year" />
                                     <YAxis />
-                                    <Line type="monotone" dataKey="violentCrime" stroke="#F1A8A8" strokeWidth={2} />
+                                    <Line type="monotone" dataKey="autismRate" stroke="#F1A8A8" strokeWidth={2} />
                                     <Line type="monotone" dataKey="dvdSales" stroke="#fe4543" strokeWidth={2} />
                                 </LineChart>
                             </ResponsiveContainer>
@@ -233,7 +248,7 @@ function DefaultMaybeTrue() {
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="h-2 w-2 bg-accent" />
-                                <span>% of People In Therapy</span>
+                                <span>Autism Diagnoses per 10k</span>
                             </div>
                         </div>
                     </div>
@@ -242,21 +257,29 @@ function DefaultMaybeTrue() {
                 <Card className="p-6">
                     <div className="space-y-4">
                         <div>
-                            <h2 className="font-ndot text-xl uppercase tracking-wider text-secondary">Intelligent Business</h2>
+                            <h2 className="font-ndot text-xl uppercase tracking-wider text-secondary">Instead of Fixing Healthcare</h2>
                             <p className="mt-2 pb-2 text-xs leading-relaxed">
-                                How OpenAI is helping to subsidize workforce reduction with massive profit losses
+                                Capital invested in top AI startups (billions USD). Source: CB Insights
                             </p>
                         </div>
-                        <div className="space-y-4">
-                            <div className="h-[180px]">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={openAIData}>
-                                        <XAxis dataKey="label" fill="#6E3E3E" />
-                                        <Bar dataKey="value" fill="#FF3A3AB4" />
-                                        <YAxis domain={[0, 8]} />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
+                        <div className="space-y-2">
+                            {aiInvestmentData.map((item) => (
+                                <div key={item.company} className="space-y-1">
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className="font-ndot uppercase">{item.company}</span>
+                                        <span className="font-ndot text-primary">${item.invested}B</span>
+                                    </div>
+                                    <div className="h-3 overflow-hidden bg-muted">
+                                        <div
+                                            className="h-full bg-primary/80"
+                                            style={{ width: `${(item.invested / 14) * 100}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="border-t pt-2">
+                            <p className="text-xs font-neuve italic text-muted-foreground">Total: $24.7B invested in making robots instead</p>
                         </div>
                     </div>
                 </Card>

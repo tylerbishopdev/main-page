@@ -123,6 +123,39 @@ const experienceData: ExperienceItem[] = [
             "No longer do yo need an engineering degree  to use a round timer. Just explain the timer configurtion you want in plain languag and start the timer.",
     },
     {
+        company: "OJFlix",
+        year: "OjFlix.com",
+        title: "Put OJ In Any Movie Trailer",
+        position: "What if he did it?",
+        imgSrc: "/ojflix.png",
+        projectLink: "https://ojflix.com",
+        buttonText: "Try OJFlix",
+        answer:
+            "An app that only a visionary genius could see coming and one that cannot be replicated in ingenuity and pure creative intelligence. Put OJ in any movie. Generate storyboard, movie poster and 30-45 sec. trailer.",
+    },
+    {
+        company: "MuseVault",
+        year: "Mac App",
+        title: "A Lyrics and Suno Prompt Notepad for the AI Era",
+        position: "MuseVault® Mac App",
+        imgSrc: "/musevault.png",
+        projectLink: "https://github.com/tylerbishopdev/MuseVault.git",
+        buttonText: "View on GitHub",
+        answer:
+            "Auto counts bars and analyzes musical structure to ensure good song-writing. Tags lyrics and measures syllable and word counts per bar automagically. Notes include types for Suno prompts titling and providing auto-descriptions and tags for quick reference.",
+    },
+    {
+        company: "MMA Manager Simulator",
+        year: "artofhype.com",
+        title: "Do a Good Job at the Worst Job",
+        position: "The Ultimate MMA Manager Simulator",
+        imgSrc: "/mmamanager.png",
+        projectLink: "https://artofhype.com",
+        buttonText: "Play Now",
+        answer:
+            "Simulate the experience of being a figurative punching bag for fighters, promotors, and the seedy under-belly of fighting by playing the ultimate MMA manager simulator. Includes a game builder mode where you can add venues, experiences, and make the game richer and more robust on your own. Limitless possibilities.",
+    },
+    {
         company: "Coming soon",
         year: "everything else",
         title: "I have so many projects to list",
