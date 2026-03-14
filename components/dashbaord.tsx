@@ -9,6 +9,7 @@ import Image from "next/image"
 import Link from "next/link"
 
 import { Bar, BarChart, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import ArtGallery from "@/components/art-gallery"
 
 // Data for DVD sales vs autism diagnosis correlation
 const correlationData = [
@@ -62,7 +63,7 @@ export default function Dashboard({ maybeTrue, notArt, notOriginals }: Dashboard
 
     const tabContent: Record<DashboardTabKey, ReactNode> = {
         maybeTrue: maybeTrue ?? <DefaultMaybeTrue />,
-        notArt: notArt ?? <PlaceholderPane label="Not Art" />,
+        notArt: notArt ?? <ArtGallery />,
         notOriginals: notOriginals ?? <PlaceholderPane label="Not Originals" />,
     }
 

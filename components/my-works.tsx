@@ -123,6 +123,17 @@ const experienceData: ExperienceItem[] = [
             "No longer do yo need an engineering degree  to use a round timer. Just explain the timer configurtion you want in plain languag and start the timer.",
     },
     {
+        company: "Clawd Cut Pro",
+        year: "clawdcutpro.com",
+        title: "No more stupid video editors crashing laptops",
+        position: "Directly Edit YouTube / Open.Video's or Create New Ones",
+        imgSrc: "/clawdcutpro.png",
+        projectLink: "https://clawdcutpro.com",
+        buttonText: "Try It Out",
+        answer:
+            "A tool that allows you to directly edit YouTube / Open.Video's or create new ones directly in a browser by providing the links or connecting your channel. Create highlights, add captions, make edits, all using prompts without ever needing to download or make any edits. Its magic.",
+    },
+    {
         company: "OJFlix",
         year: "OjFlix.com",
         title: "Put OJ In Any Movie Trailer",
@@ -138,7 +149,7 @@ const experienceData: ExperienceItem[] = [
         year: "Mac App",
         title: "A Lyrics and Suno Prompt Notepad for the AI Era",
         position: "MuseVault® Mac App",
-        imgSrc: "/musevault.png",
+        imgSrc: "/musevaultimage.png",
         projectLink: "https://github.com/tylerbishopdev/MuseVault.git",
         buttonText: "View on GitHub",
         answer:
