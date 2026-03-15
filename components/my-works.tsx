@@ -25,6 +25,17 @@ type ExperienceItem = {
 
 const experienceData: ExperienceItem[] = [
     {
+        company: "notAuth",
+        year: "notauth.com",
+        title: "Train Your Own AI Image People Cloner With Your Images",
+        position: "notauth.com",
+        imgSrc: "/logo.png",
+        projectLink: "https://notauth.com",
+        buttonText: "Try It",
+        answer:
+            "Train your own AI to generate hyper-realistic images based on images you upload. Have create clones of people, styles, or animals. 4 models to choose from. Requires my personal invite code, so if you don't have it and don't know me... don't ask.",
+    },
+    {
         company: "Music",
         year: "audio project",
         title: "People Are Saying I Saved Soul Music",
