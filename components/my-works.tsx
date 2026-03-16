@@ -58,17 +58,6 @@ const experienceData: ExperienceItem[] = [
             "Have an audio file, or open.video link to a song that needs a karoake video with lyrics synchronized? TextLayer understands the lyrics and can make the video in seconds. Just paste a url or upload the audio file and it creates a video you can download.",
     },
     {
-        company: "Tylers.wtf ",
-        year: "software made for me by me",
-        title: "Good Tools Remove The Complexity From Work",
-        position: "tylers.wtf®  ai media generation",
-        imgSrc: "/tylerwtf.png",
-        projectLink: "https://tylers.wtf",
-        buttonText: "Make something",
-        answer:
-            "I got tired of showing people how to do dev work or use disparate AI tools to make cools stuff that anyone could make themselves. So I made a tool that brings everything that that I am using currently available in one place.",
-    },
-    {
         company: "lil Toast",
         year: "RIP ",
         title: "She was but a mighty titan forever in our memories",
@@ -134,17 +123,6 @@ const experienceData: ExperienceItem[] = [
             "A tool that generates sound frequencies with deep customizable options. I don't care why and neither does the app, so enjot the most flexible generator there is available for free.",
     },
     {
-        company: "Sictok Timer",
-        year: "round timer that uses words",
-        title: "SikTok AI Round Timer",
-        position: "SicTok® AI Round Timer",
-        imgSrc: "/siktok.png",
-        projectLink: "https://www.sictok.com/",
-        buttonText: "Try It Out",
-        answer:
-            "No longer do yo need an engineering degree  to use a round timer. Just explain the timer configurtion you want in plain languag and start the timer.",
-    },
-    {
         company: "Clawd Cut Pro",
         year: "clawdcutpro.com",
         title: "No more stupid video editors crashing laptops",
@@ -187,6 +165,28 @@ const experienceData: ExperienceItem[] = [
         buttonText: "Play Now",
         answer:
             "Simulate the experience of being a figurative punching bag for fighters, promotors, and the seedy under-belly of fighting by playing the ultimate MMA manager simulator. Includes a game builder mode where you can add venues, experiences, and make the game richer and more robust on your own. Limitless possibilities.",
+    },
+        {
+        company: "Tylers.wtf ",
+        year: "software made for me by me",
+        title: "Good Tools Remove The Complexity From Work",
+        position: "tylers.wtf®  ai media generation",
+        imgSrc: "/tylerwtf.png",
+        projectLink: "https://tylers.wtf",
+        buttonText: "Make something",
+        answer:
+            "I got tired of showing people how to do dev work or use disparate AI tools to make cools stuff that anyone could make themselves. So I made a tool that brings everything that that I am using currently available in one place.",
+    },
+        {
+        company: "Sictok Timer",
+        year: "round timer that uses words",
+        title: "SikTok AI Round Timer",
+        position: "SicTok® AI Round Timer",
+        imgSrc: "/siktok.png",
+        projectLink: "https://www.sictok.com/",
+        buttonText: "Try It Out",
+        answer:
+            "No longer do yo need an engineering degree  to use a round timer. Just explain the timer configurtion you want in plain languag and start the timer.",
     },
     {
         company: "Coming soon",
