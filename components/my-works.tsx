@@ -24,18 +24,7 @@ type ExperienceItem = {
 };
 
 const experienceData: ExperienceItem[] = [
-    {
-        company: "notAuth",
-        year: "notauth.com",
-        title: "Train Your Own AI Image People Cloner With Your Images",
-        position: "notauth.com",
-        imgSrc: "/logo.png",
-        projectLink: "https://notauth.com",
-        buttonText: "Try It",
-        answer:
-            "Train your own AI to generate hyper-realistic images based on images you upload. Have create clones of people, styles, or animals. 4 models to choose from. Requires my personal invite code, so if you don't have it and don't know me... don't ask.",
-    },
-    {
+        {
         company: "Music",
         year: "audio project",
         title: "People Are Saying I Saved Soul Music",
@@ -45,6 +34,28 @@ const experienceData: ExperienceItem[] = [
         buttonText: "Listen on Spotify",
         answer:
             "I'm a singer-songwriter and producer who creates soulful music that is surging in popularity for it's universal acclaim. People with good taste say its better than all music before it.",
+    },
+    {
+        company: "notAuth",
+        year: "notauth.com",
+        title: "Train Your Own AI Image People Cloner With Your Images",
+        position: "notauth.com",
+        imgSrc: "/logo.png",
+        projectLink: "notauthex.png",
+        buttonText: "Try It",
+        answer:
+            "Train AI to generate hyper-realistic images based on people or styles from images you upload. Save trained models and then create clones of people, styles, or animals. Only using the best models. Requires my personal invite code, so if you don't have it and don't know me... don't ask.",
+    },
+    {
+        company: "TextLayer",
+        year: "Turn audio files or Open Video links into karoake videos",
+        title: "Turn Music Into Karoake Videos w/ Lyrics",
+        position: "TextLayer®",
+        imgSrc: "/textlayer1.png",
+        projectLink: "https://textlayer.app",
+        buttonText: "Get Discovered",
+        answer:
+            "Have an audio file, or open.video link to a song that needs a karoake video with lyrics synchronized? TextLayer understands the lyrics and can make the video in seconds. Just paste a url or upload the audio file and it creates a video you can download.",
     },
     {
         company: "Tylers.wtf ",
