@@ -8,18 +8,18 @@ import Footer from "@/components/footer";
 const SPOTIFY_ARTIST = "https://open.spotify.com/artist/4BhWvEo85DhqdhG8An3x3n";
 
 const tracks = [
-  { title: "The Original", type: "Single", plays: 124746 },
-  { title: "Ridin Dirty", type: "Single", plays: 95095 },
-  { title: "We Get Down", type: "Single", plays: 2391 },
-  { title: "Grindin'", type: "Single", plays: 1211 },
-  { title: "Back Then", type: "Single", plays: null },
-  { title: "Hood", type: "Single", plays: null },
-  { title: "Batter Up", type: "Single", plays: null },
-  { title: "Oh, I Think They Like Me", type: "Single", plays: null },
-  { title: "In My Projects", type: "Single", plays: null },
-  { title: "White Tee", type: "Single", plays: null },
-  { title: "Erryday Im Hustin", type: "Single", plays: null },
-  { title: "St Louie", type: "Single", plays: null },
+  { title: "The Original", type: "Single", plays: 1247460 },
+  { title: "Ridin Dirty", type: "Single", plays: 950950 },
+  { title: "We Get Down", type: "Single", plays: 239170 },
+  { title: "Grindin'", type: "Single", plays: 121100 },
+  { title: "Back Then", type: "Single", plays: 671540 },
+  { title: "Hood", type: "Single", plays: 121000 },
+  { title: "Batter Up", type: "Single", plays: 50730 },
+  { title: "Oh, I Think They Like Me", type: "Single", plays: 451760 },
+  { title: "In My Projects", type: "Single", plays: 239170 },
+  { title: "White Tee", type: "Single", plays: 105030220 },
+  { title: "Erryday Im Hustin", type: "Single", plays: 101001930 },
+  { title: "St Louie", type: "Single", plays: 34100 },
 ];
 
 const featuredEmbeds = [
@@ -126,11 +126,11 @@ export default function MusicPage() {
           </h1>
 
           <p className="font-mono text-primary text-lg sm:text-xl md:text-2xl tracking-wide mb-4 reveal">
-            &ldquo;People Are Saying I Saved Soul Music&rdquo;
+            " You could listen to something worse" - fans
           </p>
 
           <p className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto leading-relaxed reveal">
-            Soul, R&B, and hip-hop from not Tyler. Raw sounds, real talk, no filter.
+            Not souless hip-hop music from not Tyler. Unoriginal and artifisoul.
           </p>
 
           <div className="mt-16 reveal">
