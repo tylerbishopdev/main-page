@@ -126,7 +126,7 @@ export default function MusicPage() {
           </h1>
 
           <p className="font-mono text-primary text-lg sm:text-xl md:text-2xl tracking-wide mb-4 reveal">
-            " You could listen to something worse" - fans
+            &ldquo;You could listen to something worse&rdquo; - fans
           </p>
 
           <p className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto leading-relaxed reveal">
