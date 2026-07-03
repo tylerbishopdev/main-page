@@ -53,8 +53,8 @@ function ExhibitCard({
   return (
     <div className="sticky top-0 flex h-svh items-center justify-center px-3 sm:px-6">
       <motion.article
-        style={{ scale, top: `calc(2vh + ${i * 6}px)` }}
-        className={`relative flex max-h-[86svh] w-full max-w-6xl origin-top flex-col overflow-hidden rounded-3xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.55)] ${surface}`}
+        style={{ scale }}
+        className={`relative flex max-h-[88svh] w-full max-w-6xl origin-top flex-col overflow-hidden rounded-3xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.55)] ${surface}`}
       >
         <div className="flex items-center justify-between gap-4 border-b border-current/15 px-5 py-3 sm:px-8">
           <span className="font-advancedled text-[11px] uppercase tracking-[0.3em] opacity-80">
@@ -70,17 +70,17 @@ function ExhibitCard({
           </span>
         </div>
 
-        <div className="grid flex-1 gap-6 overflow-hidden p-5 sm:p-8 lg:grid-cols-[1.1fr_1fr] lg:gap-10">
-          <div className="flex min-h-0 flex-col justify-between gap-5">
+        <div className="grid min-h-0 flex-1 gap-5 overflow-hidden p-5 sm:p-7 lg:grid-cols-[1.1fr_1fr] lg:gap-10">
+          <div className="flex min-h-0 flex-col justify-between gap-4 overflow-y-auto">
             <div>
-              <h3 className="font-ndot text-4xl uppercase leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
+              <h3 className="font-ndot text-4xl uppercase leading-[0.95] tracking-tight sm:text-5xl lg:text-6xl">
                 {project.company}
               </h3>
               <p className="mt-3 font-mono text-sm uppercase tracking-tight opacity-80 sm:text-base">
                 {project.title}
               </p>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-3">
               <p className="text-[11px] font-medium uppercase tracking-[0.2em] opacity-60">
                 {project.position}
               </p>
@@ -91,7 +91,7 @@ function ExhibitCard({
                 href={project.projectLink}
                 target={project.external ? "_blank" : undefined}
                 rel={project.external ? "noopener noreferrer" : undefined}
-                className={`inline-flex w-fit items-center gap-2 rounded-full px-6 py-3 font-mono text-xs uppercase tracking-[0.15em] transition-colors ${ctaStyle}`}
+                className={`mb-1 inline-flex w-fit items-center gap-2 rounded-full px-6 py-2.5 font-mono text-xs uppercase tracking-[0.15em] transition-colors ${ctaStyle}`}
               >
                 {project.buttonText}
                 <svg
@@ -149,7 +149,7 @@ export default function Exhibits() {
     <section id="exhibits" className="relative">
       <div
         ref={introRef}
-        className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-28 sm:px-6 lg:flex-row lg:items-end lg:justify-between"
+        className="mx-auto flex max-w-6xl flex-col gap-8 px-4 pb-10 pt-28 sm:px-6 lg:flex-row lg:items-end lg:justify-between"
       >
         <h2 className="font-ndot text-6xl uppercase leading-[0.9] tracking-tight text-foreground sm:text-8xl">
           <VerticalCutReveal

@@ -22,7 +22,7 @@ export default function MarioCartPage() {
     <div className="flex min-h-svh flex-col bg-background">
       <SiteNav />
 
-      <div className="pt-28">
+      <div className="pt-40">
         <ScrollVelocityContainer>
           <ScrollVelocityRow baseVelocity={14} direction={1}>
             <span className="whitespace-nowrap pr-10 font-ndot text-5xl uppercase leading-none tracking-tight text-primary sm:text-7xl">

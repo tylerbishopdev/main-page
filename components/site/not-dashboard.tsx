@@ -28,7 +28,7 @@ export default function NotDashboard() {
   const active = WUT.tabs.find((t) => t.id === activeTab) ?? WUT.tabs[0];
 
   return (
-    <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-8 px-4 pb-24 pt-32 sm:px-6 lg:flex-row">
+    <div className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-8 px-4 pb-24 pt-44 sm:px-6 lg:flex-row">
       {/* sidebar */}
       <aside className="lg:w-64 lg:shrink-0">
         <div className="mb-8 space-y-1">

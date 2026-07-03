@@ -6,7 +6,8 @@ import { useEffect, useState } from "react";
 
 import { IDENTITY } from "@/lib/content";
 
-/* Entry curtain adapted from skiper-ui Skiper7 (Preloader_001). */
+/* Entry curtain adapted from skiper-ui Skiper7 (Preloader_001).
+ * Intro reveals are CSS keyframes so the server and client markup match. */
 export default function Preloader() {
   const [show, setShow] = useState(true);
 
@@ -44,29 +45,18 @@ export default function Preloader() {
           <h1 className="relative z-10 flex flex-col items-center font-ndot uppercase leading-[0.95] tracking-tight text-primary">
             {words.map((word, i) => (
               <span key={word} className="overflow-hidden">
-                <motion.span
-                  initial={{ y: "110%" }}
-                  animate={{ y: 0 }}
-                  transition={{
-                    delay: 0.15 + i * 0.14,
-                    duration: 0.7,
-                    ease: [0.215, 0.61, 0.355, 1],
-                  }}
-                  className="block text-6xl sm:text-8xl lg:text-9xl"
+                <span
+                  className="preloader-word block text-6xl sm:text-8xl lg:text-9xl"
+                  style={{ animationDelay: `${0.15 + i * 0.14}s` }}
                 >
                   {word}
-                </motion.span>
+                </span>
               </span>
             ))}
           </h1>
           <div className="absolute bottom-10 left-1/2 w-56 -translate-x-1/2">
             <div className="h-px w-full bg-foreground/15" />
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 2.1, ease: "easeInOut" }}
-              className="-mt-px h-px w-full origin-left bg-primary"
-            />
+            <div className="preloader-bar -mt-px h-px w-full origin-left bg-primary" />
             <p className="led-flicker mt-3 text-center font-advancedled text-xs uppercase tracking-[0.4em] text-primary">
               nottyler.org
             </p>

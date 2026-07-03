@@ -75,9 +75,9 @@ export default function Hero() {
 
       <motion.div
         style={{ y: drift, opacity: fade }}
-        className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 pb-16 pt-28"
+        className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 pb-10 pt-24"
       >
-        <p className="mb-6 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.45em] text-primary sm:text-xs">
+        <p className="mb-5 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.45em] text-primary sm:text-xs">
           <span className="inline-block h-px w-10 bg-primary/60" />
           a prestigious organization
           <span className="inline-block h-px w-10 bg-primary/60" />
@@ -89,7 +89,7 @@ export default function Hero() {
               initial={{ y: "105%" }}
               animate={{ y: 0 }}
               transition={{ delay: 2.35, duration: 0.8, ease: [0.215, 0.61, 0.355, 1] }}
-              className="text-stroke-paper block text-[22vw] sm:text-[18vw] lg:text-[15vw]"
+              className="block text-[20vw] text-foreground/90 sm:text-[16vw] lg:text-[12.5vw]"
             >
               NOT
             </motion.span>
@@ -99,7 +99,7 @@ export default function Hero() {
               initial={{ y: "105%" }}
               animate={{ y: 0 }}
               transition={{ delay: 2.5, duration: 0.8, ease: [0.215, 0.61, 0.355, 1] }}
-              className="block text-[22vw] text-primary sm:text-[18vw] lg:text-[15vw]"
+              className="block text-[20vw] text-primary sm:text-[16vw] lg:text-[12.5vw]"
             >
               TYLER
             </motion.span>
@@ -110,7 +110,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 2.9, duration: 0.7 }}
-          className="mt-8 max-w-xl text-balance text-center font-mono text-xs leading-relaxed text-foreground/70 sm:text-sm"
+          className="mt-6 max-w-xl text-balance text-center font-mono text-xs leading-relaxed text-foreground/70 sm:text-sm"
         >
           {IDENTITY.description}
         </motion.p>
@@ -120,7 +120,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 3.1, duration: 0.7 }}
-          className="mt-12 w-full max-w-3xl"
+          className="mt-8 w-full max-w-3xl"
         >
           <ul className="flex flex-col divide-y divide-foreground/10 border-y border-foreground/10">
             {DESTINATIONS.map((item, index) => (
@@ -133,13 +133,13 @@ export default function Hero() {
                   href={item.href}
                   target={item.external ? "_blank" : undefined}
                   rel={item.external ? "noopener noreferrer" : undefined}
-                  className="group flex items-baseline justify-between gap-4 px-2 py-4 transition-colors hover:text-primary sm:px-4"
+                  className="group flex items-baseline justify-between gap-4 px-2 py-3 transition-colors hover:text-primary sm:px-4"
                 >
                   <span className="flex items-baseline gap-4">
                     <span className="font-advancedled text-[10px] text-primary/70">
                       0{index + 1}
                     </span>
-                    <TextRoll className="font-ndot text-3xl uppercase leading-none sm:text-5xl">
+                    <TextRoll className="font-ndot text-3xl uppercase leading-none sm:text-4xl">
                       {item.name}
                     </TextRoll>
                   </span>

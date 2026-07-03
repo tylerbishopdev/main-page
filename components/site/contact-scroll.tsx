@@ -32,7 +32,7 @@ export default function ContactScroll() {
         className="sticky top-[12%] flex gap-3 pb-10 text-3xl tracking-tighter sm:gap-4 md:text-6xl"
       >
         <div className="sticky top-[50%] h-fit">
-          <h1 className="font-ndot uppercase text-primary lg:text-7xl">
+          <h1 className="font-ndot text-5xl uppercase leading-none text-primary md:text-8xl">
             {CONTACT.heading}
           </h1>
         </div>

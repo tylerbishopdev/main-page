@@ -22,17 +22,18 @@ export default function SiteFooter() {
       <div className="relative">
         <AsciiSimulation
           modelPath="/models/shiba2.glb"
-          className="h-[46vh] w-full"
+          className="h-[48vh] w-full"
           backgroundColor="#0e0d0c"
           textColor="#ff4438"
-          fontSize="8px"
-          lineHeight="8px"
-          modelScale={7}
+          fontSize="7px"
+          lineHeight="7px"
+          modelScale={17}
+          cameraPosition={{ x: 0, y: 9, z: 14 }}
         />
-        <p className="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
-          pet the shiba (drag it)
-        </p>
       </div>
+      <p className="pointer-events-none py-2 text-center font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+        pet the shiba (drag it)
+      </p>
 
       <h2 className="w-full select-none text-center font-ndot text-[16.5vw] uppercase leading-[0.85] tracking-tight text-primary">
         nottyler

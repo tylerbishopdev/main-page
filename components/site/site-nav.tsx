@@ -81,8 +81,11 @@ export default function SiteNav() {
                     href={item.href}
                     target={item.external ? "_blank" : undefined}
                     rel={item.external ? "noopener noreferrer" : undefined}
-                    className="text-foreground transition-colors hover:text-primary"
+                    className="flex items-start gap-3 text-foreground transition-colors hover:text-primary"
                   >
+                    <span className="mt-1 font-advancedled text-xs text-primary/70">
+                      0{index + 1}
+                    </span>
                     <TextRoll
                       center
                       className="font-ndot text-6xl uppercase leading-[0.9] tracking-tight sm:text-8xl"
@@ -90,7 +93,7 @@ export default function SiteNav() {
                       {item.name}
                     </TextRoll>
                   </Link>
-                  <span className="mt-2 font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground opacity-0 transition-opacity duration-300 group-hover:text-primary group-hover:opacity-100">
+                  <span className="mt-2 font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground opacity-40 transition-all duration-300 group-hover:text-primary group-hover:opacity-100">
                     {item.note}
                   </span>
                 </motion.div>
