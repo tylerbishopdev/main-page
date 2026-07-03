@@ -1,18 +1,24 @@
-import Dashboard from "@/components/dashbaord";
-import { Metadata } from "next";
+import type { Metadata } from "next";
+
+import NotDashboard from "@/components/site/not-dashboard";
+import SiteFooter from "@/components/site/site-footer";
+import SiteNav from "@/components/site/site-nav";
+import { WUT } from "@/lib/content";
 
 export const metadata: Metadata = {
-    title: "NotTyler | Wut?",
-    description: "Wut? Data or weird stuff that is super smart or maybe just interesting to me, but probably genius to you.",
-    icons: {
-        icon: "/favicon.ico",
-    },
+  title: WUT.title,
+  description: WUT.description,
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function NotPage() {
-    return (
-        <div>
-            <Dashboard />
-        </div>
-    );
+  return (
+    <div className="flex min-h-svh flex-col">
+      <SiteNav />
+      <NotDashboard />
+      <SiteFooter />
+    </div>
+  );
 }

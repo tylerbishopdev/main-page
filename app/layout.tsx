@@ -1,20 +1,23 @@
 import type { Metadata } from "next";
-import { Inter, Space_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
-import 'boxicons/css/boxicons.min.css';
+import "boxicons/css/boxicons.min.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-const spaceMono = Space_Mono({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-mono"
-});
+import SmoothScroll from "@/components/site/smooth-scroll";
+import CursorDot from "@/components/site/cursor-dot";
+import { IDENTITY } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "NotTyler | Organization",
-  description: "NotTyler is a prestigious organization that was imagined as a place for brilliant creative works to be appreciated for their genius and clever artistic vision.",
+  title: IDENTITY.title,
+  description: IDENTITY.description,
   icons: {
     icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: IDENTITY.title,
+    description: IDENTITY.description,
+    url: "https://nottyler.org",
+    siteName: "NotTyler",
   },
 };
 
@@ -25,7 +28,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={"px-2 lg:px-2" + `${inter.variable} ${spaceMono.variable}`}>{children}</body>
+      <body className="grain">
+        <SmoothScroll>{children}</SmoothScroll>
+        <CursorDot />
+        <Analytics />
+      </body>
     </html>
   );
 }

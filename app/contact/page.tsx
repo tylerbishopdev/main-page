@@ -1,11 +1,22 @@
-import ContactPage from "@/components/ui/contact-page";
-import Footer from "@/components/footer";
+import type { Metadata } from "next";
 
-export default function ContactPageComponent() {
-    return (
-        <div>
-            <ContactPage />
-            <Footer />
-        </div>
-    );
+import ContactScroll from "@/components/site/contact-scroll";
+import SiteFooter from "@/components/site/site-footer";
+import SiteNav from "@/components/site/site-nav";
+
+export const metadata: Metadata = {
+  title: "NotTyler | Contact",
+  description: "Contact not Tyler. I'd rather you dont.",
+};
+
+export default function ContactPage() {
+  return (
+    <div>
+      <SiteNav />
+      <main>
+        <ContactScroll />
+      </main>
+      <SiteFooter />
+    </div>
+  );
 }
