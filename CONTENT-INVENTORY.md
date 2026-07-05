@@ -73,6 +73,18 @@ Everything here is REAL content from the existing site. Do not fabricate. Source
 - Companion: MuseVault | Mac App | "A Lyrics and Suno Prompt Notepad for the AI Era" | /musevaultimage.png | GitHub link (see PROJECTS #13)
 - No track lists exist in the repo; none were fabricated.
 
+## Merged from origin/main (July 2026, after rebuild branched)
+- app/music/page.tsx — full music catalog page authored on main (track list w/ play
+  counts, two Spotify embeds, streaming links, email capture). Kept verbatim; only the
+  old header/footer imports were swapped for SiteNav/SiteFooter. Linked from the home
+  music section ("View Full Catalog") and the Directory drawer.
+- New project: TextLayer | textlayer.app | /textlayer1.png (karaoke video generator).
+- notAuth updated: new answer copy + /notauthex.png screenshot (its projectLink field
+  on main mistakenly held the image path; real destination stays notauth.com).
+- New assets: /logo.png, /notauthex.png, /textlayer1.png. Next.js bumped to 15.5.10
+  (security patch from main).
+- Exhibit deck is now 16 works (was 15).
+
 ## Rebuild notes (July 2026 round 2)
 - Preloader removed per feedback; its copy "absurdly creative vision" preserved as the footer tagline.
 - Face logo (logo12.png) removed from header; swap slot = IDENTITY.logoSrc in lib/content.ts.

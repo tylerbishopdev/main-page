@@ -54,23 +54,31 @@ export default function MusicCatalog() {
             <p className="max-w-lg text-sm leading-relaxed text-ink/80 sm:text-base">
               {MUSIC.answer}
             </p>
-            <Link
-              href={MUSIC.projectLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-7 py-3 font-mono text-xs uppercase tracking-[0.15em] text-primary-foreground transition-colors hover:bg-primary/85"
-            >
-              {MUSIC.buttonText}
-              <svg className="size-3" fill="none" viewBox="0 0 10 10" aria-hidden="true">
-                <path
-                  d="M1.004 9.166 9.337.833m0 0v8.333m0-8.333H1.004"
-                  stroke="currentColor"
-                  strokeWidth="1.25"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </Link>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link
+                href={MUSIC.projectLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex w-fit items-center gap-2 rounded-full bg-primary px-7 py-3 font-mono text-xs uppercase tracking-[0.15em] text-primary-foreground transition-colors hover:bg-primary/85"
+              >
+                {MUSIC.buttonText}
+                <svg className="size-3" fill="none" viewBox="0 0 10 10" aria-hidden="true">
+                  <path
+                    d="M1.004 9.166 9.337.833m0 0v8.333m0-8.333H1.004"
+                    stroke="currentColor"
+                    strokeWidth="1.25"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </Link>
+              <Link
+                href={MUSIC.catalogHref}
+                className="inline-flex w-fit items-center gap-2 rounded-full border border-ink/30 px-7 py-3 font-mono text-xs uppercase tracking-[0.15em] text-ink transition-colors hover:border-primary hover:text-primary"
+              >
+                {MUSIC.catalogLabel} →
+              </Link>
+            </div>
           </div>
         </motion.div>
 

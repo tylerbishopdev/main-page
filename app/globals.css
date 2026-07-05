@@ -224,4 +224,95 @@
     -webkit-text-stroke: 1px color-mix(in srgb, var(--ink) 45%, transparent);
     color: transparent;
   }
+
+  /* Music page */
+  .pixel-heading {
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .scanlines::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.08) 2px,
+      rgba(0, 0, 0, 0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .track-row {
+    transition: background-color 0.18s ease, transform 0.18s ease;
+  }
+  .track-row:hover {
+    background-color: rgba(241, 90, 87, 0.06);
+    transform: translateX(4px);
+  }
+
+  .stream-link {
+    transition: color 0.18s ease, border-color 0.18s ease;
+  }
+  .stream-link:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .btn-accent {
+    transition: background-color 0.18s ease, transform 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+  .btn-accent:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(241, 90, 87, 0.35);
+  }
+  .btn-accent:active {
+    transform: translateY(0);
+  }
+
+  .play-count {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .reveal {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(24px);
+    transition: opacity 0.7s ease-out, filter 0.7s ease-out,
+      transform 0.7s ease-out;
+  }
+  .reveal.visible {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+
+  .reveal-stagger > * {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(16px);
+    transition: opacity 0.5s ease-out, filter 0.5s ease-out,
+      transform 0.5s ease-out;
+  }
+  .reveal-stagger.visible > * {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+  .reveal-stagger.visible > *:nth-child(1) { transition-delay: 0ms; }
+  .reveal-stagger.visible > *:nth-child(2) { transition-delay: 80ms; }
+  .reveal-stagger.visible > *:nth-child(3) { transition-delay: 160ms; }
+  .reveal-stagger.visible > *:nth-child(4) { transition-delay: 240ms; }
+  .reveal-stagger.visible > *:nth-child(5) { transition-delay: 320ms; }
+  .reveal-stagger.visible > *:nth-child(6) { transition-delay: 400ms; }
+  .reveal-stagger.visible > *:nth-child(7) { transition-delay: 480ms; }
+  .reveal-stagger.visible > *:nth-child(8) { transition-delay: 560ms; }
+  .reveal-stagger.visible > *:nth-child(9) { transition-delay: 640ms; }
+  .reveal-stagger.visible > *:nth-child(10) { transition-delay: 720ms; }
+  .reveal-stagger.visible > *:nth-child(11) { transition-delay: 800ms; }
+  .reveal-stagger.visible > *:nth-child(12) { transition-delay: 880ms; }
 }

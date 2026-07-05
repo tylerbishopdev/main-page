@@ -214,6 +214,12 @@ export default function SiteNav() {
                     Channel ↗
                   </Link>
                   <Link
+                    href="/music"
+                    className="text-foreground/70 transition-colors hover:text-primary"
+                  >
+                    Music
+                  </Link>
+                  <Link
                     href="/not"
                     className="text-foreground/70 transition-colors hover:text-primary"
                   >

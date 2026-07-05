@@ -64,20 +64,21 @@ export type Project = {
   external: boolean;
 };
 
-/* NOTE: /logo.png and /siktok.png were referenced by the original site but the
- * files never existed in public/. Those two entries fall back to real assets
- * that do exist so nothing renders broken. */
+/* NOTE: /siktok.png was referenced by the original site but the file never
+ * existed in public/, so that entry falls back to a real asset. notAuth uses
+ * the notauthex.png screenshot uploaded on main (its projectLink field there
+ * mistakenly held the image path; the real destination is notauth.com). */
 export const PROJECTS: Project[] = [
   {
     company: "notAuth",
     year: "notauth.com",
     title: "Train Your Own AI Image People Cloner With Your Images",
     position: "notauth.com",
-    imgSrc: "/logos.png",
+    imgSrc: "/notauthex.png",
     projectLink: "https://notauth.com",
     buttonText: "Try It",
     answer:
-      "Train your own AI to generate hyper-realistic images based on images you upload. Have create clones of people, styles, or animals. 4 models to choose from. Requires my personal invite code, so if you don't have it and don't know me... don't ask.",
+      "Train AI to generate hyper-realistic images based on people or styles from images you upload. Save trained models and then create clones of people, styles, or animals. Only using the best models. Requires my personal invite code, so if you don't have it and don't know me... don't ask.",
     external: true,
   },
   {
@@ -90,6 +91,18 @@ export const PROJECTS: Project[] = [
     buttonText: "Listen on Spotify",
     answer:
       "I'm a singer-songwriter and producer who creates soulful music that is surging in popularity for it's universal acclaim. People with good taste say its better than all music before it.",
+    external: true,
+  },
+  {
+    company: "TextLayer",
+    year: "Turn audio files or Open Video links into karoake videos",
+    title: "Turn Music Into Karoake Videos w/ Lyrics",
+    position: "TextLayer®",
+    imgSrc: "/textlayer1.png",
+    projectLink: "https://textlayer.app",
+    buttonText: "Get Discovered",
+    answer:
+      "Have an audio file, or open.video link to a song that needs a karoake video with lyrics synchronized? TextLayer understands the lyrics and can make the video in seconds. Just paste a url or upload the audio file and it creates a video you can download.",
     external: true,
   },
   {
@@ -367,6 +380,9 @@ export const MUSIC = {
   buttonText: "Listen on Spotify",
   answer:
     "I'm a singer-songwriter and producer who creates soulful music that is surging in popularity for it's universal acclaim. People with good taste say its better than all music before it.",
+  /* The dedicated catalog page added on main (app/music/page.tsx). */
+  catalogHref: "/music",
+  catalogLabel: "View Full Catalog",
   companion: {
     company: "MuseVault",
     year: "Mac App",
