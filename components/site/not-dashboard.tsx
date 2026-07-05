@@ -1,8 +1,9 @@
 "use client";
 
 import NumberFlow from "@number-flow/react";
-import { motion } from "framer-motion";
-import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
 import {
   Line,
   LineChart,
@@ -11,8 +12,6 @@ import {
   YAxis,
 } from "recharts";
 
-import ArtGallery from "@/components/art-gallery";
-import { Carousel_002 } from "@/components/ui/skiper-ui/skiper48";
 import {
   AI_INVESTMENT_DATA,
   ART_IMAGES,
@@ -318,29 +317,150 @@ function KindaFacts() {
   );
 }
 
+/* The artwork IS the point: one large uncropped stage (object-contain),
+ * arrow / keyboard navigation, a thumbnail rail, and a true fullscreen view. */
 function MostlyArts() {
+  const [index, setIndex] = useState(0);
+  const [fullscreen, setFullscreen] = useState(false);
+  const total = ART_IMAGES.length;
+
+  const step = useCallback(
+    (dir: 1 | -1) => setIndex((i) => (i + dir + total) % total),
+    [total],
+  );
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") step(1);
+      if (e.key === "ArrowLeft") step(-1);
+      if (e.key === "Escape") setFullscreen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [step]);
+
+  useEffect(() => {
+    document.documentElement.style.overflow = fullscreen ? "hidden" : "";
+    return () => {
+      document.documentElement.style.overflow = "";
+    };
+  }, [fullscreen]);
+
+  const src = ART_IMAGES[index];
+
   return (
-    <div className="space-y-14">
-      {/* deck of the collection — skiper-ui Skiper48 (Carousel_002, Swiper cards effect) */}
-      <div className="flex flex-col items-center gap-4">
-        <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
-          shuffle the deck
-        </p>
-        <Carousel_002
-          images={ART_IMAGES.slice(0, 10).map((src) => ({
-            src,
-            alt: "art piece from the NotTyler collection",
-          }))}
-          loop
-          className="flex justify-center"
-        />
+    <div className="space-y-5">
+      {/* stage */}
+      <div className="relative overflow-hidden rounded-2xl border border-foreground/10 bg-[#0a0909]">
+        <div className="relative h-[52svh] w-full md:h-[64svh]">
+          <AnimatePresence mode="wait">
+            <motion.button
+              key={src}
+              type="button"
+              onClick={() => setFullscreen(true)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="absolute inset-0 cursor-zoom-in"
+              aria-label="View artwork fullscreen"
+            >
+              <Image
+                src={src}
+                alt={`Artwork ${index + 1} of ${total}`}
+                fill
+                sizes="(max-width: 1024px) 100vw, 80vw"
+                className="object-contain p-4 md:p-6"
+                priority
+              />
+            </motion.button>
+          </AnimatePresence>
+        </div>
+
+        {/* chrome */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center justify-between p-4">
+          <span className="font-advancedled text-xs uppercase tracking-[0.25em] text-primary">
+            № {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+          </span>
+          <span className="hidden font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground sm:block">
+            click to enlarge — ← → to browse
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={() => step(-1)}
+          aria-label="Previous artwork"
+          className="absolute left-3 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-foreground/15 bg-background/70 text-foreground backdrop-blur transition-colors hover:border-primary hover:text-primary"
+        >
+          ←
+        </button>
+        <button
+          type="button"
+          onClick={() => step(1)}
+          aria-label="Next artwork"
+          className="absolute right-3 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-full border border-foreground/15 bg-background/70 text-foreground backdrop-blur transition-colors hover:border-primary hover:text-primary"
+        >
+          →
+        </button>
       </div>
-      <div>
-        <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
-          the full wall — click any piece
-        </p>
-        <ArtGallery />
+
+      {/* thumbnail rail */}
+      <div className="flex gap-2 overflow-x-auto pb-2">
+        {ART_IMAGES.map((thumb, i) => (
+          <button
+            key={thumb}
+            type="button"
+            onClick={() => setIndex(i)}
+            aria-label={`Show artwork ${i + 1}`}
+            className={`relative size-16 shrink-0 overflow-hidden rounded-lg transition-all sm:size-20 ${
+              i === index
+                ? "ring-2 ring-primary"
+                : "opacity-50 ring-1 ring-foreground/10 hover:opacity-90"
+            }`}
+          >
+            <Image
+              src={thumb}
+              alt=""
+              fill
+              sizes="80px"
+              className="object-cover"
+            />
+          </button>
+        ))}
       </div>
+
+      {/* fullscreen view */}
+      <AnimatePresence>
+        {fullscreen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setFullscreen(false)}
+            className="fixed inset-0 z-[96] flex items-center justify-center bg-black/95 p-4 sm:p-10"
+          >
+            <Image
+              src={src}
+              alt={`Artwork ${index + 1} of ${total}`}
+              fill
+              sizes="100vw"
+              className="object-contain p-4 sm:p-10"
+            />
+            <button
+              type="button"
+              onClick={() => setFullscreen(false)}
+              aria-label="Close fullscreen"
+              className="absolute right-5 top-5 flex size-10 items-center justify-center rounded-full border border-foreground/20 bg-background/60 font-mono text-foreground backdrop-blur transition-colors hover:border-primary hover:text-primary"
+            >
+              ✕
+            </button>
+            <span className="absolute bottom-5 left-1/2 -translate-x-1/2 font-advancedled text-xs uppercase tracking-[0.3em] text-primary">
+              № {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

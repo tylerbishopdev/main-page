@@ -17,9 +17,6 @@ export default function GalleryStrip() {
   return (
     <section className="relative w-full bg-background py-28">
       <div className="mx-auto flex max-w-6xl flex-col items-start gap-2 px-4 sm:px-6">
-        <p className="font-advancedled text-[10px] uppercase tracking-[0.35em] text-primary">
-          from the vault
-        </p>
         <div className="flex w-full flex-wrap items-end justify-between gap-4">
           <h2 className="font-ndot text-5xl uppercase leading-none tracking-tight text-foreground sm:text-7xl">
             {artsTab.label}
@@ -40,7 +37,7 @@ export default function GalleryStrip() {
           href="/not"
           className="group inline-flex items-center gap-3 rounded-full border border-foreground/20 px-7 py-3 font-mono text-xs uppercase tracking-[0.2em] text-foreground transition-colors hover:border-primary hover:text-primary"
         >
-          see everything in the Not Dashboard
+          open the Not Dashboard
           <span className="transition-transform duration-300 group-hover:translate-x-1">
             →
           </span>

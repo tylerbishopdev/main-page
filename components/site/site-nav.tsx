@@ -1,19 +1,90 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { useLenis } from "lenis/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { TextRoll } from "@/components/ui/skiper-ui/skiper58";
-import { DESTINATIONS, IDENTITY } from "@/lib/content";
+import { IDENTITY, PROJECTS } from "@/lib/content";
 
-/* Full-screen panel menu adapted from skiper-ui Skiper13 (Navbar_001),
- * with skiper58 TextRoll hover on every item. */
+/* The header brand. Swap the mark by setting IDENTITY.logoSrc in
+ * lib/content.ts to an image path in /public — nothing else to touch. */
+function BrandMark() {
+  return (
+    <Link
+      href="/"
+      aria-label="NotTyler home"
+      className="pointer-events-auto group flex items-center gap-2 rounded-full bg-background/60 px-4 py-2 backdrop-blur-md"
+    >
+      {IDENTITY.logoSrc ? (
+        <Image
+          src={IDENTITY.logoSrc}
+          alt="NotTyler"
+          width={120}
+          height={48}
+          className="h-9 w-auto opacity-85 transition-opacity group-hover:opacity-100"
+          priority
+        />
+      ) : (
+        <span className="font-ndot text-xl uppercase leading-none tracking-tight text-foreground transition-colors group-hover:text-primary sm:text-2xl">
+          not&nbsp;tyler<span className="text-primary">®</span>
+        </span>
+      )}
+    </Link>
+  );
+}
+
+function Clock() {
+  const [now, setNow] = useState<string | null>(null);
+
+  useEffect(() => {
+    const tick = () =>
+      setNow(
+        new Date().toLocaleTimeString("en-US", {
+          hour12: false,
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }),
+      );
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <span className="led-flicker font-advancedled text-xs tracking-[0.2em] text-primary">
+      {now ?? "--:--:--"}
+    </span>
+  );
+}
+
+/* Collection directory drawer: instead of repeating the page's own links,
+ * the menu is an exhibit INDEX — jump straight to any of the 15 works —
+ * plus a live clock and quick routes to the sub-pages. */
 export default function SiteNav() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const lenis = useLenis();
+
+  /* Lenis owns the scroll, so hash hrefs alone won't move the page while
+   * we're already on "/" — drive the jump through lenis explicitly. */
+  const jumpTo = (hash: string) => (e: React.MouseEvent) => {
+    setIsOpen(false);
+    if (pathname === "/") {
+      e.preventDefault();
+      // wait a tick so the drawer's overflow lock is released first
+      setTimeout(() => {
+        if (lenis) {
+          lenis.scrollTo(hash, { offset: -96 });
+        } else {
+          document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 60);
+    }
+  };
 
   useEffect(() => {
     setIsOpen(false);
@@ -30,98 +101,143 @@ export default function SiteNav() {
     <>
       <header className="fixed inset-x-0 top-0 z-[80] px-4 pt-4 sm:px-6">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between">
-          <Link href="/" aria-label="NotTyler home" className="pointer-events-auto">
-            <Image
-              src="/logo12.png"
-              alt="NotTyler"
-              width={110}
-              height={110}
-              className="h-auto w-[84px] opacity-80 transition-opacity hover:opacity-100 sm:w-[110px]"
-              priority
-            />
-          </Link>
+          <BrandMark />
           <button
             type="button"
             onClick={() => setIsOpen((o) => !o)}
-            className="group flex items-center gap-3 rounded-full border border-foreground/20 bg-background/60 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-foreground backdrop-blur-md transition-colors hover:border-primary hover:text-primary"
+            className="flex items-center gap-3 rounded-full border border-foreground/20 bg-background/60 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-foreground backdrop-blur-md transition-colors hover:border-primary hover:text-primary"
           >
             <span className="relative flex size-2">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
               <span className="relative inline-flex size-2 rounded-full bg-primary" />
             </span>
-            {isOpen ? "Close" : "Menu"}
+            {isOpen ? "Close" : "Index"}
           </button>
         </div>
       </header>
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ clipPath: "inset(0 0 100% 0)" }}
-            animate={{ clipPath: "inset(0 0 0% 0)" }}
-            exit={{ clipPath: "inset(0 0 100% 0)" }}
-            transition={{ duration: 0.55, ease: [0.785, 0.135, 0.15, 0.86] }}
-            className="fixed inset-0 z-[70] flex flex-col bg-background/95 p-4 backdrop-blur-xl sm:p-6"
-          >
-            <div className="h-20" />
-            <nav className="flex flex-1 flex-col items-center justify-center gap-6">
-              {DESTINATIONS.map((item, index) => (
-                <motion.div
-                  key={item.name}
-                  initial={{ y: 60, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{
-                    delay: 0.25 + index * 0.06,
-                    duration: 0.6,
-                    ease: [0.215, 0.61, 0.355, 1],
-                  }}
-                  className="group flex flex-col items-center"
-                >
-                  <Link
-                    href={item.href}
-                    target={item.external ? "_blank" : undefined}
-                    rel={item.external ? "noopener noreferrer" : undefined}
-                    className="flex items-start gap-3 text-foreground transition-colors hover:text-primary"
-                  >
-                    <span className="mt-1 font-advancedled text-xs text-primary/70">
-                      0{index + 1}
-                    </span>
-                    <TextRoll
-                      center
-                      className="font-ndot text-6xl uppercase leading-[0.9] tracking-tight sm:text-8xl"
-                    >
-                      {item.name}
-                    </TextRoll>
-                  </Link>
-                  <span className="mt-2 font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground opacity-40 transition-all duration-300 group-hover:text-primary group-hover:opacity-100">
-                    {item.note}
-                  </span>
-                </motion.div>
-              ))}
-            </nav>
-            <motion.div
+          <>
+            <motion.button
+              type="button"
+              aria-label="Close index"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="flex items-center justify-between border-t border-foreground/10 pt-4 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground"
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              onClick={() => setIsOpen(false)}
+              className="fixed inset-0 z-[70] cursor-default bg-background/60 backdrop-blur-sm"
+            />
+            <motion.aside
+              initial={{ x: "105%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "105%" }}
+              transition={{ duration: 0.45, ease: [0.785, 0.135, 0.15, 0.86] }}
+              className="fixed bottom-0 right-0 top-0 z-[75] flex w-full max-w-md flex-col border-l border-primary/25 bg-background p-6 pt-24 sm:p-8 sm:pt-24"
             >
-              <span>{IDENTITY.copyrightShort}</span>
-              <Link
-                href="https://videos.nottyler.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition-colors hover:text-primary"
-              >
-                <Image
-                  src="/ovlogo.png"
-                  alt="Open.Video"
-                  width={110}
-                  height={110}
-                  className="h-auto w-[90px] opacity-60"
-                />
-              </Link>
-            </motion.div>
-          </motion.div>
+              <div className="flex items-center justify-between border-b border-foreground/10 pb-4">
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+                    the collection
+                  </p>
+                  <h2 className="mt-1 font-ndot text-2xl uppercase leading-none text-foreground">
+                    Directory
+                  </h2>
+                </div>
+                <div className="text-right">
+                  <Clock />
+                  <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground">
+                    status: brilliant
+                  </p>
+                </div>
+              </div>
+
+              <nav className="-mr-2 flex-1 overflow-y-auto py-4 pr-2">
+                <ul>
+                  {PROJECTS.map((project, i) => (
+                    <motion.li
+                      key={project.company}
+                      initial={{ opacity: 0, x: 24 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.12 + i * 0.02, duration: 0.3 }}
+                    >
+                      <Link
+                        href={`/#exh-${String(i + 1).padStart(3, "0")}`}
+                        onClick={jumpTo(`#exh-${String(i + 1).padStart(3, "0")}`)}
+                        className="group flex items-baseline gap-3 border-b border-foreground/5 py-2 transition-colors hover:text-primary"
+                      >
+                        <span className="font-advancedled text-[10px] text-primary/60 transition-colors group-hover:text-primary">
+                          {String(i + 1).padStart(3, "0")}
+                        </span>
+                        <span className="flex-1 truncate font-ndot text-lg uppercase leading-tight tracking-tight">
+                          {project.company}
+                        </span>
+                        <span className="hidden max-w-[38%] truncate text-right font-mono text-[9px] uppercase tracking-[0.1em] text-muted-foreground sm:block">
+                          {project.year}
+                        </span>
+                      </Link>
+                    </motion.li>
+                  ))}
+                  <motion.li
+                    initial={{ opacity: 0, x: 24 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.12 + PROJECTS.length * 0.02 }}
+                  >
+                    <Link
+                      href="/#music"
+                      onClick={jumpTo("#music")}
+                      className="group flex items-baseline gap-3 py-2 transition-colors hover:text-primary"
+                    >
+                      <span className="font-advancedled text-[10px] text-primary/60">
+                        LP
+                      </span>
+                      <span className="flex-1 font-ndot text-lg uppercase leading-tight tracking-tight">
+                        The music catalog
+                      </span>
+                      <span className="hidden text-right font-mono text-[9px] uppercase tracking-[0.1em] text-muted-foreground sm:block">
+                        audio project
+                      </span>
+                    </Link>
+                  </motion.li>
+                </ul>
+              </nav>
+
+              <div className="space-y-4 border-t border-foreground/10 pt-4">
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[10px] uppercase tracking-[0.25em]">
+                  <Link
+                    href="https://videos.nottyler.org"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-foreground/70 transition-colors hover:text-primary"
+                  >
+                    Channel ↗
+                  </Link>
+                  <Link
+                    href="/not"
+                    className="text-foreground/70 transition-colors hover:text-primary"
+                  >
+                    Wut?
+                  </Link>
+                  <Link
+                    href="/contact"
+                    className="text-foreground/70 transition-colors hover:text-primary"
+                  >
+                    Contact
+                  </Link>
+                  <Link
+                    href="/mario-cart"
+                    className="text-foreground/70 transition-colors hover:text-primary"
+                  >
+                    Mario Cart®
+                  </Link>
+                </div>
+                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/30">
+                  {IDENTITY.copyrightShort}
+                </p>
+              </div>
+            </motion.aside>
+          </>
         )}
       </AnimatePresence>
     </>

@@ -68,6 +68,17 @@ Everything here is REAL content from the existing site. Do not fabricate. Source
 ## Palette (original)
 - bg #141313, fg #d1caca, primary red oklch(0.66 0.22 26.14) ≈ #fe4543, accent bright red/pink, secondary warm orange
 
+## Music catalog (rebuild: dedicated home-page section, copy verbatim from main:components/my-works.tsx)
+- Music | audio project | "People Are Saying I Saved Soul Music" | Spotify® verified artist | /promo.png | https://open.spotify.com/artist/4BhWvEo85DhqdhG8An3x3n | Listen on Spotify | singer-songwriter bio (see PROJECTS #2)
+- Companion: MuseVault | Mac App | "A Lyrics and Suno Prompt Notepad for the AI Era" | /musevaultimage.png | GitHub link (see PROJECTS #13)
+- No track lists exist in the repo; none were fabricated.
+
+## Rebuild notes (July 2026 round 2)
+- Preloader removed per feedback; its copy "absurdly creative vision" preserved as the footer tagline.
+- Face logo (logo12.png) removed from header; swap slot = IDENTITY.logoSrc in lib/content.ts.
+- Hero intro paragraph is the ORIGINAL site's metadata description from main:app/layout.tsx (verbatim). The "a prestigious organization" eyebrow was removed per feedback.
+- Copy sweep: all authored voice lines removed ("from the vault", "from the studio", "pet the shiba", "responses not guaranteed", "official trailer"). Remaining labels are either verbatim original copy or pure UI chrome (counts, arrows, "click to enlarge").
+
 ## 3D / misc assets
 - /models/shiba.glb, /models/shiba2.glb (ASCII shiba via skiper14 AsciiSimulation)
 - masks: /mainclip.png, /mobilevector.png; backdrops: /mainback.png, /mobileback.png

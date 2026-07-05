@@ -31,11 +31,10 @@ export default function SiteFooter() {
           cameraPosition={{ x: 0, y: 9, z: 14 }}
         />
       </div>
-      <p className="pointer-events-none py-2 text-center font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
-        pet the shiba (drag it)
+      <p className="pt-6 text-center font-advancedled text-[10px] uppercase tracking-[0.45em] text-primary">
+        {IDENTITY.tagline}
       </p>
-
-      <h2 className="w-full select-none text-center font-ndot text-[16.5vw] uppercase leading-[0.85] tracking-tight text-primary">
+      <h2 className="w-full select-none text-center font-ndot text-[16.5vw] uppercase leading-none tracking-tight text-primary">
         nottyler
       </h2>
 

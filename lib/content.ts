@@ -10,7 +10,13 @@ export const IDENTITY = {
     "NotTyler is a prestigious organization that was imagined as a place for brilliant creative works to be appreciated for their genius and clever artistic vision.",
   copyright: "COPYRIGHT NOT TYLER .ORG ALL RIGHTS RESERVED",
   copyrightShort: "© Copright nottyler.org 2025",
-  preloader: "absurdly creative vision",
+  tagline: "absurdly creative vision",
+  /**
+   * LOGO SWAP SLOT — set this to an image path in /public (e.g. "/my-mark.png")
+   * and the header brand renders that image instead of the text wordmark.
+   * Leave null for the "not tyler®" text mark.
+   */
+  logoSrc: null as string | null,
 };
 
 export type Destination = {
@@ -347,6 +353,32 @@ export const AI_INVESTMENT_DATA = [
   { company: "Figure", invested: 0.9 },
   { company: "Mistral", invested: 0.5 },
 ];
+
+/* Music catalog — copy taken verbatim from the original works list on main
+ * (components/my-works.tsx). No tracks are invented; the catalog is the
+ * Spotify artist project plus the music-adjacent MuseVault app. */
+export const MUSIC = {
+  heading: "Music",
+  year: "audio project",
+  title: "People Are Saying I Saved Soul Music",
+  position: "Spotify® verified artist",
+  imgSrc: "/promo.png",
+  projectLink: "https://open.spotify.com/artist/4BhWvEo85DhqdhG8An3x3n",
+  buttonText: "Listen on Spotify",
+  answer:
+    "I'm a singer-songwriter and producer who creates soulful music that is surging in popularity for it's universal acclaim. People with good taste say its better than all music before it.",
+  companion: {
+    company: "MuseVault",
+    year: "Mac App",
+    title: "A Lyrics and Suno Prompt Notepad for the AI Era",
+    position: "MuseVault® Mac App",
+    imgSrc: "/musevaultimage.png",
+    projectLink: "https://github.com/tylerbishopdev/MuseVault.git",
+    buttonText: "View on GitHub",
+    answer:
+      "Auto counts bars and analyzes musical structure to ensure good song-writing. Tags lyrics and measures syllable and word counts per bar automagically. Notes include types for Suno prompts titling and providing auto-descriptions and tags for quick reference.",
+  },
+};
 
 export const MARIO = {
   title: "NotTyler | Mario Cart",

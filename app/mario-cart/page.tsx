@@ -28,7 +28,7 @@ export default function MarioCartPage() {
             <span className="whitespace-nowrap pr-10 font-ndot text-5xl uppercase leading-none tracking-tight text-primary sm:text-7xl">
               Mario Cart® The Movie{" "}
               <span className="text-foreground/30">
-                {"/// official trailer ///"}
+                {"/// Trailer for Future Blockbuster ///"}
               </span>{" "}
             </span>
           </ScrollVelocityRow>

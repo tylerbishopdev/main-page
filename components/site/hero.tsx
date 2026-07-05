@@ -40,76 +40,56 @@ export default function Hero() {
       onMouseMove={handleMouseMove}
       className="relative flex min-h-svh flex-col overflow-hidden"
     >
-      {/* mouse-parallax backdrop, masked by the original site's clip art */}
+      {/* full-bleed mouse-parallax backdrop, toned down so type stays legible */}
       <motion.div
         aria-hidden
         style={{ opacity: fade }}
         className="absolute inset-0"
       >
-        <div
-          className="absolute inset-[-6%]"
+        <motion.div
           style={{
-            maskImage: "url(/mainclip.png)",
-            maskSize: "contain",
-            maskRepeat: "no-repeat",
-            maskPosition: "center",
-            WebkitMaskImage: "url(/mainclip.png)",
-            WebkitMaskSize: "contain",
-            WebkitMaskRepeat: "no-repeat",
-            WebkitMaskPosition: "center",
+            x: backX,
+            y: backY,
+            backgroundImage: "url(/mainback.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
-        >
-          <motion.div
-            style={{
-              x: backX,
-              y: backY,
-              backgroundImage: "url(/mainback.png)",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-            className="absolute inset-[-4%] opacity-25 saturate-[0.85]"
-          />
-        </div>
-        <div className="absolute inset-0 bg-linear-to-b from-background/70 via-transparent to-background" />
+          className="absolute inset-[-4%] opacity-[0.16] grayscale-[0.35] sepia-[0.15]"
+        />
+        <div className="absolute inset-0 bg-linear-to-b from-background via-background/30 to-background" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 55% at 50% 45%, transparent 0%, var(--background) 100%)",
+            opacity: 0.75,
+          }}
+        />
       </motion.div>
 
       <motion.div
         style={{ y: drift, opacity: fade }}
         className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 pb-10 pt-24"
       >
-        <p className="mb-5 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.45em] text-primary sm:text-xs">
-          <span className="inline-block h-px w-10 bg-primary/60" />
-          a prestigious organization
-          <span className="inline-block h-px w-10 bg-primary/60" />
-        </p>
-
-        <h1 className="text-center font-ndot uppercase leading-[0.82] tracking-tight">
-          <span className="block overflow-hidden">
-            <motion.span
-              initial={{ y: "105%" }}
-              animate={{ y: 0 }}
-              transition={{ delay: 2.35, duration: 0.8, ease: [0.215, 0.61, 0.355, 1] }}
-              className="block text-[20vw] text-foreground/90 sm:text-[16vw] lg:text-[12.5vw]"
-            >
-              NOT
-            </motion.span>
+        {/* no overflow clipping here — Ndot glyphs need their full box */}
+        <motion.h1
+          initial={{ opacity: 0, y: 48 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.8, ease: [0.215, 0.61, 0.355, 1] }}
+          className="text-center font-ndot uppercase leading-none tracking-tight"
+        >
+          <span className="block text-[19vw] text-foreground/90 sm:text-[16vw] lg:text-[12.5vw]">
+            NOT
           </span>
-          <span className="block overflow-hidden">
-            <motion.span
-              initial={{ y: "105%" }}
-              animate={{ y: 0 }}
-              transition={{ delay: 2.5, duration: 0.8, ease: [0.215, 0.61, 0.355, 1] }}
-              className="block text-[20vw] text-primary sm:text-[16vw] lg:text-[12.5vw]"
-            >
-              TYLER
-            </motion.span>
+          <span className="-mt-[0.12em] block text-[19vw] text-primary sm:text-[16vw] lg:text-[12.5vw]">
+            TYLER
           </span>
-        </h1>
+        </motion.h1>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 2.9, duration: 0.7 }}
+          transition={{ delay: 0.45, duration: 0.7 }}
           className="mt-6 max-w-xl text-balance text-center font-mono text-xs leading-relaxed text-foreground/70 sm:text-sm"
         >
           {IDENTITY.description}
@@ -119,7 +99,7 @@ export default function Hero() {
         <motion.nav
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 3.1, duration: 0.7 }}
+          transition={{ delay: 0.6, duration: 0.7 }}
           className="mt-8 w-full max-w-3xl"
         >
           <ul className="flex flex-col divide-y divide-foreground/10 border-y border-foreground/10">
@@ -160,13 +140,19 @@ export default function Hero() {
       </motion.div>
 
       <motion.div
+        aria-hidden
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 3.4 }}
-        className="relative z-10 flex items-center justify-center gap-3 pb-8 font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground"
+        transition={{ delay: 0.9 }}
+        className="relative z-10 flex items-center justify-center pb-8"
       >
-        <span className="led-flicker text-primary">●</span>
-        scroll for the collection
+        <motion.span
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+          className="led-flicker font-mono text-sm text-primary"
+        >
+          ↓
+        </motion.span>
       </motion.div>
     </section>
   );

@@ -78,9 +78,6 @@ export default function ContactScroll() {
             ),
           )}
         </ul>
-        <p className="max-w-md text-center font-mono text-xs uppercase tracking-[0.25em] text-ink/60">
-          responses not guaranteed. genius is busy.
-        </p>
       </motion.div>
     </div>
   );

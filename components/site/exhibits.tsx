@@ -50,8 +50,18 @@ function ExhibitCard({
     ? "bg-ink text-paper hover:bg-ink/85"
     : "bg-primary text-primary-foreground hover:bg-primary/85";
 
+  /* treated backdrop so square screenshots sit uncropped in the frame */
+  const frameStyle = isFinal
+    ? "bg-paper/5 ring-paper/15"
+    : isRed
+      ? "bg-ink/10 ring-ink/25"
+      : "bg-ink/5 ring-ink/15";
+
   return (
-    <div className="sticky top-0 flex h-svh items-center justify-center px-3 sm:px-6">
+    <div
+      id={`exh-${String(i + 1).padStart(3, "0")}`}
+      className="sticky top-0 flex h-svh items-center justify-center px-3 sm:px-6"
+    >
       <motion.article
         style={{ scale }}
         className={`relative flex max-h-[88svh] w-full max-w-6xl origin-top flex-col overflow-hidden rounded-3xl shadow-[0_40px_80px_-20px_rgba(0,0,0,0.55)] ${surface}`}
@@ -112,24 +122,32 @@ function ExhibitCard({
             </div>
           </div>
 
-          <div className="relative hidden min-h-[240px] overflow-hidden rounded-2xl lg:block">
-            <Image
-              src={project.imgSrc}
-              alt={project.company}
-              fill
-              sizes="(max-width: 1024px) 100vw, 45vw"
-              className="object-cover"
-            />
-            <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/20" />
+          {/* square-friendly frame: object-contain so nothing is cropped */}
+          <div className="hidden min-h-0 items-center justify-center lg:flex">
+            <div
+              className={`relative aspect-square max-h-full w-full max-w-[460px] overflow-hidden rounded-2xl ring-1 ring-inset ${frameStyle}`}
+            >
+              <Image
+                src={project.imgSrc}
+                alt={project.company}
+                fill
+                sizes="(max-width: 1024px) 100vw, 40vw"
+                className="object-contain p-3"
+              />
+            </div>
           </div>
-          <div className="relative block h-40 overflow-hidden rounded-2xl sm:h-52 lg:hidden">
-            <Image
-              src={project.imgSrc}
-              alt={project.company}
-              fill
-              sizes="100vw"
-              className="object-cover"
-            />
+          <div className="flex justify-center lg:hidden">
+            <div
+              className={`relative aspect-square max-h-56 w-full max-w-56 overflow-hidden rounded-2xl ring-1 ring-inset ${frameStyle}`}
+            >
+              <Image
+                src={project.imgSrc}
+                alt={project.company}
+                fill
+                sizes="60vw"
+                className="object-contain p-2"
+              />
+            </div>
           </div>
         </div>
       </motion.article>
@@ -167,7 +185,7 @@ export default function Exhibits() {
             {WORKS_INTRO.bio}
           </p>
           <p className="font-advancedled text-[10px] uppercase tracking-[0.3em] text-primary">
-            {total} exhibits on permanent display
+            {String(total).padStart(3, "0")} works
           </p>
         </div>
       </div>
