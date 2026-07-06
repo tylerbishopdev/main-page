@@ -2,25 +2,11 @@
 
 import { useEffect } from "react";
 
+import NotMusik from "@/components/site/not-musik";
 import SiteFooter from "@/components/site/site-footer";
 import SiteNav from "@/components/site/site-nav";
 
 const SPOTIFY_ARTIST = "https://open.spotify.com/artist/4BhWvEo85DhqdhG8An3x3n";
-
-const tracks = [
-  { title: "The Original", type: "Single", plays: 1247460 },
-  { title: "Ridin Dirty", type: "Single", plays: 950950 },
-  { title: "We Get Down", type: "Single", plays: 239170 },
-  { title: "Grindin'", type: "Single", plays: 121100 },
-  { title: "Back Then", type: "Single", plays: 671540 },
-  { title: "Hood", type: "Single", plays: 121000 },
-  { title: "Batter Up", type: "Single", plays: 50730 },
-  { title: "Oh, I Think They Like Me", type: "Single", plays: 451760 },
-  { title: "In My Projects", type: "Single", plays: 239170 },
-  { title: "White Tee", type: "Single", plays: 105030220 },
-  { title: "Erryday Im Hustin", type: "Single", plays: 101001930 },
-  { title: "St Louie", type: "Single", plays: 34100 },
-];
 
 const featuredEmbeds = [
   {
@@ -34,37 +20,6 @@ const featuredEmbeds = [
     src: "https://open.spotify.com/embed/track/5Gu0PDLN4YJeW3jGF2vIzB?utm_source=generator&theme=0",
   },
 ];
-
-function animateCount(el: HTMLElement) {
-  const target = parseInt(el.textContent?.replace(/,/g, "") || "0");
-  if (isNaN(target) || target === 0) return;
-  const duration = 1200;
-  const start = performance.now();
-  function tick(now: number) {
-    const elapsed = now - start;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    el.textContent = Math.round(eased * target).toLocaleString();
-    if (progress < 1) requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-}
-
-function PlayIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary">
-      <polygon points="5 3 19 12 5 21 5 3" />
-    </svg>
-  );
-}
-
-function ArrowIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-muted-foreground group-hover:text-primary transition-colors shrink-0 hidden sm:block">
-      <path d="M7 17l9.2-9.2M17 17V7H7" />
-    </svg>
-  );
-}
 
 export default function MusicPage() {
   useEffect(() => {
@@ -82,23 +37,8 @@ export default function MusicPage() {
     );
     reveals.forEach((el) => observer.observe(el));
 
-    const countEls = document.querySelectorAll(".play-count");
-    const countObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            animateCount(entry.target as HTMLElement);
-            countObserver.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
-    countEls.forEach((el) => countObserver.observe(el));
-
     return () => {
       observer.disconnect();
-      countObserver.disconnect();
     };
   }, []);
 
@@ -218,52 +158,8 @@ export default function MusicPage() {
         </div>
       </section>
 
-      {/* Discography */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
-        <div className="reveal">
-          <p className="font-mono text-primary text-xs tracking-[0.3em] uppercase mb-3">Catalog</p>
-          <h2 className="pixel-heading text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">DISCOGRAPHY</h2>
-          <p className="text-muted-foreground text-base max-w-lg mb-12">Every track. Every vibe. Tap to stream.</p>
-        </div>
-
-        <div className="reveal-stagger">
-          {tracks.map((track, i) => (
-            <a
-              key={track.title}
-              href={SPOTIFY_ARTIST}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`track-row group flex items-center gap-4 sm:gap-6 py-4 px-3 sm:px-4 border-t-2 border-white/10 cursor-pointer${i === tracks.length - 1 ? " border-b-2" : ""}`}
-            >
-              <span className="font-mono text-xs text-muted-foreground w-6 text-right shrink-0">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-md bg-primary/15 flex items-center justify-center shrink-0 border border-primary/20">
-                <PlayIcon />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-foreground font-semibold text-base sm:text-lg truncate group-hover:text-primary transition-colors duration-150">
-                  {track.title}
-                </p>
-                <p className="text-muted-foreground text-xs sm:text-sm font-mono">{track.type}</p>
-              </div>
-              <div className="text-right shrink-0">
-                {track.plays ? (
-                  <>
-                    <p className="play-count text-primary font-mono text-sm sm:text-base font-medium">
-                      {track.plays.toLocaleString()}
-                    </p>
-                    <p className="text-muted-foreground text-xs">plays</p>
-                  </>
-                ) : (
-                  <p className="text-muted-foreground font-mono text-sm">&mdash;</p>
-                )}
-              </div>
-              <ArrowIcon />
-            </a>
-          ))}
-        </div>
-      </section>
+      {/* notMusik interactive archive (replaces the old plain discography list) */}
+      <NotMusik showHeading={false} />
 
       {/* Email Capture */}
       <section className="bg-card/60 border-t border-b border-white/5">

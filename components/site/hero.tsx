@@ -90,7 +90,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.45, duration: 0.7 }}
-          className="mt-6 max-w-xl text-balance text-center font-mono text-xs leading-relaxed text-foreground/70 sm:text-sm"
+          className="mt-6 max-w-xl whitespace-pre-line text-balance text-center font-mono text-xs leading-relaxed text-foreground/70 sm:text-sm"
         >
           {IDENTITY.description}
         </motion.p>

@@ -7,7 +7,7 @@
 export const IDENTITY = {
   title: "NotTyler | Organization",
   description:
-    "NotTyler is a prestigious organization that was imagined as a place for brilliant creative works to be appreciated for their genius and clever artistic vision.",
+    "Not a prestigious organization  with zero compromise:\nLeadership is prone to excessive hyperbole but dripping with humility. Some people are calling notTyler.org: one brilliant creative masterpiece after another.",
   copyright: "COPYRIGHT NOT TYLER .ORG ALL RIGHTS RESERVED",
   copyrightShort: "© Copright nottyler.org 2025",
   tagline: "absurdly creative vision",
@@ -65,20 +65,21 @@ export type Project = {
 };
 
 /* NOTE: /siktok.png was referenced by the original site but the file never
- * existed in public/, so that entry falls back to a real asset. notAuth uses
- * the notauthex.png screenshot uploaded on main (its projectLink field there
- * mistakenly held the image path; the real destination is notauth.com). */
+ * existed in public/, so that entry falls back to a real asset.
+ * Xheba is the periodic table sample pad (first in list).
+ * notAuth secret lab is the mysterious "if you know..." version (placed as item 4).
+ * The original notAuth cloner was moved to the end per request. */
 export const PROJECTS: Project[] = [
   {
-    company: "notAuth",
-    year: "notauth.com",
-    title: "Train Your Own AI Image People Cloner With Your Images",
-    position: "notauth.com",
-    imgSrc: "/notauthex.png",
-    projectLink: "https://notauth.com",
-    buttonText: "Try It",
+    company: "Xheba",
+    year: "xheba.com",
+    title: "Sample Pad Based On Periodic Table",
+    position: "Scientifically accurate element sounds",
+    imgSrc: "/xheba.png",
+    projectLink: "https://xheba.com",
+    buttonText: "Play the Elements",
     answer:
-      "Train AI to generate hyper-realistic images based on people or styles from images you upload. Save trained models and then create clones of people, styles, or animals. Only using the best models. Requires my personal invite code, so if you don't have it and don't know me... don't ask.",
+      "A sample pad built on the periodic table. Every element produces scientifically accurate sounds mapped directly from real spectral line frequencies. Real physics, turned into playable tones.",
     external: true,
   },
   {
@@ -103,6 +104,18 @@ export const PROJECTS: Project[] = [
     buttonText: "Get Discovered",
     answer:
       "Have an audio file, or open.video link to a song that needs a karoake video with lyrics synchronized? TextLayer understands the lyrics and can make the video in seconds. Just paste a url or upload the audio file and it creates a video you can download.",
+    external: true,
+  },
+  {
+    company: "notAuth",
+    year: "notauth.com",
+    title: "A secret AI training lab",
+    position: "If you know what to do you are a genius",
+    imgSrc: "/notauth-secret.png",
+    projectLink: "https://notauth.com",
+    buttonText: "Secrets →",
+    answer:
+      "If you know what to do you are a genius. If not, maybe one day you will.",
     external: true,
   },
   {
@@ -260,6 +273,19 @@ export const PROJECTS: Project[] = [
     answer: "TBD",
     external: false,
   },
+  // Original notAuth (cloner) moved to the very end per request.
+  {
+    company: "notAuth",
+    year: "notauth.com",
+    title: "Train Your Own AI Image People Cloner With Your Images",
+    position: "notauth.com",
+    imgSrc: "/notauthex.png",
+    projectLink: "https://notauth.com",
+    buttonText: "Try It",
+    answer:
+      "Train AI to generate hyper-realistic images based on people or styles from images you upload. Save trained models and then create clones of people, styles, or animals. Only using the best models. Requires my personal invite code, so if you don't have it and don't know me... don't ask.",
+    external: true,
+  },
 ];
 
 export const CONTACT = {
@@ -402,3 +428,33 @@ export const MARIO = {
     "A live action trailer for Mario Cart. A movie that could totally be made. Get at me Hollywood.",
   videoId: "QKRNJjg6PBu",
 };
+
+/* notMusik releases — all tracks from the catalog on /music (Spotify artist 4BhWvEo85DhqdhG8An3x3n).
+ * Data copied verbatim from app/music/page.tsx. No tracks fabricated.
+ * Images default to the existing soundwave.png asset. Update `image` per item with real
+ * album art / thumbnails from Spotify CDN or open.video when available.
+ * bgColor values chosen to complement the site's red/ink/paper palette for dynamic transitions. */
+export type MusikRelease = {
+  id: number;
+  title: string;
+  type: string;
+  plays?: number;
+  image: string;
+  bgColor: string;
+  description?: string;
+};
+
+export const NOT_MUSIK_RELEASES: MusikRelease[] = [
+  { id: 1, title: "The Original", type: "Single", plays: 1247460, image: "/soundwave.png", bgColor: "#f15a57", description: "Signature single" },
+  { id: 2, title: "Ridin Dirty", type: "Single", plays: 950950, image: "/soundwave.png", bgColor: "#111111", description: "Southern heat" },
+  { id: 3, title: "We Get Down", type: "Single", plays: 239170, image: "/soundwave.png", bgColor: "#f5f0e6", description: "Low end theory" },
+  { id: 4, title: "Grindin'", type: "Single", plays: 121100, image: "/soundwave.png", bgColor: "#c8102e", description: "Hustle anthem" },
+  { id: 5, title: "Back Then", type: "Single", plays: 671540, image: "/soundwave.png", bgColor: "#1f1f1f", description: "Reflective" },
+  { id: 6, title: "Hood", type: "Single", plays: 121000, image: "/soundwave.png", bgColor: "#f15a57", description: "Street narrative" },
+  { id: 7, title: "Batter Up", type: "Single", plays: 50730, image: "/soundwave.png", bgColor: "#2a2a2a", description: "Game time" },
+  { id: 8, title: "Oh, I Think They Like Me", type: "Single", plays: 451760, image: "/soundwave.png", bgColor: "#f5f0e6", description: "Crowd favorite" },
+  { id: 9, title: "In My Projects", type: "Single", plays: 239170, image: "/soundwave.png", bgColor: "#111111", description: "Block life" },
+  { id: 10, title: "White Tee", type: "Single", plays: 105030220, image: "/soundwave.png", bgColor: "#c8102e", description: "Timeless" },
+  { id: 11, title: "Erryday Im Hustin", type: "Single", plays: 101001930, image: "/soundwave.png", bgColor: "#f15a57", description: "Daily grind" },
+  { id: 12, title: "St Louie", type: "Single", plays: 34100, image: "/soundwave.png", bgColor: "#1f1f1f", description: "Midwest soul" },
+];

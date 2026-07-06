@@ -4,7 +4,7 @@ Everything here is REAL content from the existing site. Do not fabricate. Source
 
 ## Identity / SEO
 - Title: "NotTyler | Organization"
-- Description: "NotTyler is a prestigious organization that was imagined as a place for brilliant creative works to be appreciated for their genius and clever artistic vision."
+- Description: "Not a prestigious organization  with zero compromise:\nLeadership is prone to excessive hyperbole but dripping with humility. Some people are calling notTyler.org: one brilliant creative masterpiece after another."
 - Favicon: /favicon.ico
 - Logos: /logo12.png (home header), /logos2.png (subpage headers), /ovlogo.png (Open.Video footer logo), /logos.png, /shiba.png (preloader shiba)
 - Preloader copy: "absurdly creative vision"
