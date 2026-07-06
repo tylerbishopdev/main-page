@@ -7,7 +7,7 @@
 export const IDENTITY = {
   title: "NotTyler | Organization",
   description:
-    "Not a prestigious organization  with zero compromise:\nLeadership is prone to excessive hyperbole but dripping with humility. Some people are calling notTyler.org: one brilliant creative masterpiece after another.",
+    "Uncompromising and prone to excessive hyperbole; yet dripping with humility. Explore why some people are saying notTyler.org: 'Is one brilliant creative masterpiece after another'.",
   copyright: "COPYRIGHT NOT TYLER .ORG ALL RIGHTS RESERVED",
   copyrightShort: "© Copright nottyler.org 2025",
   tagline: "absurdly creative vision",
