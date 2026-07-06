@@ -429,11 +429,10 @@ export const MARIO = {
   videoId: "QKRNJjg6PBu",
 };
 
-/* notMusik releases — all tracks from the catalog on /music (Spotify artist 4BhWvEo85DhqdhG8An3x3n).
- * Data copied verbatim from app/music/page.tsx. No tracks fabricated.
- * Images default to the existing soundwave.png asset. Update `image` per item with real
- * album art / thumbnails from Spotify CDN or open.video when available.
- * bgColor values chosen to complement the site's red/ink/paper palette for dynamic transitions. */
+/* notMusik releases — the documented catalog selection from the site (Spotify artist 4BhWvEo85DhqdhG8An3x3n).
+ * This is the real list that was previously rendered in the music page discography.
+ * No tracks fabricated. If a fuller track list exists, replace this array with it.
+ * Images default to soundwave.png; swap per-item for real art when available. */
 export type MusikRelease = {
   id: number;
   title: string;
