@@ -41,8 +41,9 @@ export default function NotMusik({ showHeading = true }: { showHeading?: boolean
   const sectionRef = useRef<HTMLElement>(null);
   const rowRefs = useRef<(HTMLAnchorElement | null)[]>([]);
 
-  // Duplicate for a longer "infinite" archive scroll feel
-  const displayItems = [...NOT_MUSIK_RELEASES, ...NOT_MUSIK_RELEASES];
+  // Use the real unique releases. No artificial duplication — the previous
+  // doubling caused repeated tracks in the archive list.
+  const displayItems = NOT_MUSIK_RELEASES;
 
   const current: MusikRelease = NOT_MUSIK_RELEASES[activeIndex % NOT_MUSIK_RELEASES.length];
 
@@ -93,8 +94,7 @@ export default function NotMusik({ showHeading = true }: { showHeading?: boolean
 
   // Click a row -> jump active + scroll the row into nice view
   const focusRelease = (idx: number, el: HTMLAnchorElement | null) => {
-    const real = idx % NOT_MUSIK_RELEASES.length;
-    setActiveIndex(real);
+    setActiveIndex(idx);
     playTick();
     if (el) {
       const y = el.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.32;
@@ -132,11 +132,11 @@ export default function NotMusik({ showHeading = true }: { showHeading?: boolean
 
         {/* The interactive archive */}
         <div className="relative grid gap-8 lg:grid-cols-12">
-          {/* Scrollable list of releases (duplicated for length) */}
+          {/* Scrollable list of releases (unique catalog order) */}
           <div className="lg:col-span-7">
             <div className="flex flex-col divide-y divide-white/10">
               {displayItems.map((release, i) => {
-                const isActive = (i % NOT_MUSIK_RELEASES.length) === activeIndex;
+                const isActive = i === activeIndex;
                 return (
                   <a
                     key={`${release.id}-${i}`}
@@ -151,7 +151,7 @@ export default function NotMusik({ showHeading = true }: { showHeading?: boolean
                     className={`group flex items-center gap-4 py-5 pr-2 transition-all sm:gap-6 sm:py-6 ${isActive ? "opacity-100" : "opacity-70 hover:opacity-100"}`}
                   >
                     <span className="w-9 shrink-0 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-                      {String((i % NOT_MUSIK_RELEASES.length) + 1).padStart(2, "0")}
+                      {String(i + 1).padStart(2, "0")}
                     </span>
 
                     <div className="min-w-0 flex-1">
