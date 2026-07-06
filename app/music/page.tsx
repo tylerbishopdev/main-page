@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import Footer from "@/components/footer";
+
+import SiteFooter from "@/components/site/site-footer";
+import SiteNav from "@/components/site/site-nav";
 
 const SPOTIFY_ARTIST = "https://open.spotify.com/artist/4BhWvEo85DhqdhG8An3x3n";
 
@@ -104,13 +104,7 @@ export default function MusicPage() {
 
   return (
     <div className="bg-background text-foreground antialiased">
-      <header className="w-full absolute pt-3 lg:pt-3 font-mono z-10 mx-auto bg-none">
-        <div className="flex justify-center items-center max-w-7xl mx-auto">
-          <Link href="/" className="text-lg">
-            <Image src="/logo12.png" alt="NotTyler" width={145} height={145} className="opacity-60" />
-          </Link>
-        </div>
-      </header>
+      <SiteNav />
 
       {/* Hero */}
       <section className="relative min-h-[80vh] flex flex-col items-center justify-center px-6 py-24 overflow-hidden scanlines">
@@ -302,7 +296,7 @@ export default function MusicPage() {
         </div>
       </section>
 
-      <Footer />
+      <SiteFooter />
     </div>
   );
 }
