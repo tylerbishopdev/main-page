@@ -123,7 +123,7 @@ function StatPanel({
       </div>
       <div className="flex-1">{children}</div>
       {footnote && (
-        <p className="font-mono text-[10px] italic text-muted-foreground/70">
+        <p className="font-mono text-[10px] italic text-muted-foreground">
           {footnote}
         </p>
       )}
@@ -216,14 +216,17 @@ function KindaFacts() {
               <LineChart data={CURRENCY_DATA}>
                 <XAxis
                   dataKey="year"
-                  tick={{ fontSize: 9, fill: "#948a7e" }}
-                  stroke="#2c2825"
+                  tick={{ fontSize: 9, fill: "var(--muted-foreground)" }}
+                  stroke="var(--border)"
                 />
-                <YAxis tick={{ fontSize: 9, fill: "#948a7e" }} stroke="#2c2825" />
+                <YAxis
+                  tick={{ fontSize: 9, fill: "var(--muted-foreground)" }}
+                  stroke="var(--border)"
+                />
                 <Line
                   type="monotone"
                   dataKey="amount"
-                  stroke="#ff4438"
+                  stroke="var(--primary)"
                   strokeWidth={2}
                   dot={false}
                 />
@@ -253,20 +256,23 @@ function KindaFacts() {
               <LineChart data={CORRELATION_DATA}>
                 <XAxis
                   dataKey="year"
-                  tick={{ fontSize: 9, fill: "#948a7e" }}
-                  stroke="#2c2825"
+                  tick={{ fontSize: 9, fill: "var(--muted-foreground)" }}
+                  stroke="var(--border)"
                 />
-                <YAxis tick={{ fontSize: 9, fill: "#948a7e" }} stroke="#2c2825" />
+                <YAxis
+                  tick={{ fontSize: 9, fill: "var(--muted-foreground)" }}
+                  stroke="var(--border)"
+                />
                 <Line
                   type="monotone"
                   dataKey="autismRate"
-                  stroke="#ffd0c8"
+                  stroke="var(--accent)"
                   strokeWidth={2}
                 />
                 <Line
                   type="monotone"
                   dataKey="dvdSales"
-                  stroke="#ff4438"
+                  stroke="var(--primary)"
                   strokeWidth={2}
                 />
               </LineChart>
@@ -351,7 +357,7 @@ function MostlyArts() {
   return (
     <div className="space-y-5">
       {/* stage */}
-      <div className="relative overflow-hidden rounded-2xl border border-foreground/10 bg-[#0a0909]">
+      <div className="relative overflow-hidden rounded-2xl border border-foreground/10 bg-background">
         <div className="relative h-[52svh] w-full md:h-[64svh]">
           <AnimatePresence mode="wait">
             <motion.button
@@ -472,7 +478,7 @@ function Placeholder() {
         <span className="font-ndot text-3xl uppercase text-primary">
           {WUT.placeholder.heading}
         </span>
-        <p className="font-mono text-sm text-foreground/60">
+        <p className="font-mono text-sm text-foreground/75">
           {WUT.placeholder.body}
         </p>
       </div>

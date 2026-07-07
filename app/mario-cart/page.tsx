@@ -36,7 +36,7 @@ export default function MarioCartPage() {
       </div>
 
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center gap-8 px-4 py-10 sm:px-6">
-        <div className="w-full overflow-hidden rounded-2xl border border-primary/40 bg-card p-1.5 shadow-[0_30px_80px_-30px_rgba(255,68,56,0.35)]">
+        <div className="w-full overflow-hidden rounded-2xl border border-primary/40 bg-card p-1.5 shadow-[0_30px_80px_-30px_rgba(216,58,46,0.35)]">
           <MarioCart className="aspect-video w-full" />
         </div>
         <p className="max-w-xl text-center font-mono text-xs leading-relaxed text-muted-foreground">

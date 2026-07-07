@@ -112,7 +112,7 @@ export default function Hero() {
                       className={`hidden text-right font-mono text-[10px] uppercase tracking-[0.2em] transition-all duration-300 sm:block ${
                         hovered === index
                           ? "translate-x-0 opacity-100"
-                          : "translate-x-3 opacity-45"
+                          : "translate-x-3 opacity-70"
                       }`}
                     >
                       {item.note}

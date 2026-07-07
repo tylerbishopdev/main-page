@@ -238,7 +238,7 @@ export default function SiteNav() {
                     Mario Cart®
                   </Link>
                 </div>
-                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-ink/40">
+                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-ink/60">
                   {IDENTITY.copyrightShort}
                 </p>
               </div>

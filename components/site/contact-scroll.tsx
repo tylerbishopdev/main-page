@@ -54,7 +54,7 @@ export default function ContactScroll() {
         style={{ scale: scaleDiv }}
         className="z-20 mt-[16vh] flex w-full flex-col items-center space-y-12 rounded-t-[3rem] bg-primary px-4 py-[16vh] text-ink"
       >
-        <p className="font-advancedled text-[11px] uppercase tracking-[0.4em] text-ink/70">
+        <p className="font-advancedled text-[11px] uppercase tracking-[0.4em] text-ink/90">
           {CONTACT.artistInfoLabel}
         </p>
         <ul className="flex w-full max-w-2xl flex-col items-center gap-5 text-center">
@@ -71,7 +71,7 @@ export default function ContactScroll() {
             ) : (
               <li
                 key={row.label}
-                className="font-ndot text-2xl uppercase leading-none tracking-tight text-ink/60 sm:text-4xl"
+                className="font-ndot text-2xl uppercase leading-none tracking-tight text-ink/80 sm:text-4xl"
               >
                 {row.label}
               </li>

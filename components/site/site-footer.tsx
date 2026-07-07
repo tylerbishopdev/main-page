@@ -67,7 +67,7 @@ export default function SiteFooter() {
         </nav>
 
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <p className="font-ndot text-[10px] uppercase tracking-[0.2em] text-paper/35">
+          <p className="font-ndot text-[10px] uppercase tracking-[0.2em] text-paper/60">
             {IDENTITY.copyright}
           </p>
           <Link

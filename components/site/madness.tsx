@@ -36,7 +36,7 @@ export default function Madness() {
               {line}
             </span>
           ))}
-          <span className="mt-10 block font-mono text-xs normal-case tracking-[0.3em] opacity-70">
+          <span className="mt-10 block font-mono text-xs normal-case tracking-[0.3em] opacity-90">
             — not Tyler
           </span>
         </motion.blockquote>
