@@ -33,6 +33,7 @@ function ExhibitCard({
 
   const isRed = i % 5 === 2;
   const isFinal = i === total - 1;
+  const flip = i % 2 === 1;
 
   const surface = isFinal
     ? "brand-ink text-foreground"
@@ -57,10 +58,13 @@ function ExhibitCard({
 
   /* treated backdrop so square screenshots sit uncropped in the frame */
   const frameStyle = isFinal
-    ? "bg-paper/5 ring-paper/15"
+    ? "bg-paper/5 ring-paper/20"
     : isRed
-      ? "bg-paper/10 ring-paper/25"
-      : "bg-ink/5 ring-ink/15";
+      ? "bg-ink/20 ring-paper/30"
+      : "bg-ink/90 ring-ink/25";
+
+  const mediaOrder = flip ? "lg:order-2" : "lg:order-1";
+  const copyOrder = flip ? "lg:order-1" : "lg:order-2";
 
   return (
     <div
@@ -69,9 +73,9 @@ function ExhibitCard({
     >
       <motion.article
         style={{ scale }}
-        className={`print-panel relative flex max-h-[88svh] w-full max-w-6xl origin-top flex-col overflow-hidden shadow-[22px_22px_0_rgba(216,58,46,0.6)] ${surface}`}
+        className={`print-panel relative flex max-h-[90svh] w-full max-w-7xl origin-top flex-col overflow-hidden border-2 shadow-[18px_18px_0_rgba(17,18,17,0.16),28px_28px_0_rgba(216,58,46,0.42)] ${surface}`}
       >
-        <div className="flex items-center justify-between gap-4 border-b-2 border-current/30 px-5 py-3 sm:px-8">
+        <div className="flex items-center justify-between gap-4 border-b-2 border-current/35 px-4 py-3 sm:px-7">
           <span className={`font-advancedled text-[11px] uppercase tracking-[0.3em] ${dimStrong}`}>
             EXH.{String(i + 1).padStart(3, "0")} / {String(total).padStart(3, "0")}
           </span>
@@ -85,28 +89,68 @@ function ExhibitCard({
           </span>
         </div>
 
-        <div className="grid min-h-0 flex-1 gap-5 overflow-hidden p-5 sm:p-7 lg:grid-cols-[1.05fr_1fr] lg:gap-10">
-          <div className="flex min-h-0 flex-col justify-between gap-4 overflow-y-auto">
+        <div className="grid min-h-0 flex-1 overflow-hidden lg:grid-cols-[minmax(360px,1.08fr)_minmax(0,0.92fr)]">
+          <div className={`relative min-h-[230px] overflow-hidden border-current/20 ${mediaOrder} ${flip ? "lg:border-l-2" : "lg:border-r-2"}`}>
+            <div className={`absolute inset-4 ring-1 ring-inset ${frameStyle}`} />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(216,58,46,0.22),transparent_32%),repeating-linear-gradient(90deg,currentColor_0_1px,transparent_1px_42px)] opacity-[0.13]" />
+            <span
+              aria-hidden
+              className={`absolute -left-5 top-3 z-10 font-ndot text-[8rem] uppercase leading-none tracking-[-0.08em] mix-blend-difference ${dimSoft} sm:text-[11rem]`}
+            >
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <Image
+              src={project.imgSrc}
+              alt={project.company}
+              fill
+              sizes="(max-width: 1024px) 100vw, 48vw"
+              className="relative z-20 object-contain p-5 grayscale-[0.02] contrast-[1.08] drop-shadow-[0_18px_28px_rgba(0,0,0,0.26)] sm:p-7"
+            />
+            <div className="absolute bottom-4 left-4 right-4 z-20 flex items-end justify-between gap-4">
+              <span
+                aria-hidden
+                className={`brand-label ${isRed ? "bg-paper text-ink" : isFinal ? "bg-paper text-ink" : "bg-ink text-paper"}`}
+              >
+                asset view
+              </span>
+              <span
+                aria-hidden
+                className={`hidden max-w-44 text-right font-mono text-[9px] uppercase leading-snug tracking-[0.2em] ${dimSoft} sm:block`}
+              >
+                screenshot preserved, no crop
+              </span>
+            </div>
+          </div>
+
+          <div className={`flex min-h-0 flex-col justify-between gap-6 overflow-y-auto p-5 sm:p-8 lg:p-10 ${copyOrder}`}>
             <div>
-              <h3 className="font-ndot text-5xl uppercase leading-[0.82] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
+              <div className="mb-5 flex flex-wrap items-center gap-2">
+                <span className={`brand-label ${isRed ? "text-paper" : "text-primary"}`}>
+                  project dossier
+                </span>
+                <span className={`brand-label ${chipStyle}`}>
+                  {project.year}
+                </span>
+              </div>
+              <h3 className="font-ndot text-[clamp(3.2rem,9vw,7.8rem)] uppercase leading-[0.72] tracking-[-0.06em]">
                 {project.company}
               </h3>
-              <p className={`mt-4 max-w-xl font-mono text-sm uppercase tracking-tight sm:text-base ${dimStrong}`}>
+              <p className={`mt-5 max-w-2xl font-mono text-sm uppercase leading-snug tracking-[0.08em] sm:text-base ${dimStrong}`}>
                 {project.title}
               </p>
             </div>
-            <div className="space-y-3">
-              <p className={`text-[11px] font-medium uppercase tracking-[0.2em] ${dimSoft}`}>
+            <div className="space-y-4">
+              <p className={`text-[11px] font-bold uppercase tracking-[0.22em] ${dimSoft}`}>
                 {project.position}
               </p>
-              <p className={`max-w-md text-sm leading-relaxed sm:text-[15px] ${dimBody}`}>
+              <p className={`max-w-2xl text-base leading-relaxed sm:text-lg ${dimBody}`}>
                 {project.answer}
               </p>
               <Link
                 href={project.projectLink}
                 target={project.external ? "_blank" : undefined}
                 rel={project.external ? "noopener noreferrer" : undefined}
-                className={`mb-1 inline-flex w-fit items-center gap-2 border-2 border-current px-6 py-2.5 font-mono text-xs uppercase tracking-[0.15em] transition-colors ${ctaStyle}`}
+                className={`mb-1 inline-flex w-fit items-center gap-2 border-2 border-current px-6 py-3 font-mono text-xs uppercase tracking-[0.15em] transition-colors ${ctaStyle}`}
               >
                 {project.buttonText}
                 <svg
@@ -124,33 +168,6 @@ function ExhibitCard({
                   />
                 </svg>
               </Link>
-            </div>
-          </div>
-
-          {/* square-friendly frame: object-contain so nothing is cropped */}
-          <div className="hidden min-h-0 items-center justify-center lg:flex">
-            <div className={`print-panel relative aspect-square max-h-full w-full max-w-[460px] overflow-hidden ring-1 ring-inset ${frameStyle}`}>
-              <Image
-                src={project.imgSrc}
-                alt={project.company}
-                fill
-                sizes="(max-width: 1024px) 100vw, 40vw"
-                className="object-contain p-3 grayscale-[0.08] contrast-[1.04]"
-              />
-              <span className="red-sun -right-10 -top-10 h-32 opacity-85" />
-            </div>
-          </div>
-          <div className="flex justify-center lg:hidden">
-            <div
-              className={`print-panel relative aspect-square max-h-56 w-full max-w-56 overflow-hidden ring-1 ring-inset ${frameStyle}`}
-            >
-              <Image
-                src={project.imgSrc}
-                alt={project.company}
-                fill
-                sizes="60vw"
-                className="object-contain p-2 grayscale-[0.08] contrast-[1.04]"
-              />
             </div>
           </div>
         </div>
@@ -206,7 +223,7 @@ export default function Exhibits() {
       <div ref={deckRef} className="relative">
         {PROJECTS.map((project, i) => (
           <ExhibitCard
-            key={project.company}
+            key={`${project.company}-${i}`}
             project={project}
             i={i}
             progress={scrollYProgress}

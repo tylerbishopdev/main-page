@@ -33,7 +33,7 @@ export default function CursorDot() {
     <motion.div
       aria-hidden
       style={{ x, y }}
-      className="pointer-events-none fixed left-0 top-0 z-[95] -ml-2 -mt-2 size-4 rounded-full bg-primary mix-blend-difference"
+      className="pointer-events-none fixed left-0 top-0 z-[95] hidden size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-paper/70 bg-primary/85 shadow-[0_0_0_4px_rgba(216,58,46,0.14)] xl:block"
     />
   );
 }

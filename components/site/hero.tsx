@@ -10,7 +10,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 
-import { TextRoll } from "@/components/ui/skiper-ui/skiper58";
 import { BRAND_ASSETS, DESTINATIONS, IDENTITY } from "@/lib/content";
 
 export default function Hero() {
@@ -37,6 +36,7 @@ export default function Hero() {
 
   return (
     <section
+      id="top"
       ref={sectionRef}
       onMouseMove={handleMouseMove}
       className="brand-paper relative flex min-h-svh flex-col overflow-hidden border-b-[10px] border-ink text-ink"
@@ -50,12 +50,13 @@ export default function Hero() {
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
-          className="absolute inset-[-3%] opacity-[0.34] mix-blend-multiply grayscale"
+          className="absolute inset-[-3%] opacity-[0.2] mix-blend-multiply grayscale"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(238,227,205,0.76)_0%,rgba(238,227,205,0.62)_48%,rgba(216,58,46,0.74)_100%)]" />
-        <div className="absolute inset-y-0 right-0 w-[38%] bg-primary/80 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(238,227,205,0.96)_0%,rgba(238,227,205,0.9)_48%,rgba(17,18,17,0.62)_78%,rgba(216,58,46,0.82)_100%)]" />
+        <div className="absolute inset-y-0 right-0 hidden w-[42%] bg-primary/90 mix-blend-multiply md:block" />
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-paper via-paper/70 to-transparent" />
         <div className="brand-checker absolute bottom-6 right-6 hidden h-36 w-36 sm:block" />
-        <span className="red-sun right-[15%] top-[16%] h-[22vw] max-h-72 min-h-36 opacity-90" />
+        <span className="red-sun right-[15%] top-[16%] hidden h-[22vw] max-h-72 min-h-36 opacity-75 md:block" />
       </motion.div>
 
       <motion.div
@@ -63,27 +64,36 @@ export default function Hero() {
         className="relative z-10 grid flex-1 gap-8 px-4 pb-10 pt-24 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(420px,0.72fr)] lg:items-center lg:pt-28"
       >
         <div className="mx-auto flex w-full max-w-5xl flex-col justify-center lg:mx-0">
-          <div className="brand-microcopy mb-8 flex max-w-xl flex-wrap gap-x-8 gap-y-2 text-ink/70">
+          <div className="mb-5 flex max-w-xl flex-wrap gap-2">
+            <span className="brand-label bg-paper/85 text-ink">we exist outside the ordinary</span>
+            <span className="brand-label bg-primary text-paper">catalog: nt-69-a</span>
+            <span className="brand-label hidden bg-paper/85 text-ink sm:inline-flex">global observatory program</span>
+          </div>
+
+          <div className="relative border-l-[10px] border-primary bg-paper/88 p-4 shadow-[14px_14px_0_rgba(17,18,17,0.12)] backdrop-blur-[2px] sm:p-6">
+            <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-24 bg-[repeating-linear-gradient(0deg,rgba(216,58,46,0.12)_0_2px,transparent_2px_8px)] sm:block" />
+            <div className="brand-microcopy mb-6 flex max-w-xl flex-wrap gap-x-8 gap-y-2 text-ink/78">
             <span>we exist outside the ordinary</span>
             <span>catalog: nt-69-a</span>
             <span>global observatory program</span>
-          </div>
+            </div>
 
-          <div className="relative max-w-[880px]">
+            <div className="relative max-w-[880px]">
             <Image
               src={BRAND_ASSETS.logo.red}
               alt="notTyler"
               width={425}
               height={119}
               priority
-              className="h-auto w-full max-w-[780px]"
+              className="h-auto w-full max-w-[min(760px,calc(100vw-3rem))]"
             />
-            <div className="mt-4 h-3 w-44 bg-primary sm:w-72" />
-          </div>
+              <div className="mt-4 h-3 w-44 bg-primary sm:w-72" />
+            </div>
 
-          <p className="mt-7 max-w-2xl whitespace-pre-line text-balance font-mono text-sm leading-relaxed text-ink/78 sm:text-base">
+            <p className="mt-7 max-w-2xl whitespace-pre-line text-balance bg-paper/75 py-1 font-mono text-[15px] leading-relaxed text-ink sm:text-base">
             {IDENTITY.description}
-          </p>
+            </p>
+          </div>
 
           <nav className="mt-10 w-full max-w-3xl">
             <ul className="grid border-y-2 border-ink sm:grid-cols-2">
@@ -98,21 +108,19 @@ export default function Hero() {
                     href={item.href}
                     target={item.external ? "_blank" : undefined}
                     rel={item.external ? "noopener noreferrer" : undefined}
-                    className="group flex h-full items-baseline justify-between gap-4 bg-paper/45 px-4 py-4 transition-colors hover:bg-primary hover:text-paper"
+                    className="group grid min-h-24 grid-cols-[auto_1fr] gap-x-4 gap-y-2 bg-paper/82 px-4 py-4 transition-colors hover:bg-primary hover:text-paper sm:min-h-28"
                   >
-                    <span className="flex items-baseline gap-4">
-                      <span className="font-advancedled text-[10px] text-primary transition-colors group-hover:text-paper/80">
+                    <span className="font-advancedled text-[10px] text-primary transition-colors group-hover:text-paper/80">
                         0{index + 1}
                       </span>
-                      <TextRoll className="font-ndot text-3xl uppercase leading-none sm:text-4xl">
+                    <span className="font-ndot text-[clamp(2.1rem,6vw,3.25rem)] uppercase leading-[0.78] tracking-[-0.04em]">
                         {item.name}
-                      </TextRoll>
                     </span>
                     <span
-                      className={`hidden text-right font-mono text-[10px] uppercase tracking-[0.2em] transition-all duration-300 sm:block ${
+                      className={`col-span-2 border-t border-ink/15 pt-2 text-left font-mono text-[9px] uppercase leading-snug tracking-[0.22em] transition-all duration-300 ${
                         hovered === index
                           ? "translate-x-0 opacity-100"
-                          : "translate-x-3 opacity-70"
+                          : "translate-x-0 opacity-85"
                       }`}
                     >
                       {item.note}

@@ -157,7 +157,7 @@ export default function SiteNav() {
                 <ul>
                   {PROJECTS.map((project, i) => (
                     <motion.li
-                      key={project.company}
+                      key={`${project.company}-${i}`}
                       initial={{ opacity: 0, x: 24 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.12 + i * 0.02, duration: 0.3 }}
