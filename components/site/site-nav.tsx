@@ -24,7 +24,7 @@ function BrandMark() {
           alt="NotTyler"
           width={170}
           height={48}
-          className="h-9 w-auto drop-shadow-[0_1px_10px_rgba(238,227,205,0.28)] transition-opacity group-hover:opacity-90"
+          className="h-8 w-auto drop-shadow-[0_2px_14px_rgba(9,9,9,0.55)] transition-opacity group-hover:opacity-90 sm:h-9"
           priority
         />
       ) : (
@@ -105,11 +105,11 @@ export default function SiteNav() {
           <button
             type="button"
             onClick={() => setIsOpen((o) => !o)}
-            className="flex items-center gap-3 border-2 border-ink bg-paper px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-ink shadow-[5px_5px_0_var(--primary)] transition-transform hover:-translate-y-0.5"
+            className="group flex items-center gap-3 rounded-full bg-ink/60 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-paper backdrop-blur-sm transition-colors hover:bg-primary hover:text-paper"
           >
             <span className="relative flex size-2">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
-              <span className="relative inline-flex size-2 rounded-full bg-primary" />
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60 group-hover:bg-paper" />
+              <span className="relative inline-flex size-2 rounded-full bg-primary group-hover:bg-paper" />
             </span>
             {isOpen ? "Close" : "Index"}
           </button>

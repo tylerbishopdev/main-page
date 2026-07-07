@@ -16,7 +16,7 @@ export const IDENTITY = {
    * and the header brand renders that image instead of the text wordmark.
    * Leave null for the "not tyler®" text mark.
    */
-  logoSrc: "/brand/logo-red.png" as string | null,
+  logoSrc: "/brand/logo-cream.png" as string | null,
 };
 
 export const BRAND_ASSETS = {

@@ -13,9 +13,10 @@ import { useRef } from "react";
 import VerticalCutReveal from "@/components/ui/vertical-cut-reveal";
 import { BRAND_ASSETS, PROJECTS, WORKS_INTRO, type Project } from "@/lib/content";
 
-/* Scroll-driven exhibit deck adapted from skiper-ui Skiper16 (StickyCard_001):
- * every project is a sticky full-height "museum placard" that scales back as
- * the next one stacks on top. */
+/* Compact shuffle deck adapted from skiper-ui Skiper16 (StickyCard_001):
+ * one uniform charcoal plate per project; each card pins and scales back
+ * as the next shuffles on top, so the deck stays tight instead of a
+ * long run of full-screen sections. */
 
 const total = PROJECTS.length;
 
@@ -28,43 +29,8 @@ function ExhibitCard({
   i: number;
   progress: MotionValue<number>;
 }) {
-  const targetScale = Math.max(0.72, 1 - (total - i - 1) * 0.035);
+  const targetScale = Math.max(0.86, 1 - (total - i - 1) * 0.018);
   const scale = useTransform(progress, [i / total, 1], [1, targetScale]);
-
-  const isRed = i % 5 === 2;
-  const isFinal = i === total - 1;
-  const flip = i % 2 === 1;
-
-  const surface = isFinal
-    ? "brand-ink text-foreground"
-    : isRed
-      ? "bg-primary text-paper"
-      : "paper-texture text-ink";
-
-  const chipStyle = isFinal
-    ? "border-foreground/25 text-muted-foreground"
-    : isRed
-      ? "border-paper/60 text-paper"
-      : "border-ink/25 text-ink/70";
-
-  /* red-on-primary text needs near-full opacity to stay legible */
-  const dimStrong = isRed ? "opacity-100" : "opacity-80";
-  const dimSoft = isRed ? "opacity-90" : "opacity-70";
-  const dimBody = isRed ? "opacity-100" : "opacity-90";
-
-  const ctaStyle = isRed
-    ? "bg-paper text-ink hover:bg-paper/85"
-    : "bg-primary text-paper hover:bg-ink";
-
-  /* treated backdrop so square screenshots sit uncropped in the frame */
-  const frameStyle = isFinal
-    ? "bg-paper/5 ring-paper/20"
-    : isRed
-      ? "bg-ink/20 ring-paper/30"
-      : "bg-ink/90 ring-ink/25";
-
-  const mediaOrder = flip ? "lg:order-2" : "lg:order-1";
-  const copyOrder = flip ? "lg:order-1" : "lg:order-2";
 
   return (
     <div
@@ -73,84 +39,42 @@ function ExhibitCard({
     >
       <motion.article
         style={{ scale }}
-        className={`print-panel relative flex max-h-[90svh] w-full max-w-7xl origin-top flex-col overflow-hidden border-2 shadow-[18px_18px_0_rgba(17,18,17,0.16),28px_28px_0_rgba(216,58,46,0.42)] ${surface}`}
+        className="print-panel relative grid h-[min(640px,80svh)] w-full max-w-5xl origin-top grid-rows-[auto_1fr] overflow-hidden border border-paper/20 bg-[#191816] text-paper shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)]"
       >
-        <div className="flex items-center justify-between gap-4 border-b-2 border-current/35 px-4 py-3 sm:px-7">
-          <span className={`font-advancedled text-[11px] uppercase tracking-[0.3em] ${dimStrong}`}>
-            EXH.{String(i + 1).padStart(3, "0")} / {String(total).padStart(3, "0")}
+        <div className="flex min-w-0 items-center justify-between gap-4 border-b border-paper/20 bg-ink/40 px-4 py-2.5 sm:px-6">
+          <span className="shrink-0 font-advancedled text-[11px] uppercase tracking-[0.3em] text-primary">
+            EXH.{String(i + 1).padStart(3, "0")}
           </span>
-          <span
-            className={`hidden rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] sm:block ${chipStyle}`}
-          >
+          <span className="min-w-0 truncate font-mono text-[9px] uppercase tracking-[0.2em] text-paper/60">
             {project.year}
           </span>
-          <span className={`font-mono text-[10px] uppercase tracking-[0.25em] ${dimSoft}`}>
+          <span className="hidden shrink-0 font-mono text-[9px] uppercase tracking-[0.25em] text-paper/50 sm:block">
             nottyler.org
           </span>
         </div>
 
-        <div className="grid min-h-0 flex-1 overflow-hidden lg:grid-cols-[minmax(360px,1.08fr)_minmax(0,0.92fr)]">
-          <div className={`relative min-h-[230px] overflow-hidden border-current/20 ${mediaOrder} ${flip ? "lg:border-l-2" : "lg:border-r-2"}`}>
-            <div className={`absolute inset-4 ring-1 ring-inset ${frameStyle}`} />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(216,58,46,0.22),transparent_32%),repeating-linear-gradient(90deg,currentColor_0_1px,transparent_1px_42px)] opacity-[0.13]" />
-            <span
-              aria-hidden
-              className={`absolute -left-5 top-3 z-10 font-ndot text-[8rem] uppercase leading-none tracking-[-0.08em] mix-blend-difference ${dimSoft} sm:text-[11rem]`}
-            >
-              {String(i + 1).padStart(2, "0")}
-            </span>
-            <Image
-              src={project.imgSrc}
-              alt={project.company}
-              fill
-              sizes="(max-width: 1024px) 100vw, 48vw"
-              className="relative z-20 object-contain p-5 grayscale-[0.02] contrast-[1.08] drop-shadow-[0_18px_28px_rgba(0,0,0,0.26)] sm:p-7"
-            />
-            <div className="absolute bottom-4 left-4 right-4 z-20 flex items-end justify-between gap-4">
-              <span
-                aria-hidden
-                className={`brand-label ${isRed ? "bg-paper text-ink" : isFinal ? "bg-paper text-ink" : "bg-ink text-paper"}`}
-              >
-                asset view
-              </span>
-              <span
-                aria-hidden
-                className={`hidden max-w-44 text-right font-mono text-[9px] uppercase leading-snug tracking-[0.2em] ${dimSoft} sm:block`}
-              >
-                screenshot preserved, no crop
-              </span>
-            </div>
-          </div>
-
-          <div className={`flex min-h-0 flex-col justify-between gap-6 overflow-y-auto p-5 sm:p-8 lg:p-10 ${copyOrder}`}>
-            <div>
-              <div className="mb-5 flex flex-wrap items-center gap-2">
-                <span className={`brand-label ${isRed ? "text-paper" : "text-primary"}`}>
-                  project dossier
-                </span>
-                <span className={`brand-label ${chipStyle}`}>
-                  {project.year}
-                </span>
-              </div>
-              <h3 className="font-ndot text-[clamp(3.2rem,9vw,7.8rem)] uppercase leading-[0.72] tracking-[-0.06em]">
+        <div className="grid min-h-0 min-w-0 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.82fr)]">
+          <div className="flex min-h-0 min-w-0 flex-col justify-between gap-4 overflow-y-auto p-5 sm:p-7">
+            <div className="min-w-0">
+              <h3 className="min-w-0 break-words font-ndot text-[clamp(2rem,4.3vw,3.6rem)] uppercase leading-[0.85] tracking-[-0.03em] text-paper">
                 {project.company}
               </h3>
-              <p className={`mt-5 max-w-2xl font-mono text-sm uppercase leading-snug tracking-[0.08em] sm:text-base ${dimStrong}`}>
+              <p className="mt-3 max-w-xl break-words font-mono text-xs uppercase leading-snug tracking-[0.08em] text-primary sm:text-sm">
                 {project.title}
               </p>
             </div>
-            <div className="space-y-4">
-              <p className={`text-[11px] font-bold uppercase tracking-[0.22em] ${dimSoft}`}>
+            <div className="min-w-0 space-y-3">
+              <p className="break-words text-[10px] font-bold uppercase tracking-[0.2em] text-paper/70">
                 {project.position}
               </p>
-              <p className={`max-w-2xl text-base leading-relaxed sm:text-lg ${dimBody}`}>
+              <p className="max-w-xl text-sm leading-relaxed text-paper/90 sm:text-[15px]">
                 {project.answer}
               </p>
               <Link
                 href={project.projectLink}
                 target={project.external ? "_blank" : undefined}
                 rel={project.external ? "noopener noreferrer" : undefined}
-                className={`mb-1 inline-flex w-fit items-center gap-2 border-2 border-current px-6 py-3 font-mono text-xs uppercase tracking-[0.15em] transition-colors ${ctaStyle}`}
+                className="inline-flex w-fit items-center gap-2 bg-primary px-5 py-2.5 font-mono text-xs uppercase tracking-[0.15em] text-paper transition-colors hover:bg-paper hover:text-ink"
               >
                 {project.buttonText}
                 <svg
@@ -170,6 +94,25 @@ function ExhibitCard({
               </Link>
             </div>
           </div>
+
+          <div className="relative hidden min-h-0 border-l border-paper/15 bg-ink/50 lg:block">
+            <Image
+              src={project.imgSrc}
+              alt={project.company}
+              fill
+              sizes="(max-width: 1024px) 0px, 42vw"
+              className="object-contain p-5"
+            />
+          </div>
+          <div className="relative order-first h-44 border-b border-paper/15 bg-ink/50 sm:h-56 lg:hidden">
+            <Image
+              src={project.imgSrc}
+              alt={project.company}
+              fill
+              sizes="100vw"
+              className="object-contain p-3"
+            />
+          </div>
         </div>
       </motion.article>
     </div>
@@ -178,28 +121,24 @@ function ExhibitCard({
 
 export default function Exhibits() {
   const deckRef = useRef<HTMLDivElement>(null);
-  const introRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: deckRef,
     offset: ["start start", "end end"],
   });
 
   return (
-    <section id="exhibits" className="paper-texture relative overflow-hidden text-ink">
+    <section id="exhibits" className="brand-ink relative overflow-x-clip text-foreground">
       <Image
         src={BRAND_ASSETS.collages[0]}
         alt=""
         width={1200}
         height={675}
         aria-hidden
-        className="pointer-events-none absolute right-[-8%] top-10 hidden w-[48vw] max-w-3xl opacity-20 mix-blend-multiply grayscale lg:block"
+        className="pointer-events-none absolute right-[-8%] top-10 hidden w-[46vw] max-w-3xl opacity-[0.14] grayscale invert lg:block"
       />
-      <span className="red-sun left-[-8rem] top-32 h-80 opacity-90" />
-      <div
-        ref={introRef}
-        className="mx-auto flex max-w-6xl flex-col gap-8 px-4 pb-10 pt-28 sm:px-6 lg:flex-row lg:items-end lg:justify-between"
-      >
-        <h2 className="relative z-10 font-ndot text-7xl uppercase leading-[0.78] tracking-[-0.05em] text-ink sm:text-9xl">
+      <span className="red-sun left-[-8rem] top-32 h-72 opacity-70" />
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 pb-6 pt-24 sm:px-6 lg:flex-row lg:items-end lg:justify-between">
+        <h2 className="relative z-10 min-w-0 break-words font-ndot text-6xl uppercase leading-[0.8] tracking-[-0.04em] text-paper sm:text-8xl">
           <VerticalCutReveal
             splitBy="characters"
             staggerDuration={0.02}
@@ -210,8 +149,8 @@ export default function Exhibits() {
           </VerticalCutReveal>
         </h2>
         <div className="max-w-sm space-y-3">
-          <div className="h-[6px] w-full bg-primary" />
-          <p className="font-mono text-xs leading-relaxed text-ink/75">
+          <div className="h-[5px] w-full bg-primary" />
+          <p className="font-mono text-xs leading-relaxed text-foreground/80">
             {WORKS_INTRO.bio}
           </p>
           <p className="brand-label text-primary">
@@ -220,7 +159,7 @@ export default function Exhibits() {
         </div>
       </div>
 
-      <div ref={deckRef} className="relative">
+      <div ref={deckRef} className="relative pb-16">
         {PROJECTS.map((project, i) => (
           <ExhibitCard
             key={`${project.company}-${i}`}

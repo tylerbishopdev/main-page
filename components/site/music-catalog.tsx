@@ -9,15 +9,13 @@ import { MUSIC } from "@/lib/content";
 /* The music catalog — copy verbatim from the original works list. */
 export default function MusicCatalog() {
   return (
-    <section id="music" className="w-full bg-paper py-24 text-ink">
+    <section id="music" className="brand-ink w-full border-t border-paper/10 py-24 text-foreground">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h2 className="font-ndot text-6xl uppercase leading-none tracking-tight sm:text-8xl">
-              {MUSIC.heading}
-            </h2>
-          </div>
-          <span className="rounded-full border border-ink/25 px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-ink/60">
+        <div className="flex min-w-0 flex-wrap items-end justify-between gap-4">
+          <h2 className="min-w-0 break-words font-ndot text-5xl uppercase leading-none tracking-tight text-paper sm:text-8xl">
+            {MUSIC.heading}
+          </h2>
+          <span className="rounded-full border border-paper/30 px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em] text-paper/70">
             {MUSIC.year}
           </span>
         </div>
@@ -33,7 +31,7 @@ export default function MusicCatalog() {
           className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-14"
         >
           <div className="mx-auto w-full max-w-[420px]">
-            <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-ink/5 ring-1 ring-inset ring-ink/15">
+            <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-paper/5 ring-1 ring-inset ring-paper/20">
               <Image
                 src={MUSIC.imgSrc}
                 alt={MUSIC.position}
@@ -42,16 +40,16 @@ export default function MusicCatalog() {
                 className="object-contain p-3"
               />
             </div>
-            <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-ink/65">
+            <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-paper/70">
               {MUSIC.position}
             </p>
           </div>
 
-          <div className="flex flex-col justify-center gap-5">
-            <h3 className="font-mono text-2xl uppercase leading-snug tracking-tight sm:text-3xl">
+          <div className="flex min-w-0 flex-col justify-center gap-5">
+            <h3 className="break-words font-mono text-xl uppercase leading-snug tracking-tight text-paper sm:text-3xl">
               {MUSIC.title}
             </h3>
-            <p className="max-w-lg text-sm leading-relaxed text-ink/80 sm:text-base">
+            <p className="max-w-lg text-sm leading-relaxed text-paper/85 sm:text-base">
               {MUSIC.answer}
             </p>
             <div className="flex flex-wrap items-center gap-3">
@@ -74,7 +72,7 @@ export default function MusicCatalog() {
               </Link>
               <Link
                 href={MUSIC.catalogHref}
-                className="inline-flex w-fit items-center gap-2 rounded-full border border-ink/30 px-7 py-3 font-mono text-xs uppercase tracking-[0.15em] text-ink transition-colors hover:border-primary hover:text-primary"
+                className="inline-flex w-fit items-center gap-2 rounded-full border border-paper/35 px-7 py-3 font-mono text-xs uppercase tracking-[0.15em] text-paper transition-colors hover:border-primary hover:text-primary"
               >
                 {MUSIC.catalogLabel} →
               </Link>
@@ -88,9 +86,9 @@ export default function MusicCatalog() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.55 }}
-          className="mt-14 grid items-center gap-6 rounded-2xl border border-ink/15 p-5 sm:p-7 lg:grid-cols-[160px_1fr_auto]"
+          className="mt-14 grid items-center gap-6 rounded-2xl border border-paper/20 bg-ink/40 p-5 sm:p-7 lg:grid-cols-[160px_1fr_auto]"
         >
-          <div className="relative mx-auto aspect-square w-32 overflow-hidden rounded-xl bg-ink/5 ring-1 ring-inset ring-ink/15 sm:w-40">
+          <div className="relative mx-auto aspect-square w-32 overflow-hidden rounded-xl bg-paper/5 ring-1 ring-inset ring-paper/20 sm:w-40">
             <Image
               src={MUSIC.companion.imgSrc}
               alt={MUSIC.companion.position}
@@ -99,14 +97,14 @@ export default function MusicCatalog() {
               className="object-contain p-2"
             />
           </div>
-          <div className="space-y-2 text-center lg:text-left">
+          <div className="min-w-0 space-y-2 text-center lg:text-left">
             <p className="font-advancedled text-[10px] uppercase tracking-[0.3em] text-primary">
               {MUSIC.companion.company} — {MUSIC.companion.year}
             </p>
-            <h4 className="font-mono text-lg uppercase leading-snug tracking-tight">
+            <h4 className="break-words font-mono text-lg uppercase leading-snug tracking-tight text-paper">
               {MUSIC.companion.title}
             </h4>
-            <p className="mx-auto max-w-xl text-sm leading-relaxed text-ink/75 lg:mx-0">
+            <p className="mx-auto max-w-xl text-sm leading-relaxed text-paper/80 lg:mx-0">
               {MUSIC.companion.answer}
             </p>
           </div>
@@ -114,7 +112,7 @@ export default function MusicCatalog() {
             href={MUSIC.companion.projectLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="mx-auto inline-flex w-fit items-center gap-2 rounded-full border border-ink/30 px-6 py-2.5 font-mono text-xs uppercase tracking-[0.15em] text-ink transition-colors hover:border-primary hover:text-primary"
+            className="mx-auto inline-flex w-fit items-center gap-2 rounded-full border border-paper/35 px-6 py-2.5 font-mono text-xs uppercase tracking-[0.15em] text-paper transition-colors hover:border-primary hover:text-primary"
           >
             {MUSIC.companion.buttonText}
           </Link>

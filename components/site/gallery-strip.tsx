@@ -25,7 +25,7 @@ export default function GalleryStrip() {
           <h2 className="font-ndot text-6xl uppercase leading-[0.8] tracking-[-0.05em] text-paper sm:text-8xl">
             {artsTab.label}
           </h2>
-          <p className="max-w-xs border-l-4 border-primary pl-4 font-mono text-[11px] uppercase tracking-[0.25em] text-paper/70">
+          <p className="max-w-xs border-l-4 border-primary pl-4 font-mono text-[11px] uppercase tracking-[0.25em] text-paper/85">
             {artsTab.description}
           </p>
         </div>

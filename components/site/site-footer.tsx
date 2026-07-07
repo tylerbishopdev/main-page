@@ -53,14 +53,14 @@ export default function SiteFooter() {
             <Link001
               key={item.name}
               href={item.href}
-              className="font-mono text-xs uppercase tracking-[0.25em] text-paper/70 transition-colors hover:text-primary"
+              className="font-mono text-xs uppercase tracking-[0.25em] text-paper/85 transition-colors hover:text-primary"
             >
               {item.name}
             </Link001>
           ))}
           <Link001
             href="mailto:not@nottyler.org"
-            className="font-mono text-xs uppercase tracking-[0.25em] text-paper/70 transition-colors hover:text-primary"
+            className="font-mono text-xs uppercase tracking-[0.25em] text-paper/85 transition-colors hover:text-primary"
           >
             not@nottyler.org
           </Link001>
