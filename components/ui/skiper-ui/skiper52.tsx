@@ -112,7 +112,7 @@ const HoverExpand_001 = ({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="absolute h-full w-full bg-gradient-to-t from-black/40 to-transparent"
+                    className="absolute h-full w-full bg-gradient-to-t from-black/60 to-transparent"
                   />
                 )}
               </AnimatePresence>
@@ -124,7 +124,7 @@ const HoverExpand_001 = ({
                     exit={{ opacity: 0 }}
                     className="absolute flex h-full w-full flex-col items-end justify-end p-4"
                   >
-                    <p className="text-left text-xs text-white/50">
+                    <p className="text-left font-mono text-xs uppercase tracking-[0.2em] text-white/85">
                       {image.code}
                     </p>
                   </motion.div>

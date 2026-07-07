@@ -156,9 +156,9 @@ export default function NotMusik({ showHeading = true }: { showHeading?: boolean
                       // keep navigation but also focus the visual
                       focusRelease(i, rowRefs.current[i]);
                     }}
-                    className={`group flex items-center gap-4 px-2 py-5 transition-all sm:gap-6 sm:py-6 ${isActive ? "bg-paper text-ink opacity-100" : "opacity-70 hover:bg-paper/10 hover:opacity-100"}`}
+                    className={`group flex items-center gap-4 px-2 py-5 transition-all sm:gap-6 sm:py-6 ${isActive ? "bg-paper text-ink opacity-100" : "opacity-85 hover:bg-paper/10 hover:opacity-100"}`}
                   >
-                    <span className={`w-9 shrink-0 font-mono text-[10px] uppercase tracking-[0.25em] ${isActive ? "text-primary" : "text-paper/45"}`}>
+                    <span className={`w-9 shrink-0 font-mono text-[10px] uppercase tracking-[0.25em] ${isActive ? "text-primary" : "text-paper/60"}`}>
                       {String(i + 1).padStart(2, "0")}
                     </span>
 
@@ -169,11 +169,11 @@ export default function NotMusik({ showHeading = true }: { showHeading?: boolean
                         >
                           {release.title}
                         </span>
-                        <span className={`border px-2.5 py-px font-mono text-[9px] uppercase tracking-[0.2em] ${isActive ? "border-ink/25 text-ink/65" : "border-paper/20 text-paper/55"}`}>
+                        <span className={`border px-2.5 py-px font-mono text-[9px] uppercase tracking-[0.2em] ${isActive ? "border-ink/25 text-ink/70" : "border-paper/35 text-paper/70"}`}>
                           {release.type}
                         </span>
                       </div>
-                      <p className={`mt-0.5 font-mono text-xs ${isActive ? "text-ink/60" : "text-paper/55"}`}>
+                      <p className={`mt-0.5 font-mono text-xs ${isActive ? "text-ink/70" : "text-paper/70"}`}>
                         {release.description}
                         {release.plays ? ` • ${release.plays.toLocaleString()} plays` : ""}
                       </p>
@@ -217,7 +217,7 @@ export default function NotMusik({ showHeading = true }: { showHeading?: boolean
                     <span className="text-primary">{current.type}</span>
                   </div>
                   {current.plays && (
-                    <div className="mt-0.5 text-[9px] text-ink/55">
+                    <div className="mt-0.5 text-[9px] text-ink/70">
                       {current.plays.toLocaleString()} plays
                     </div>
                   )}
@@ -228,7 +228,7 @@ export default function NotMusik({ showHeading = true }: { showHeading?: boolean
               </motion.div>
             </div>
 
-            <p className="mt-5 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-paper/55 lg:text-right">
+            <p className="mt-5 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-paper/70 lg:text-right">
               drag the sleeve anywhere
             </p>
           </div>

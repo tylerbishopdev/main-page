@@ -43,8 +43,13 @@ function ExhibitCard({
   const chipStyle = isFinal
     ? "border-foreground/25 text-muted-foreground"
     : isRed
-      ? "border-paper/45 text-paper/80"
-      : "border-ink/25 text-ink/60";
+      ? "border-paper/60 text-paper"
+      : "border-ink/25 text-ink/70";
+
+  /* red-on-primary text needs near-full opacity to stay legible */
+  const dimStrong = isRed ? "opacity-100" : "opacity-80";
+  const dimSoft = isRed ? "opacity-90" : "opacity-70";
+  const dimBody = isRed ? "opacity-100" : "opacity-90";
 
   const ctaStyle = isRed
     ? "bg-paper text-ink hover:bg-paper/85"
@@ -67,7 +72,7 @@ function ExhibitCard({
         className={`print-panel relative flex max-h-[88svh] w-full max-w-6xl origin-top flex-col overflow-hidden shadow-[22px_22px_0_rgba(216,58,46,0.6)] ${surface}`}
       >
         <div className="flex items-center justify-between gap-4 border-b-2 border-current/30 px-5 py-3 sm:px-8">
-          <span className="font-advancedled text-[11px] uppercase tracking-[0.3em] opacity-80">
+          <span className={`font-advancedled text-[11px] uppercase tracking-[0.3em] ${dimStrong}`}>
             EXH.{String(i + 1).padStart(3, "0")} / {String(total).padStart(3, "0")}
           </span>
           <span
@@ -75,7 +80,7 @@ function ExhibitCard({
           >
             {project.year}
           </span>
-          <span className="font-mono text-[10px] uppercase tracking-[0.25em] opacity-60">
+          <span className={`font-mono text-[10px] uppercase tracking-[0.25em] ${dimSoft}`}>
             nottyler.org
           </span>
         </div>
@@ -86,15 +91,15 @@ function ExhibitCard({
               <h3 className="font-ndot text-5xl uppercase leading-[0.82] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
                 {project.company}
               </h3>
-              <p className="mt-4 max-w-xl font-mono text-sm uppercase tracking-tight opacity-80 sm:text-base">
+              <p className={`mt-4 max-w-xl font-mono text-sm uppercase tracking-tight sm:text-base ${dimStrong}`}>
                 {project.title}
               </p>
             </div>
             <div className="space-y-3">
-              <p className="text-[11px] font-medium uppercase tracking-[0.2em] opacity-60">
+              <p className={`text-[11px] font-medium uppercase tracking-[0.2em] ${dimSoft}`}>
                 {project.position}
               </p>
-              <p className="max-w-md text-sm leading-relaxed opacity-90 sm:text-[15px]">
+              <p className={`max-w-md text-sm leading-relaxed sm:text-[15px] ${dimBody}`}>
                 {project.answer}
               </p>
               <Link

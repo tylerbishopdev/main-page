@@ -42,7 +42,7 @@ export default function MusicCatalog() {
                 className="object-contain p-3"
               />
             </div>
-            <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-ink/50">
+            <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-ink/65">
               {MUSIC.position}
             </p>
           </div>

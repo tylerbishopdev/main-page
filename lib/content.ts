@@ -476,16 +476,16 @@ export type MusikRelease = {
 };
 
 export const NOT_MUSIK_RELEASES: MusikRelease[] = [
-  { id: 1, title: "The Original", type: "Single", plays: 1247460, image: "/soundwave.png", bgColor: "#f15a57", description: "Signature single" },
-  { id: 2, title: "Ridin Dirty", type: "Single", plays: 950950, image: "/soundwave.png", bgColor: "#111111", description: "Southern heat" },
-  { id: 3, title: "We Get Down", type: "Single", plays: 239170, image: "/soundwave.png", bgColor: "#f5f0e6", description: "Low end theory" },
-  { id: 4, title: "Grindin'", type: "Single", plays: 121100, image: "/soundwave.png", bgColor: "#c8102e", description: "Hustle anthem" },
-  { id: 5, title: "Back Then", type: "Single", plays: 671540, image: "/soundwave.png", bgColor: "#1f1f1f", description: "Reflective" },
-  { id: 6, title: "Hood", type: "Single", plays: 121000, image: "/soundwave.png", bgColor: "#f15a57", description: "Street narrative" },
-  { id: 7, title: "Batter Up", type: "Single", plays: 50730, image: "/soundwave.png", bgColor: "#2a2a2a", description: "Game time" },
-  { id: 8, title: "Oh, I Think They Like Me", type: "Single", plays: 451760, image: "/soundwave.png", bgColor: "#f5f0e6", description: "Crowd favorite" },
-  { id: 9, title: "In My Projects", type: "Single", plays: 239170, image: "/soundwave.png", bgColor: "#111111", description: "Block life" },
-  { id: 10, title: "White Tee", type: "Single", plays: 105030220, image: "/soundwave.png", bgColor: "#c8102e", description: "Timeless" },
-  { id: 11, title: "Erryday Im Hustin", type: "Single", plays: 101001930, image: "/soundwave.png", bgColor: "#f15a57", description: "Daily grind" },
-  { id: 12, title: "St Louie", type: "Single", plays: 34100, image: "/soundwave.png", bgColor: "#1f1f1f", description: "Midwest soul" },
+  { id: 1, title: "The Original", type: "Single", plays: 1247460, image: "/soundwave.png", bgColor: "#d83a2e", description: "Signature single" },
+  { id: 2, title: "Ridin Dirty", type: "Single", plays: 950950, image: "/soundwave.png", bgColor: "#111211", description: "Southern heat" },
+  { id: 3, title: "We Get Down", type: "Single", plays: 239170, image: "/soundwave.png", bgColor: "#eee3cd", description: "Low end theory" },
+  { id: 4, title: "Grindin'", type: "Single", plays: 121100, image: "/soundwave.png", bgColor: "#a12a21", description: "Hustle anthem" },
+  { id: 5, title: "Back Then", type: "Single", plays: 671540, image: "/soundwave.png", bgColor: "#25211c", description: "Reflective" },
+  { id: 6, title: "Hood", type: "Single", plays: 121000, image: "/soundwave.png", bgColor: "#d83a2e", description: "Street narrative" },
+  { id: 7, title: "Batter Up", type: "Single", plays: 50730, image: "/soundwave.png", bgColor: "#342e25", description: "Game time" },
+  { id: 8, title: "Oh, I Think They Like Me", type: "Single", plays: 451760, image: "/soundwave.png", bgColor: "#eee3cd", description: "Crowd favorite" },
+  { id: 9, title: "In My Projects", type: "Single", plays: 239170, image: "/soundwave.png", bgColor: "#111211", description: "Block life" },
+  { id: 10, title: "White Tee", type: "Single", plays: 105030220, image: "/soundwave.png", bgColor: "#a12a21", description: "Timeless" },
+  { id: 11, title: "Erryday Im Hustin", type: "Single", plays: 101001930, image: "/soundwave.png", bgColor: "#d83a2e", description: "Daily grind" },
+  { id: 12, title: "St Louie", type: "Single", plays: 34100, image: "/soundwave.png", bgColor: "#25211c", description: "Midwest soul" },
 ];
