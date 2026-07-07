@@ -16,7 +16,39 @@ export const IDENTITY = {
    * and the header brand renders that image instead of the text wordmark.
    * Leave null for the "not tyler®" text mark.
    */
-  logoSrc: null as string | null,
+  logoSrc: "/brand/logo-red.png" as string | null,
+};
+
+export const BRAND_ASSETS = {
+  logo: {
+    cream: "/brand/logo-cream.png",
+    red: "/brand/logo-red.png",
+    dark: "/brand/logo-dark.png",
+  },
+  hero: {
+    backdrop: "/brand/collage-three-panel.png",
+    figure: "/brand/hero-helmet.png",
+    secondaryFigure: "/brand/helmet-sun.png",
+  },
+  collages: [
+    "/brand/collage-straight-line.png",
+    "/brand/collage-reject-normal.png",
+    "/brand/collage-see-differently.png",
+    "/brand/collage-broadcast.png",
+    "/brand/collage-big.png",
+    "/brand/collage-red-grid.png",
+    "/brand/poster-future-idols.png",
+    "/brand/poster-curious.png",
+  ],
+  elements: [
+    "/brand/hero-helmet.png",
+    "/brand/helmet-sun.png",
+    "/brand/visor-portrait.png",
+    "/brand/field-astronaut.png",
+    "/brand/square-helmet.png",
+    "/brand/split-horizon.png",
+  ],
+  texture: "/brand/black-paper-texture.png",
 };
 
 export type Destination = {

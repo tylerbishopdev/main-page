@@ -6,11 +6,12 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 
 import { TextRoll } from "@/components/ui/skiper-ui/skiper58";
-import { DESTINATIONS, IDENTITY } from "@/lib/content";
+import { BRAND_ASSETS, DESTINATIONS, IDENTITY } from "@/lib/content";
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -38,121 +39,109 @@ export default function Hero() {
     <section
       ref={sectionRef}
       onMouseMove={handleMouseMove}
-      className="relative flex min-h-svh flex-col overflow-hidden"
+      className="brand-paper relative flex min-h-svh flex-col overflow-hidden border-b-[10px] border-ink text-ink"
     >
-      {/* full-bleed mouse-parallax backdrop, toned down so type stays legible */}
-      <motion.div
-        aria-hidden
-        style={{ opacity: fade }}
-        className="absolute inset-0"
-      >
+      <motion.div aria-hidden style={{ opacity: fade }} className="absolute inset-0">
         <motion.div
           style={{
             x: backX,
             y: backY,
-            backgroundImage: "url(/mainback.png)",
+            backgroundImage: `url(${BRAND_ASSETS.hero.backdrop})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
-          className="absolute inset-[-4%] opacity-[0.16] grayscale-[0.35] sepia-[0.15]"
+          className="absolute inset-[-3%] opacity-[0.34] mix-blend-multiply grayscale"
         />
-        <div className="absolute inset-0 bg-linear-to-b from-background via-background/30 to-background" />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 70% 55% at 50% 45%, transparent 0%, var(--background) 100%)",
-            opacity: 0.75,
-          }}
-        />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(238,227,205,0.76)_0%,rgba(238,227,205,0.62)_48%,rgba(216,58,46,0.74)_100%)]" />
+        <div className="absolute inset-y-0 right-0 w-[38%] bg-primary/80 mix-blend-multiply" />
+        <div className="brand-checker absolute bottom-6 right-6 hidden h-36 w-36 sm:block" />
+        <span className="red-sun right-[15%] top-[16%] h-[22vw] max-h-72 min-h-36 opacity-90" />
       </motion.div>
 
       <motion.div
         style={{ y: drift, opacity: fade }}
-        className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 pb-10 pt-24"
+        className="relative z-10 grid flex-1 gap-8 px-4 pb-10 pt-24 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(420px,0.72fr)] lg:items-center lg:pt-28"
       >
-        {/* no overflow clipping here — Ndot glyphs need their full box */}
-        <motion.h1
-          initial={{ opacity: 0, y: 48 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.8, ease: [0.215, 0.61, 0.355, 1] }}
-          className="text-center font-ndot uppercase leading-none tracking-tight"
-        >
-          <span className="block text-[19vw] text-foreground/90 sm:text-[16vw] lg:text-[12.5vw]">
-            NOT
-          </span>
-          <span className="-mt-[0.12em] block text-[19vw] text-primary sm:text-[16vw] lg:text-[12.5vw]">
-            TYLER
-          </span>
-        </motion.h1>
+        <div className="mx-auto flex w-full max-w-5xl flex-col justify-center lg:mx-0">
+          <div className="brand-microcopy mb-8 flex max-w-xl flex-wrap gap-x-8 gap-y-2 text-ink/70">
+            <span>we exist outside the ordinary</span>
+            <span>catalog: nt-69-a</span>
+            <span>global observatory program</span>
+          </div>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.45, duration: 0.7 }}
-          className="mt-6 max-w-xl whitespace-pre-line text-balance text-center font-mono text-xs leading-relaxed text-foreground/70 sm:text-sm"
-        >
-          {IDENTITY.description}
-        </motion.p>
+          <div className="relative max-w-[880px]">
+            <Image
+              src={BRAND_ASSETS.logo.red}
+              alt="notTyler"
+              width={425}
+              height={119}
+              priority
+              className="h-auto w-full max-w-[780px]"
+            />
+            <div className="mt-4 h-3 w-44 bg-primary sm:w-72" />
+          </div>
 
-        {/* destinations — hover reveals each destination's note */}
-        <motion.nav
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.7 }}
-          className="mt-8 w-full max-w-3xl"
-        >
-          <ul className="flex flex-col divide-y divide-foreground/10 border-y border-foreground/10">
-            {DESTINATIONS.map((item, index) => (
-              <li
-                key={item.name}
-                onMouseEnter={() => setHovered(index)}
-                onMouseLeave={() => setHovered(null)}
-              >
-                <Link
-                  href={item.href}
-                  target={item.external ? "_blank" : undefined}
-                  rel={item.external ? "noopener noreferrer" : undefined}
-                  className="group flex items-baseline justify-between gap-4 px-2 py-3 transition-colors hover:text-primary sm:px-4"
+          <p className="mt-7 max-w-2xl whitespace-pre-line text-balance font-mono text-sm leading-relaxed text-ink/78 sm:text-base">
+            {IDENTITY.description}
+          </p>
+
+          <nav className="mt-10 w-full max-w-3xl">
+            <ul className="grid border-y-2 border-ink sm:grid-cols-2">
+              {DESTINATIONS.map((item, index) => (
+                <li
+                  key={item.name}
+                  onMouseEnter={() => setHovered(index)}
+                  onMouseLeave={() => setHovered(null)}
+                  className="border-b border-ink/25 odd:sm:border-r even:sm:border-r-0 sm:[&:nth-last-child(-n+2)]:border-b-0"
                 >
-                  <span className="flex items-baseline gap-4">
-                    <span className="font-advancedled text-[10px] text-primary/70">
-                      0{index + 1}
-                    </span>
-                    <TextRoll className="font-ndot text-3xl uppercase leading-none sm:text-4xl">
-                      {item.name}
-                    </TextRoll>
-                  </span>
-                  <span
-                    className={`hidden text-right font-mono text-[10px] uppercase tracking-[0.25em] transition-all duration-300 sm:block ${
-                      hovered === index
-                        ? "translate-x-0 text-primary opacity-100"
-                        : "translate-x-3 text-muted-foreground opacity-40"
-                    }`}
+                  <Link
+                    href={item.href}
+                    target={item.external ? "_blank" : undefined}
+                    rel={item.external ? "noopener noreferrer" : undefined}
+                    className="group flex h-full items-baseline justify-between gap-4 bg-paper/45 px-4 py-4 transition-colors hover:bg-primary hover:text-paper"
                   >
-                    {item.note}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </motion.nav>
-      </motion.div>
+                    <span className="flex items-baseline gap-4">
+                      <span className="font-advancedled text-[10px] text-primary transition-colors group-hover:text-paper/80">
+                        0{index + 1}
+                      </span>
+                      <TextRoll className="font-ndot text-3xl uppercase leading-none sm:text-4xl">
+                        {item.name}
+                      </TextRoll>
+                    </span>
+                    <span
+                      className={`hidden text-right font-mono text-[10px] uppercase tracking-[0.2em] transition-all duration-300 sm:block ${
+                        hovered === index
+                          ? "translate-x-0 opacity-100"
+                          : "translate-x-3 opacity-45"
+                      }`}
+                    >
+                      {item.note}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+        </nav>
+        </div>
 
-      <motion.div
-        aria-hidden
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.9 }}
-        className="relative z-10 flex items-center justify-center pb-8"
-      >
-        <motion.span
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          className="led-flicker font-mono text-sm text-primary"
-        >
-          ↓
-        </motion.span>
+        <div className="relative mx-auto hidden w-full max-w-[440px] self-end lg:block">
+          <div className="print-panel relative overflow-hidden bg-paper/70 p-4">
+            <Image
+              src={BRAND_ASSETS.hero.figure}
+              alt="notTyler helmet figure"
+              width={355}
+              height={599}
+              priority
+              className="relative z-10 h-auto w-full"
+            />
+            <div className="brand-microcopy absolute left-5 top-5 z-20 max-w-[180px] text-ink/70">
+              not tyler. not normal. not tomorrow.
+            </div>
+            <div className="absolute bottom-5 left-5 z-20 rounded-full border-2 border-paper bg-ink px-3 py-1 font-ndot text-3xl text-paper">
+              69
+            </div>
+          </div>
+        </div>
       </motion.div>
     </section>
   );

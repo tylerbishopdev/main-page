@@ -16,19 +16,19 @@ function BrandMark() {
     <Link
       href="/"
       aria-label="NotTyler home"
-      className="pointer-events-auto group flex items-center gap-2 rounded-full bg-background/60 px-4 py-2 backdrop-blur-md"
+      className="pointer-events-auto group flex items-center gap-2 px-2 py-1 transition-transform hover:-translate-y-0.5"
     >
       {IDENTITY.logoSrc ? (
         <Image
           src={IDENTITY.logoSrc}
           alt="NotTyler"
-          width={120}
+          width={170}
           height={48}
-          className="h-9 w-auto opacity-85 transition-opacity group-hover:opacity-100"
+          className="h-9 w-auto drop-shadow-[0_1px_10px_rgba(238,227,205,0.28)] transition-opacity group-hover:opacity-90"
           priority
         />
       ) : (
-        <span className="font-ndot text-xl uppercase leading-none tracking-tight text-foreground transition-colors group-hover:text-primary sm:text-2xl">
+        <span className="font-ndot text-xl uppercase leading-none tracking-tight text-primary transition-colors group-hover:text-foreground sm:text-2xl">
           not&nbsp;tyler<span className="text-primary">®</span>
         </span>
       )}
@@ -105,7 +105,7 @@ export default function SiteNav() {
           <button
             type="button"
             onClick={() => setIsOpen((o) => !o)}
-            className="flex items-center gap-3 rounded-full border border-foreground/20 bg-background/60 px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-foreground backdrop-blur-md transition-colors hover:border-primary hover:text-primary"
+            className="flex items-center gap-3 border-2 border-ink bg-paper px-5 py-2.5 font-mono text-xs uppercase tracking-[0.2em] text-ink shadow-[5px_5px_0_var(--primary)] transition-transform hover:-translate-y-0.5"
           >
             <span className="relative flex size-2">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-60" />
@@ -127,27 +127,27 @@ export default function SiteNav() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
               onClick={() => setIsOpen(false)}
-              className="fixed inset-0 z-[70] cursor-default bg-background/60 backdrop-blur-sm"
+              className="fixed inset-0 z-[70] cursor-default bg-background/70 backdrop-blur-sm"
             />
             <motion.aside
               initial={{ x: "105%" }}
               animate={{ x: 0 }}
               exit={{ x: "105%" }}
               transition={{ duration: 0.45, ease: [0.785, 0.135, 0.15, 0.86] }}
-              className="fixed bottom-0 right-0 top-0 z-[75] flex w-full max-w-md flex-col border-l border-primary/25 bg-background p-6 pt-24 sm:p-8 sm:pt-24"
+              className="paper-texture fixed bottom-0 right-0 top-0 z-[75] flex w-full max-w-md flex-col border-l-[10px] border-ink p-6 pt-24 text-ink shadow-[-28px_0_0_rgba(216,58,46,0.7)] sm:p-8 sm:pt-24"
             >
-              <div className="flex items-center justify-between border-b border-foreground/10 pb-4">
+              <div className="flex items-center justify-between border-b-2 border-ink pb-4">
                 <div>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-muted-foreground">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-ink/60">
                     the collection
                   </p>
-                  <h2 className="mt-1 font-ndot text-2xl uppercase leading-none text-foreground">
+                  <h2 className="mt-1 font-ndot text-3xl uppercase leading-none text-ink">
                     Directory
                   </h2>
                 </div>
                 <div className="text-right">
                   <Clock />
-                  <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground">
+                  <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.25em] text-ink/55">
                     status: brilliant
                   </p>
                 </div>
@@ -165,7 +165,7 @@ export default function SiteNav() {
                       <Link
                         href={`/#exh-${String(i + 1).padStart(3, "0")}`}
                         onClick={jumpTo(`#exh-${String(i + 1).padStart(3, "0")}`)}
-                        className="group flex items-baseline gap-3 border-b border-foreground/5 py-2 transition-colors hover:text-primary"
+                        className="group flex items-baseline gap-3 border-b border-ink/15 py-2 transition-colors hover:text-primary"
                       >
                         <span className="font-advancedled text-[10px] text-primary/60 transition-colors group-hover:text-primary">
                           {String(i + 1).padStart(3, "0")}
@@ -173,7 +173,7 @@ export default function SiteNav() {
                         <span className="flex-1 truncate font-ndot text-lg uppercase leading-tight tracking-tight">
                           {project.company}
                         </span>
-                        <span className="hidden max-w-[38%] truncate text-right font-mono text-[9px] uppercase tracking-[0.1em] text-muted-foreground sm:block">
+                        <span className="hidden max-w-[38%] truncate text-right font-mono text-[9px] uppercase tracking-[0.1em] text-ink/55 sm:block">
                           {project.year}
                         </span>
                       </Link>
@@ -195,7 +195,7 @@ export default function SiteNav() {
                       <span className="flex-1 font-ndot text-lg uppercase leading-tight tracking-tight">
                         The music catalog
                       </span>
-                      <span className="hidden text-right font-mono text-[9px] uppercase tracking-[0.1em] text-muted-foreground sm:block">
+                      <span className="hidden text-right font-mono text-[9px] uppercase tracking-[0.1em] text-ink/55 sm:block">
                         audio project
                       </span>
                     </Link>
@@ -203,42 +203,42 @@ export default function SiteNav() {
                 </ul>
               </nav>
 
-              <div className="space-y-4 border-t border-foreground/10 pt-4">
+              <div className="space-y-4 border-t-2 border-ink pt-4">
                 <div className="flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[10px] uppercase tracking-[0.25em]">
                   <Link
                     href="https://videos.nottyler.org"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-foreground/70 transition-colors hover:text-primary"
+                    className="text-ink/70 transition-colors hover:text-primary"
                   >
                     Channel ↗
                   </Link>
                   <Link
                     href="/music"
-                    className="text-foreground/70 transition-colors hover:text-primary"
+                    className="text-ink/70 transition-colors hover:text-primary"
                   >
                     Music
                   </Link>
                   <Link
                     href="/not"
-                    className="text-foreground/70 transition-colors hover:text-primary"
+                    className="text-ink/70 transition-colors hover:text-primary"
                   >
                     Wut?
                   </Link>
                   <Link
                     href="/contact"
-                    className="text-foreground/70 transition-colors hover:text-primary"
+                    className="text-ink/70 transition-colors hover:text-primary"
                   >
                     Contact
                   </Link>
                   <Link
                     href="/mario-cart"
-                    className="text-foreground/70 transition-colors hover:text-primary"
+                    className="text-ink/70 transition-colors hover:text-primary"
                   >
                     Mario Cart®
                   </Link>
                 </div>
-                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-foreground/30">
+                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-ink/40">
                   {IDENTITY.copyrightShort}
                 </p>
               </div>

@@ -58,8 +58,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ------------------------------------------------------------------ */
-/*  Theme: "The Permanent Collection"                                  */
-/*  warm near-black / bone paper / signal red                          */
+/*  Theme: "Future Systems Broadcast"                                  */
+/*  offset-print black / warm paper / notTyler red                      */
 /* ------------------------------------------------------------------ */
 
 @theme inline {
@@ -98,30 +98,30 @@
 }
 
 :root {
-  --radius: 0.5rem;
+  --radius: 0.25rem;
 
-  --background: #0e0d0c;
-  --foreground: #e9e1d8;
-  --paper: #ece4d6;
-  --ink: #171412;
+  --background: #090909;
+  --foreground: #efe7d6;
+  --paper: #eee3cd;
+  --ink: #111211;
 
-  --card: #171514;
-  --card-foreground: #d9d0c6;
-  --popover: #171514;
-  --popover-foreground: #d9d0c6;
+  --card: #12110f;
+  --card-foreground: #efe7d6;
+  --popover: #12110f;
+  --popover-foreground: #efe7d6;
 
-  --primary: #ff4438;
-  --primary-foreground: #0e0d0c;
-  --secondary: #c8b9a4;
-  --secondary-foreground: #171412;
-  --muted: #2a2624;
-  --muted-foreground: #948a7e;
-  --accent: #ffd0c8;
-  --accent-foreground: #171412;
-  --destructive: #ff4438;
-  --border: #2c2825;
-  --input: #2c2825;
-  --ring: #ff4438;
+  --primary: #d83a2e;
+  --primary-foreground: #f4ead6;
+  --secondary: #d8c8aa;
+  --secondary-foreground: #111211;
+  --muted: #25211c;
+  --muted-foreground: #a99b86;
+  --accent: #f5dcc8;
+  --accent-foreground: #111211;
+  --destructive: #d83a2e;
+  --border: #342e25;
+  --input: #342e25;
+  --ring: #d83a2e;
 }
 
 .dark {
@@ -140,6 +140,10 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     overflow-x: clip;
+    background:
+      radial-gradient(circle at 82% 12%, rgba(216, 58, 46, 0.16), transparent 22rem),
+      radial-gradient(circle at 8% 34%, rgba(238, 227, 205, 0.08), transparent 20rem),
+      #090909;
   }
   ::selection {
     background: var(--primary);
@@ -223,6 +227,91 @@
   .text-stroke-ink {
     -webkit-text-stroke: 1px color-mix(in srgb, var(--ink) 45%, transparent);
     color: transparent;
+  }
+
+  .brand-paper {
+    background:
+      linear-gradient(135deg, rgba(216, 58, 46, 0.08), transparent 28%),
+      radial-gradient(circle at 18% 22%, rgba(17, 18, 17, 0.08), transparent 20rem),
+      var(--paper);
+  }
+
+  .brand-ink {
+    background:
+      linear-gradient(rgba(9, 9, 9, 0.72), rgba(9, 9, 9, 0.72)),
+      url("/brand/black-paper-texture.png"),
+      radial-gradient(circle at 80% 18%, rgba(216, 58, 46, 0.16), transparent 18rem),
+      linear-gradient(180deg, #090909 0%, #11110f 100%);
+    background-size: cover, cover, auto, auto;
+    background-blend-mode: normal, normal, normal, normal;
+  }
+
+  .paper-texture {
+    background-image:
+      linear-gradient(rgba(238, 227, 205, 0.9), rgba(238, 227, 205, 0.9)),
+      url("/brand/black-paper-texture.png");
+    background-size: cover;
+    background-blend-mode: normal, multiply;
+  }
+
+  .print-panel {
+    position: relative;
+    border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+    box-shadow:
+      0 18px 55px -34px rgba(0, 0, 0, 0.8),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.035);
+  }
+
+  .print-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(rgba(17, 18, 17, 0.09) 0.8px, transparent 0.8px),
+      linear-gradient(90deg, rgba(216, 58, 46, 0.08), transparent 22%, transparent 78%, rgba(216, 58, 46, 0.08));
+    background-size: 3px 3px, 100% 100%;
+    mix-blend-mode: multiply;
+    opacity: 0.55;
+  }
+
+  .red-sun {
+    position: absolute;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: var(--primary);
+    filter: saturate(0.95);
+  }
+
+  .brand-checker {
+    background-image:
+      linear-gradient(45deg, var(--ink) 25%, transparent 25%),
+      linear-gradient(-45deg, var(--ink) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, var(--ink) 75%),
+      linear-gradient(-45deg, transparent 75%, var(--ink) 75%);
+    background-position: 0 0, 0 16px, 16px -16px, -16px 0;
+    background-size: 32px 32px;
+    opacity: 0.85;
+  }
+
+  .brand-microcopy {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    line-height: 1.35;
+    text-transform: uppercase;
+  }
+
+  .brand-label {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid currentColor;
+    padding: 0.28rem 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.24em;
+    line-height: 1;
+    text-transform: uppercase;
   }
 
   /* Music page */

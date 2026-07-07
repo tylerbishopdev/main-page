@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { NOT_MUSIK_RELEASES, type MusikRelease } from "@/lib/content";
+import { BRAND_ASSETS, NOT_MUSIK_RELEASES, type MusikRelease } from "@/lib/content";
 
 const SPOTIFY_ARTIST = "https://open.spotify.com/artist/4BhWvEo85DhqdhG8An3x3n";
 
@@ -105,12 +105,20 @@ export default function NotMusik({ showHeading = true }: { showHeading?: boolean
   return (
     <section
       ref={sectionRef}
-      className="relative w-full overflow-hidden border-t border-white/10 bg-[#0a0a0a] py-16 text-foreground"
+      className="brand-ink relative w-full overflow-hidden border-y-[10px] border-primary py-16 text-paper"
     >
       {/* Dynamic color wash that follows the active release */}
       <div
         className="pointer-events-none absolute inset-0 transition-colors duration-500"
-        style={{ backgroundColor: current.bgColor, opacity: 0.06 }}
+        style={{ backgroundColor: current.bgColor, opacity: 0.09 }}
+      />
+      <Image
+        src={BRAND_ASSETS.collages[5]}
+        alt=""
+        width={1024}
+        height={576}
+        aria-hidden
+        className="pointer-events-none absolute -right-20 top-10 hidden w-[44vw] max-w-3xl opacity-[0.12] mix-blend-screen grayscale lg:block"
       />
 
       <div className="relative mx-auto max-w-6xl px-6">
@@ -118,15 +126,15 @@ export default function NotMusik({ showHeading = true }: { showHeading?: boolean
           <>
             {/* Heading exactly as requested */}
             <div className="mb-8 flex items-baseline justify-between gap-4">
-              <h2 className="font-ndot text-5xl uppercase leading-none tracking-[-1.5px] sm:text-7xl">
+              <h2 className="font-ndot text-6xl uppercase leading-[0.82] tracking-[-0.06em] sm:text-8xl">
                 not Tyler: <span className="text-primary">notMusik</span>
               </h2>
-              <div className="hidden text-right font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground sm:block">
-                archive • scroll to browse<br />drag the sleeve
+              <div className="hidden text-right font-mono text-[10px] uppercase tracking-[0.3em] text-paper/60 sm:block">
+                broadcast archive<br />drag the sleeve
               </div>
             </div>
 
-            <div className="mb-6 h-px w-full bg-white/10" />
+            <div className="mb-6 h-[6px] w-full bg-primary" />
           </>
         )}
 
@@ -134,7 +142,7 @@ export default function NotMusik({ showHeading = true }: { showHeading?: boolean
         <div className="relative grid gap-8 lg:grid-cols-12">
           {/* Scrollable list of releases (unique catalog order) */}
           <div className="lg:col-span-7">
-            <div className="flex flex-col divide-y divide-white/10">
+            <div className="flex flex-col divide-y divide-paper/15 border-y border-paper/15">
               {displayItems.map((release, i) => {
                 const isActive = i === activeIndex;
                 return (
@@ -148,30 +156,30 @@ export default function NotMusik({ showHeading = true }: { showHeading?: boolean
                       // keep navigation but also focus the visual
                       focusRelease(i, rowRefs.current[i]);
                     }}
-                    className={`group flex items-center gap-4 py-5 pr-2 transition-all sm:gap-6 sm:py-6 ${isActive ? "opacity-100" : "opacity-70 hover:opacity-100"}`}
+                    className={`group flex items-center gap-4 px-2 py-5 transition-all sm:gap-6 sm:py-6 ${isActive ? "bg-paper text-ink opacity-100" : "opacity-70 hover:bg-paper/10 hover:opacity-100"}`}
                   >
-                    <span className="w-9 shrink-0 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+                    <span className={`w-9 shrink-0 font-mono text-[10px] uppercase tracking-[0.25em] ${isActive ? "text-primary" : "text-paper/45"}`}>
                       {String(i + 1).padStart(2, "0")}
                     </span>
 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-3">
                         <span
-                          className={`font-ndot text-2xl uppercase tracking-[-0.5px] transition-colors sm:text-3xl ${isActive ? "text-foreground" : "text-foreground/80 group-hover:text-foreground"}`}
+                          className={`font-ndot text-2xl uppercase tracking-[-0.5px] transition-colors sm:text-3xl ${isActive ? "text-ink" : "text-paper/90 group-hover:text-paper"}`}
                         >
                           {release.title}
                         </span>
-                        <span className="rounded-full border border-white/15 px-2.5 py-px font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+                        <span className={`border px-2.5 py-px font-mono text-[9px] uppercase tracking-[0.2em] ${isActive ? "border-ink/25 text-ink/65" : "border-paper/20 text-paper/55"}`}>
                           {release.type}
                         </span>
                       </div>
-                      <p className="mt-0.5 font-mono text-xs text-muted-foreground/70">
+                      <p className={`mt-0.5 font-mono text-xs ${isActive ? "text-ink/60" : "text-paper/55"}`}>
                         {release.description}
                         {release.plays ? ` • ${release.plays.toLocaleString()} plays` : ""}
                       </p>
                     </div>
 
-                    <div className="hidden text-xs font-mono uppercase tracking-[0.2em] text-primary/70 sm:block">
+                    <div className={`hidden text-xs font-mono uppercase tracking-[0.2em] sm:block ${isActive ? "text-primary" : "text-primary/70"}`}>
                       LISTEN →
                     </div>
                   </a>
@@ -188,15 +196,14 @@ export default function NotMusik({ showHeading = true }: { showHeading?: boolean
                 dragElastic={0.18}
                 dragMomentum
                 whileDrag={{ scale: 1.03, rotate: 1.5 }}
-                className="group relative aspect-square w-[260px] cursor-grab select-none overflow-hidden rounded-2xl border border-white/15 bg-black/60 shadow-2xl active:cursor-grabbing sm:w-[300px]"
-                style={{ backgroundColor: "rgba(0,0,0,0.55)" }}
+                className="print-panel paper-texture group relative aspect-square w-[260px] cursor-grab select-none overflow-hidden border-2 border-paper shadow-[16px_16px_0_var(--primary)] active:cursor-grabbing sm:w-[300px]"
               >
                 {/* The art / waveform */}
                 <Image
                   src={current.image}
                   alt={current.title}
                   fill
-                  className="object-contain p-6 opacity-90 mix-blend-luminosity transition-opacity group-active:opacity-100"
+                  className="object-contain p-7 opacity-90 mix-blend-multiply transition-opacity group-active:opacity-100"
                   sizes="(max-width: 640px) 260px, 300px"
                 />
 
@@ -204,24 +211,24 @@ export default function NotMusik({ showHeading = true }: { showHeading?: boolean
                 <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.06)_0.6px,transparent_0.6px)] bg-[length:3px_3px]" />
 
                 {/* Active release label on the sleeve */}
-                <div className="absolute bottom-4 left-4 right-4 rounded-md bg-black/60 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.25em] text-white/90 backdrop-blur">
+                <div className="absolute bottom-4 left-4 right-4 border-2 border-ink bg-paper/90 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.25em] text-ink">
                   <div className="flex items-center justify-between">
                     <span>{current.title}</span>
                     <span className="text-primary">{current.type}</span>
                   </div>
                   {current.plays && (
-                    <div className="mt-0.5 text-[9px] text-white/50">
+                    <div className="mt-0.5 text-[9px] text-ink/55">
                       {current.plays.toLocaleString()} plays
                     </div>
                   )}
                 </div>
 
                 {/* Subtle ring */}
-                <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10" />
+                <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-ink/15" />
               </motion.div>
             </div>
 
-            <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground lg:text-right">
+            <p className="mt-5 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-paper/55 lg:text-right">
               drag the sleeve anywhere
             </p>
           </div>
@@ -233,7 +240,7 @@ export default function NotMusik({ showHeading = true }: { showHeading?: boolean
             href={SPOTIFY_ARTIST}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-2 font-mono text-xs uppercase tracking-[0.25em] text-foreground/80 transition hover:border-primary hover:text-primary"
+            className="inline-flex items-center gap-2 border-2 border-paper/30 px-5 py-2 font-mono text-xs uppercase tracking-[0.25em] text-paper/80 transition hover:border-primary hover:bg-primary hover:text-paper"
           >
             full catalog on Spotify →
           </a>
