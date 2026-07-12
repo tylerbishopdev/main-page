@@ -17,6 +17,7 @@ import {
   ART_IMAGES,
   CORRELATION_DATA,
   CURRENCY_DATA,
+  SPACEX_GDP_DATA,
   WUT,
 } from "@/lib/content";
 
@@ -319,6 +320,44 @@ function KindaFacts() {
           </div>
         </StatPanel>
       </div>
+
+      <StatPanel
+        title="SpaceX vs. Entire Nations"
+        sub="SpaceX's $1.9T market cap is closing in on the world's 10 largest economies. Nominal GDP (2025, World Bank) vs. SPCX market cap at July 10, 2026 close."
+        footnote="Sources: World Bank nominal GDP (2025, current USD) via Perplexity Finance macro data; SpaceX (SPCX) market capitalization of $1.90 trillion as of market close July 10, 2026."
+      >
+        <div className="space-y-2">
+          {SPACEX_GDP_DATA.map((item, i) => (
+            <div key={item.name} className="flex items-center gap-3">
+              <span
+                className={`w-32 shrink-0 truncate text-right sm:w-44 ${
+                  item.highlight
+                    ? "font-ndot text-xs uppercase text-primary"
+                    : "font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground"
+                }`}
+              >
+                {item.name}
+              </span>
+              <div className="h-3.5 flex-1 overflow-hidden rounded-sm bg-muted">
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileInView={{ width: `${(item.value / 30.77) * 100}%` }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.9, delay: i * 0.06, ease: "easeOut" }}
+                  className={`h-full ${item.highlight ? "bg-primary" : "bg-secondary/60"}`}
+                />
+              </div>
+              <span
+                className={`w-16 shrink-0 font-advancedled text-[11px] ${
+                  item.highlight ? "text-primary" : "text-secondary"
+                }`}
+              >
+                ${item.value.toFixed(2)}T
+              </span>
+            </div>
+          ))}
+        </div>
+      </StatPanel>
     </div>
   );
 }
