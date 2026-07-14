@@ -425,6 +425,22 @@ export const AI_INVESTMENT_DATA = [
   { company: "Mistral", invested: 0.5 },
 ];
 
+/* Nominal GDP of the world's 10 largest economies (2025, World Bank, USD
+ * trillions) vs. SpaceX (SPCX) market cap at the July 10, 2026 close. */
+export const SPACEX_GDP_DATA: { name: string; value: number; highlight?: boolean }[] = [
+  { name: "United States", value: 30.77 },
+  { name: "China", value: 19.5 },
+  { name: "Germany", value: 5.05 },
+  { name: "Japan", value: 4.43 },
+  { name: "United Kingdom", value: 4.0 },
+  { name: "India", value: 3.96 },
+  { name: "France", value: 3.37 },
+  { name: "Russia", value: 2.56 },
+  { name: "Italy", value: 2.55 },
+  { name: "Canada", value: 2.32 },
+  { name: "SpaceX (market cap)", value: 1.9, highlight: true },
+];
+
 /* Music catalog — copy taken verbatim from the original works list on main
  * (components/my-works.tsx). No tracks are invented; the catalog is the
  * Spotify artist project plus the music-adjacent MuseVault app. */
