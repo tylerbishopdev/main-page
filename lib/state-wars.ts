@@ -1,81 +1,470 @@
 /**
- * UNCIVIL WAR® — content for the state-on-state pay-per-view.
- * All 50 combatants, their classified intel, signature specials,
- * breaking-news events, and the commentary desk.
+ * UNCIVIL WAR® — content for the interstate conflict broadcast.
+ *
+ * Voice rule: the premise is the joke. Every line is written straight —
+ * wire copy, incident reports, after-action language. The absurdity is
+ * in the content, never the delivery.
  */
+
+export type Doctrine = "FORCE" | "CLIMATE" | "COMMERCE" | "PSYOPS";
+
+export type Personality = "aggressive" | "bulwark" | "opportunist" | "erratic";
+
+export type Archetype =
+  | "barrage" // 3 light strikes, each rolls crit; chews through a brace
+  | "siege" // heavy strike, attacker takes recoil
+  | "sanction" // moderate strike + applies a condition
+  | "drain" // strike + recover half the damage dealt
+  | "rally" // +1 ATK stage and hype, no damage
+  | "sabotage" // light strike + enemy -1 ATK stage
+  | "gambit" // 50% heavy / 35% weak / 15% intercepted (enemy gains hype)
+  | "pierce"; // ignores brace and defense
+
+export type StatusId =
+  | "BURNING"
+  | "TOLLED"
+  | "DISORIENTED"
+  | "SNOWBOUND"
+  | "EXPOSED"
+  | "BECOMING_OHIO";
+
+export type MoveDef = { name: string; flavor: string };
+export type TacticalDef = MoveDef & { archetype: Archetype; status?: StatusId };
+export type SpecialDef = MoveDef & { status?: StatusId };
 
 export type StateFighter = {
   abbr: string;
   name: string;
-  /** placard epithet under the fighter name */
+  /** placard epithet, tale-of-the-tape register */
   epithet: string;
   hp: number;
   atk: number;
   def: number;
-  /** 1–10, drives crit chance. Florida is the ceiling. */
+  /** 1–10. Drives crit rate. Listed in the dossier without comment. */
   chaos: number;
-  special: { name: string; flavor: string };
+  doctrine: Doctrine;
+  personality: Personality;
+  primary: MoveDef;
+  tactical: TacticalDef;
+  special: SpecialDef;
   intel: string;
 };
 
+/* ------------------------------------------------------------------ */
+/*  The 50 combatants                                                  */
+/* ------------------------------------------------------------------ */
+
 export const STATES: StateFighter[] = [
-  { abbr: "AL", name: "Alabama", epithet: "The Crimson Menace", hp: 102, atk: 11, def: 7, chaos: 6, special: { name: "ROLL TIDE TSUNAMI", flavor: "A crimson wave of 300-pound linemen floods the battlefield." }, intel: "Has beaten everyone at football. Will remind you." },
-  { abbr: "AK", name: "Alaska", epithet: "The Frozen Colossus", hp: 118, atk: 9, def: 9, chaos: 5, special: { name: "POLAR VORTEX DELIVERY", flavor: "Winter is exported directly to your doorstep. No returns." }, intel: "Twice the size of Texas. Mentions it twice as often." },
-  { abbr: "AZ", name: "Arizona", epithet: "The Dry Heat", hp: 96, atk: 10, def: 6, chaos: 6, special: { name: "DRY HEAT DEATH RAY", flavor: "It's 118 degrees, but don't worry — it's a dry heat." }, intel: "Does not observe daylight saving time. Or mercy." },
-  { abbr: "AR", name: "Arkansas", epithet: "The Rollback", hp: 94, atk: 9, def: 8, chaos: 5, special: { name: "SUPPLY CHAIN CRUSH", flavor: "Every Walmart truck in America converges on your position." }, intel: "Home of Walmart. The prices roll back. So will you." },
-  { abbr: "CA", name: "California", epithet: "The Golden Ego", hp: 128, atk: 12, def: 5, chaos: 7, special: { name: "THE BIG ONE", flavor: "The earthquake has been scheduled. You are the epicenter." }, intel: "World's 4th largest economy. Can't keep the lights on." },
-  { abbr: "CO", name: "Colorado", epithet: "The High Ground", hp: 98, atk: 10, def: 7, chaos: 6, special: { name: "ALTITUDE ADJUSTMENT", flavor: "The air is now 40% thinner. Your lungs file a complaint." }, intel: "Everything is uphill from you. Everything." },
-  { abbr: "CT", name: "Connecticut", epithet: "The Quiet Money", hp: 90, atk: 10, def: 7, chaos: 4, special: { name: "HEDGE FUND AUDIT", flavor: "Your assets are liquidated. Your feelings are shorted." }, intel: "Technically New England. Emotionally a yacht." },
-  { abbr: "DE", name: "Delaware", epithet: "The Fine Print", hp: 84, atk: 9, def: 10, chaos: 4, special: { name: "SHELL CORP SUMMON", flavor: "You are now incorporated in Delaware and owe it everything." }, intel: "1M residents. 2M registered corporations. Do the math." },
-  { abbr: "FL", name: "Florida", epithet: "The Unsupervised", hp: 110, atk: 11, def: 4, chaos: 10, special: { name: "FLORIDA MAN RAMPAGE", flavor: "A shirtless man on a stolen airboat answers the call of chaos." }, intel: "The only state with a police blotter instead of a constitution." },
-  { abbr: "GA", name: "Georgia", epithet: "The Layover", hp: 106, atk: 10, def: 7, chaos: 6, special: { name: "ETERNAL ATL LAYOVER", flavor: "You are rerouted through Atlanta. You will connect forever." }, intel: "All roads lead through Hartsfield-Jackson. All of them." },
-  { abbr: "HI", name: "Hawaii", epithet: "The Hostile Paradise", hp: 92, atk: 9, def: 8, chaos: 5, special: { name: "VOLCANIC CHECKOUT", flavor: "Pele reviews your stay: one star. The lava agrees." }, intel: "Paradise. Will absolutely fight you in paradise." },
-  { abbr: "ID", name: "Idaho", epithet: "The Classified Spud", hp: 90, atk: 10, def: 7, chaos: 5, special: { name: "BALLISTIC SPUD STRIKE", flavor: "Weapons-grade russets rain from a cloudless sky." }, intel: "The potatoes are famous. The rest is classified." },
-  { abbr: "IL", name: "Illinois", epithet: "The Deep Dish", hp: 112, atk: 11, def: 6, chaos: 6, special: { name: "DEEP DISH AIRDROP", flavor: "A 40-pound casserole labeled 'pizza' is dropped from altitude." }, intel: "Will fight you over what counts as pizza. Starts it, actually." },
-  { abbr: "IN", name: "Indiana", epithet: "The Left Turn", hp: 96, atk: 10, def: 7, chaos: 5, special: { name: "500 LEFT TURNS", flavor: "Thirty-three cars circle you at 230mph. Menacingly." }, intel: "Has one race and unlimited confidence." },
-  { abbr: "IA", name: "Iowa", epithet: "The Listening Corn", hp: 92, atk: 9, def: 8, chaos: 5, special: { name: "CORN MAZE ENTRAPMENT", flavor: "You enter the maze. The maze does not have an exit." }, intel: "Knee-high by the Fourth of July. The corn is watching." },
-  { abbr: "KS", name: "Kansas", epithet: "The Peer-Reviewed Pancake", hp: 90, atk: 10, def: 7, chaos: 6, special: { name: "TWISTER TOSS", flavor: "You're not in Kansas anymore. You are 400 feet above it." }, intel: "Flatter than a pancake. This is peer-reviewed science." },
-  { abbr: "KY", name: "Kentucky", epithet: "The Barrel-Aged", hp: 96, atk: 11, def: 6, chaos: 6, special: { name: "BOURBON MOLOTOV", flavor: "Aged 12 years in oak. Airborne for 2 seconds." }, intel: "More bourbon barrels than people. Correct priorities." },
-  { abbr: "LA", name: "Louisiana", epithet: "The Good Times", hp: 98, atk: 11, def: 5, chaos: 8, special: { name: "MARDI GRAS STAMPEDE", flavor: "Ten thousand parade floats. Zero brakes. Beads at Mach 2." }, intel: "Laissez les bons temps rouler. Directly over you." },
-  { abbr: "ME", name: "Maine", epithet: "The Polite Danger", hp: 88, atk: 9, def: 9, chaos: 4, special: { name: "LOBSTER PINCER MOVEMENT", flavor: "A literal pincer movement. The lobsters studied tactics." }, intel: "Quietly dangerous. Like the ocean. Or a moose." },
-  { abbr: "MD", name: "Maryland", epithet: "The Seasoned Veteran", hp: 92, atk: 10, def: 7, chaos: 5, special: { name: "OLD BAY BLACKOUT", flavor: "A seasoning storm at 60mph. Delicious. Blinding." }, intel: "Puts Old Bay on everything. Including this war." },
-  { abbr: "MA", name: "Massachusetts", epithet: "The Original Menace", hp: 104, atk: 12, def: 6, chaos: 6, special: { name: "WICKED SMAAHT BOMB", flavor: "Condescension detonates at Harvard-Yard scale." }, intel: "Invented America. Hasn't let it go since." },
-  { abbr: "MI", name: "Michigan", epithet: "The Hand That Slaps", hp: 106, atk: 10, def: 7, chaos: 6, special: { name: "LAKE EFFECT SLAM", flavor: "Four Great Lakes arrive at once. None of them are calm." }, intel: "Will show you where it lives on its hand. Then attack." },
-  { abbr: "MN", name: "Minnesota", epithet: "The Apology", hp: 100, atk: 9, def: 9, chaos: 4, special: { name: "OPE, SORRY", flavor: "Apologizes sincerely while removing your entire flank." }, intel: "10,000 lakes of pure passive aggression." },
-  { abbr: "MS", name: "Mississippi", epithet: "The Unspellable", hp: 90, atk: 9, def: 8, chaos: 5, special: { name: "SPELLING HEX", flavor: "M-I-S-S-I-S-S-I-P-P-I. You are stunned by the letters." }, intel: "The river does the fighting. The state takes the credit." },
-  { abbr: "MO", name: "Missouri", epithet: "The Skeptic", hp: 96, atk: 10, def: 7, chaos: 6, special: { name: "SHOW-ME SUPLEX", flavor: "Demands evidence. Provides pavement." }, intel: "Won't believe anything until it has suplexed it." },
-  { abbr: "MT", name: "Montana", epithet: "The Big Sky", hp: 94, atk: 10, def: 8, chaos: 4, special: { name: "BIG SKY DROP", flavor: "The sky itself falls on you. It is a very big sky." }, intel: "More cows than people. The cows vote." },
-  { abbr: "NE", name: "Nebraska", epithet: "The Gentle Roller", hp: 92, atk: 9, def: 8, chaos: 4, special: { name: "FULL HUSK", flavor: "You are husked like sweet corn before a cookout." }, intel: "It's not flat, it's 'gently rolling.' It is flat." },
-  { abbr: "NV", name: "Nevada", epithet: "The House", hp: 94, atk: 11, def: 5, chaos: 9, special: { name: "HOUSE ALWAYS WINS", flavor: "Your HP is placed on red. The wheel was never fair." }, intel: "What happens here stays here. Including you." },
-  { abbr: "NH", name: "New Hampshire", epithet: "The License Plate Threat", hp: 88, atk: 12, def: 5, chaos: 7, special: { name: "LIVE FREE OR DIE CHARGE", flavor: "No seatbelts, no helmets, no brakes, no survivors." }, intel: "The license plates were a warning." },
-  { abbr: "NJ", name: "New Jersey", epithet: "The Exit", hp: 100, atk: 11, def: 6, chaos: 7, special: { name: "TOLL AVALANCHE", flavor: "E-ZPass DECLINED. The fees compound hourly. With interest." }, intel: "What exit? The last one you'll ever take." },
-  { abbr: "NM", name: "New Mexico", epithet: "The Declassified", hp: 90, atk: 10, def: 7, chaos: 7, special: { name: "ROSWELL AIRSTRIKE", flavor: "Recently declassified. Immediately weaponized." }, intel: "Not new. Not Mexico. Entirely extraterrestrial." },
-  { abbr: "NY", name: "New York", epithet: "The Walking Here", hp: 124, atk: 13, def: 5, chaos: 7, special: { name: "RAT KING SUMMON", flavor: "The pizza rats have unionized. Their demand is you." }, intel: "Walks here. Is walking here right now." },
-  { abbr: "NC", name: "North Carolina", epithet: "The Pit Crew", hp: 100, atk: 10, def: 7, chaos: 5, special: { name: "PIT ROAD MANEUVER", flavor: "Four fresh tires. Twelve seconds. One casualty: you." }, intel: "First in flight. First to bring it up." },
-  { abbr: "ND", name: "North Dakota", epithet: "The Unbothered", hp: 88, atk: 8, def: 11, chaos: 3, special: { name: "BLIZZARD OF INDIFFERENCE", flavor: "It is -40 degrees and nobody there has noticed." }, intel: "Visited by literally dozens of people." },
-  { abbr: "OH", name: "Ohio", epithet: "The Inevitable", hp: 104, atk: 11, def: 6, chaos: 9, special: { name: "BECOME OHIO", flavor: "It's happening. You feel yourself... becoming Ohio." }, intel: "Cannot be explained. Only survived." },
-  { abbr: "OK", name: "Oklahoma", epithet: "The Early Bird", hp: 94, atk: 10, def: 6, chaos: 6, special: { name: "SOONER STAMPEDE", flavor: "Claims your territory 12 minutes before it's legal." }, intel: "The wind comes sweeping down the plain. Armed." },
-  { abbr: "OR", name: "Oregon", epithet: "The Small Batch", hp: 94, atk: 10, def: 7, chaos: 6, special: { name: "ARTISANAL DRONE STRIKE", flavor: "Locally sourced. Small batch. Hand-thrown ordnance." }, intel: "Keeps it weird. Weaponizes it weirder." },
-  { abbr: "PA", name: "Pennsylvania", epithet: "The Greased Pole", hp: 108, atk: 11, def: 6, chaos: 7, special: { name: "PHILLY FAN FRENZY", flavor: "They greased the poles. The fans climbed them anyway." }, intel: "Threw batteries at Santa. Santa had it coming." },
-  { abbr: "RI", name: "Rhode Island", epithet: "The Concentrated Rage", hp: 80, atk: 13, def: 5, chaos: 7, special: { name: "NAPOLEON COMPLEX", flavor: "The smallest state delivers the largest recorded rage." }, intel: "1,214 square miles of pure spite." },
-  { abbr: "SC", name: "South Carolina", epithet: "The Sweet Tooth", hp: 92, atk: 10, def: 6, chaos: 6, special: { name: "SWEET TEA OVERDOSE", flavor: "One glass. Nine thousand grams of sugar. Your heart quits." }, intel: "Started this once before. Feeling nostalgic." },
-  { abbr: "SD", name: "South Dakota", epithet: "The Four Foreheads", hp: 90, atk: 10, def: 8, chaos: 5, special: { name: "RUSHMORE HEADBUTT", flavor: "Four presidents. One granite forehead. Your problem." }, intel: "The heads are watching. The heads are always watching." },
-  { abbr: "TN", name: "Tennessee", epithet: "The Medically Inadvisable", hp: 98, atk: 11, def: 6, chaos: 6, special: { name: "HOT CHICKEN NAPALM", flavor: "Nashville hot. Medically inadvisable. Militarily decisive." }, intel: "The chicken is a weapons program." },
-  { abbr: "TX", name: "Texas", epithet: "The Bigger One", hp: 130, atk: 13, def: 6, chaos: 6, special: { name: "EVERYTHING'S BIGGER", flavor: "Texas simply produces a larger attack than yours. It's bigger." }, intel: "Was its own country. Never emotionally stopped." },
-  { abbr: "UT", name: "Utah", epithet: "The Downline", hp: 92, atk: 9, def: 8, chaos: 5, special: { name: "MLM RECRUITMENT", flavor: "You're not defeated — you're a business owner now, boss." }, intel: "Would love to add you to its downline." },
-  { abbr: "VT", name: "Vermont", epithet: "The Aggressively Quaint", hp: 84, atk: 9, def: 9, chaos: 4, special: { name: "GRADE-A QUICKSAND", flavor: "Maple syrup. Dark. Robust. Inescapable." }, intel: "Aggressively quaint. Quaintly aggressive." },
-  { abbr: "VA", name: "Virginia", epithet: "The Disappointed", hp: 102, atk: 10, def: 8, chaos: 4, special: { name: "FOUNDING SÉANCE", flavor: "Summons the founders. They are extremely disappointed in you." }, intel: "Is for lovers. Of ghost-based warfare." },
-  { abbr: "WA", name: "Washington", epithet: "The Restructure", hp: 102, atk: 11, def: 6, chaos: 5, special: { name: "ORG RESTRUCTURE", flavor: "Your position has been eliminated. Effective immediately." }, intel: "It's not rain, it's 'atmospheric ambience.'" },
-  { abbr: "WV", name: "West Virginia", epithet: "The Almost Heaven", hp: 90, atk: 10, def: 8, chaos: 5, special: { name: "COUNTRY ROADS RECKONING", flavor: "The roads take you home. Violently. To the place you belong." }, intel: "Almost heaven. Emphasis on almost." },
-  { abbr: "WI", name: "Wisconsin", epithet: "The Squeaky Doom", hp: 100, atk: 10, def: 7, chaos: 6, special: { name: "CURD AVALANCHE", flavor: "A squeaking wall of fried cheese descends the hill." }, intel: "Your body is 60% water. Wisconsin's is 60% cheese." },
-  { abbr: "WY", name: "Wyoming", epithet: "The Alleged", hp: 86, atk: 9, def: 12, chaos: 5, special: { name: "DOES NOT EXIST", flavor: "You cannot counterattack a state that isn't real." }, intel: "Population 580,000. Allegedly. Never verified." },
+  {
+    abbr: "AL", name: "Alabama", epithet: "The Crimson Menace",
+    hp: 102, atk: 11, def: 7, chaos: 6, doctrine: "FORCE", personality: "aggressive",
+    primary: { name: "IRON BOWL OFFENSIVE", flavor: "A fully padded line advances in formation." },
+    tactical: { archetype: "rally", name: "HOMECOMING MUSTER", flavor: "The entire town reports. Attendance is not optional." },
+    special: { name: "ROLL TIDE TSUNAMI", flavor: "A crimson wall of linemen advances at regulation speed. Resistance is not regulation." },
+    intel: "Has beaten everyone at football. Maintains records.",
+  },
+  {
+    abbr: "AK", name: "Alaska", epithet: "The Frozen Colossus",
+    hp: 118, atk: 9, def: 9, chaos: 5, doctrine: "CLIMATE", personality: "opportunist",
+    primary: { name: "PIPELINE STRIKE", flavor: "Eight hundred miles of pipeline, repurposed as a blunt instrument." },
+    tactical: { archetype: "sanction", status: "SNOWBOUND", name: "EXPORT WINTER", flavor: "Winter is shipped south. Standard freight." },
+    special: { name: "POLAR VORTEX DELIVERY", flavor: "A cold front with a manifest. Your name is on it." },
+    intel: "Twice the size of Texas. The comparison is filed annually.",
+  },
+  {
+    abbr: "AZ", name: "Arizona", epithet: "The Dry Heat",
+    hp: 96, atk: 10, def: 6, chaos: 6, doctrine: "PSYOPS", personality: "opportunist",
+    primary: { name: "HEAT ADVISORY", flavor: "The advisory is upgraded to a weapons system." },
+    tactical: { archetype: "sanction", status: "BURNING", name: "PAVEMENT PROTOCOL", flavor: "Asphalt at 165 degrees. Contact is discouraged." },
+    special: { name: "DRY HEAT DEATH RAY", flavor: "118 degrees. Officials note it is a dry heat. The distinction is not helping." },
+    intel: "Does not observe daylight saving time. Observes you.",
+  },
+  {
+    abbr: "AR", name: "Arkansas", epithet: "The Rollback",
+    hp: 94, atk: 9, def: 8, chaos: 5, doctrine: "COMMERCE", personality: "opportunist",
+    primary: { name: "FREIGHT SURGE", flavor: "Every distribution center ships simultaneously. To you." },
+    tactical: { archetype: "drain", name: "ROLLBACK ORDER", flavor: "Your assets are marked down and collected." },
+    special: { name: "SUPPLY CHAIN CRUSH", flavor: "All trucks converge. ETA: now. Signature required." },
+    intel: "Home of Walmart. Logistics is not a metaphor here.",
+  },
+  {
+    abbr: "CA", name: "California", epithet: "The Golden Ego",
+    hp: 128, atk: 12, def: 5, chaos: 7, doctrine: "PSYOPS", personality: "opportunist",
+    primary: { name: "MEDIA OFFENSIVE", flavor: "Three streaming platforms greenlight your defeat." },
+    tactical: { archetype: "sabotage", name: "PERMIT DENIAL", flavor: "Your offensive fails environmental review." },
+    special: { name: "THE BIG ONE", flavor: "The scheduled earthquake arrives on time. You are the epicenter." },
+    intel: "World's 4th largest economy. Rolling blackouts unrelated.",
+  },
+  {
+    abbr: "CO", name: "Colorado", epithet: "The High Ground",
+    hp: 98, atk: 10, def: 7, chaos: 6, doctrine: "CLIMATE", personality: "opportunist",
+    primary: { name: "AVALANCHE RELEASE", flavor: "Controlled release. Direction: yours." },
+    tactical: { archetype: "sanction", status: "SNOWBOUND", name: "ALTITUDE ORDER", flavor: "The air is reassigned to higher elevations." },
+    special: { name: "ALTITUDE ADJUSTMENT", flavor: "Oxygen levels are revised downward. Your lungs file a formal complaint." },
+    intel: "Holds the high ground. All of it.",
+  },
+  {
+    abbr: "CT", name: "Connecticut", epithet: "The Quiet Money",
+    hp: 90, atk: 10, def: 7, chaos: 4, doctrine: "COMMERCE", personality: "bulwark",
+    primary: { name: "PORTFOLIO STRIKE", flavor: "Your position is shorted with conviction." },
+    tactical: { archetype: "sabotage", name: "QUARTERLY REVIEW", flavor: "Your performance is discussed." },
+    special: { name: "HEDGE FUND AUDIT", flavor: "Your assets are liquidated. The paperwork is immaculate." },
+    intel: "Technically New England. Financially a jurisdiction.",
+  },
+  {
+    abbr: "DE", name: "Delaware", epithet: "The Fine Print",
+    hp: 84, atk: 9, def: 10, chaos: 4, doctrine: "COMMERCE", personality: "bulwark",
+    primary: { name: "SERVICE OF PROCESS", flavor: "You have been served. Repeatedly. At speed." },
+    tactical: { archetype: "pierce", name: "JURISDICTION CLAIM", flavor: "Your defenses are ruled inadmissible." },
+    special: { name: "SHELL CORP SUMMON", flavor: "You are now incorporated in Delaware. Liabilities transfer immediately." },
+    intel: "One million residents. Two million registered corporations.",
+  },
+  {
+    abbr: "FL", name: "Florida", epithet: "The Unsupervised",
+    hp: 110, atk: 11, def: 4, chaos: 10, doctrine: "CLIMATE", personality: "erratic",
+    primary: { name: "AIRBOAT CAVALRY", flavor: "Airboats. In formation. Nobody authorized this." },
+    tactical: { archetype: "gambit", name: "UNSUPERVISED OPERATION", flavor: "Outcome unknown. Supervision declined." },
+    special: { name: "FLORIDA MAN RAMPAGE", flavor: "Subject is shirtless, calm, and in possession of an airboat. Casualties expected." },
+    intel: "The incident reports are filed hourly. By volume.",
+  },
+  {
+    abbr: "GA", name: "Georgia", epithet: "The Layover",
+    hp: 106, atk: 10, def: 7, chaos: 6, doctrine: "COMMERCE", personality: "opportunist",
+    primary: { name: "HUB CLOSURE", flavor: "Every connection through Atlanta is cancelled. Including yours." },
+    tactical: { archetype: "drain", name: "LAYOVER LEVY", flavor: "Terminal fees are extracted from the stranded." },
+    special: { name: "ETERNAL ATL LAYOVER", flavor: "You are rerouted through Atlanta indefinitely. Gate information to follow." },
+    intel: "All routes connect through Hartsfield-Jackson. This one will too.",
+  },
+  {
+    abbr: "HI", name: "Hawaii", epithet: "The Hostile Paradise",
+    hp: 92, atk: 9, def: 8, chaos: 5, doctrine: "CLIMATE", personality: "opportunist",
+    primary: { name: "LAVA FLOW ADVISORY", flavor: "The flow is slow, certain, and headed your way." },
+    tactical: { archetype: "drain", name: "TOURISM RECLAMATION", flavor: "Your visitors, revenue, and morale are repatriated." },
+    special: { name: "VOLCANIC CHECKOUT", flavor: "Checkout is enforced by lava. Reviews are closed." },
+    intel: "Paradise, with an active volcano and a long memory.",
+  },
+  {
+    abbr: "ID", name: "Idaho", epithet: "The Undisclosed",
+    hp: 90, atk: 10, def: 7, chaos: 5, doctrine: "PSYOPS", personality: "opportunist",
+    primary: { name: "SUBSURFACE OPERATION", flavor: "Something was planted. Something was harvested. No further comment." },
+    tactical: { archetype: "pierce", name: "UNDISCLOSED PAYLOAD", flavor: "Contents classified. Impact is not." },
+    special: { name: "BALLISTIC SPUD STRIKE", flavor: "Weapons-grade russets enter low orbit. Reentry is scheduled." },
+    intel: "The potatoes are public record. Nothing else is.",
+  },
+  {
+    abbr: "IL", name: "Illinois", epithet: "The Deep Dish",
+    hp: 112, atk: 11, def: 6, chaos: 6, doctrine: "COMMERCE", personality: "opportunist",
+    primary: { name: "COMMODITIES DUMP", flavor: "The futures market lands on you at spot price." },
+    tactical: { archetype: "siege", name: "DEEP DISH ORDNANCE", flavor: "Forty pounds of casserole, delivered from altitude." },
+    special: { name: "DEEP DISH AIRDROP", flavor: "The payload is labeled 'pizza.' The label is under review." },
+    intel: "Considers the pizza question settled. Enforces the settlement.",
+  },
+  {
+    abbr: "IN", name: "Indiana", epithet: "The Left Turn",
+    hp: 96, atk: 10, def: 7, chaos: 5, doctrine: "PSYOPS", personality: "opportunist",
+    primary: { name: "PACE LAP", flavor: "Thirty-three cars form up behind you. The menace is procedural." },
+    tactical: { archetype: "barrage", name: "500 LAPS", flavor: "Repeated high-speed passes. Left turns only." },
+    special: { name: "500 LEFT TURNS", flavor: "The field circles at 230mph. You are the infield." },
+    intel: "One race. Unlimited confidence.",
+  },
+  {
+    abbr: "IA", name: "Iowa", epithet: "The Quiet Acreage",
+    hp: 92, atk: 9, def: 8, chaos: 5, doctrine: "PSYOPS", personality: "bulwark",
+    primary: { name: "HARVEST DIRECTIVE", flavor: "The combines mobilize before dawn. As always." },
+    tactical: { archetype: "sanction", status: "DISORIENTED", name: "MAZE PROTOCOL", flavor: "You are escorted into the corn. Exit unlisted." },
+    special: { name: "CORN MAZE ENTRAPMENT", flavor: "The maze is entered. The maze is not exited. The corn takes notes." },
+    intel: "First to caucus. First to strike.",
+  },
+  {
+    abbr: "KS", name: "Kansas", epithet: "The Confirmed Flatland",
+    hp: 90, atk: 10, def: 7, chaos: 6, doctrine: "CLIMATE", personality: "opportunist",
+    primary: { name: "PREVAILING WINDS", flavor: "The wind arrives sweeping down the plain. Armed." },
+    tactical: { archetype: "gambit", name: "TORNADO WARNING", flavor: "Touchdown probability: 50%. Consequences: total." },
+    special: { name: "TWISTER TOSS", flavor: "You are relocated 400 feet vertically. Return is not scheduled." },
+    intel: "Measurably flatter than a pancake. Peer-reviewed.",
+  },
+  {
+    abbr: "KY", name: "Kentucky", epithet: "The Barrel-Aged",
+    hp: 96, atk: 11, def: 6, chaos: 6, doctrine: "FORCE", personality: "aggressive",
+    primary: { name: "CAVALRY CHARGE", flavor: "Thoroughbreds at full gallop. The bourbon travels with them." },
+    tactical: { archetype: "sanction", status: "BURNING", name: "BARREL PROOF", flavor: "Cask strength. Open flame. Adjacent to you." },
+    special: { name: "BOURBON MOLOTOV", flavor: "Aged twelve years in oak. Airborne for two seconds. Proof: sufficient." },
+    intel: "More bourbon barrels than residents. The barrels are organized.",
+  },
+  {
+    abbr: "LA", name: "Louisiana", epithet: "The Good Times",
+    hp: 98, atk: 11, def: 5, chaos: 8, doctrine: "CLIMATE", personality: "aggressive",
+    primary: { name: "SECOND LINE ADVANCE", flavor: "The parade advances. The parade does not yield." },
+    tactical: { archetype: "drain", name: "GUMBO REQUISITION", flavor: "Your reserves are added to the pot." },
+    special: { name: "MARDI GRAS STAMPEDE", flavor: "Ten thousand floats. No brakes on file. Beads reach terminal velocity." },
+    intel: "Laissez les bons temps rouler. Trajectory: yours.",
+  },
+  {
+    abbr: "ME", name: "Maine", epithet: "The Polite Danger",
+    hp: 88, atk: 9, def: 9, chaos: 4, doctrine: "CLIMATE", personality: "bulwark",
+    primary: { name: "LOBSTER BOAT PICKET", flavor: "The fleet forms a line. The line tightens." },
+    tactical: { archetype: "sanction", status: "SNOWBOUND", name: "NOR'EASTER NOTICE", flavor: "The notice is the storm." },
+    special: { name: "LOBSTER PINCER MOVEMENT", flavor: "A textbook pincer movement. The lobsters wrote the textbook." },
+    intel: "Quiet, remote, and heavily clawed.",
+  },
+  {
+    abbr: "MD", name: "Maryland", epithet: "The Seasoned Veteran",
+    hp: 92, atk: 10, def: 7, chaos: 5, doctrine: "PSYOPS", personality: "opportunist",
+    primary: { name: "BLUE CRAB OFFENSIVE", flavor: "The claws are rated for this." },
+    tactical: { archetype: "sanction", status: "EXPOSED", name: "SEASONING DEPLOYMENT", flavor: "Visibility drops to zero. Flavor rises to hazardous." },
+    special: { name: "OLD BAY BLACKOUT", flavor: "The seasoning storm makes landfall. Delicious. Blinding. Sustained." },
+    intel: "Applies Old Bay to everything. This conflict qualifies.",
+  },
+  {
+    abbr: "MA", name: "Massachusetts", epithet: "The Original Menace",
+    hp: 104, atk: 12, def: 6, chaos: 6, doctrine: "PSYOPS", personality: "aggressive",
+    primary: { name: "REVOLUTIONARY PRECEDENT", flavor: "This has been done before. By them. To an empire." },
+    tactical: { archetype: "sabotage", name: "PEER REVIEW", flavor: "Your strategy is graded. Harshly." },
+    special: { name: "WICKED SMAAHT BOMB", flavor: "Condescension detonates at academic scale. Survivors are corrected." },
+    intel: "Founded the country. Retains editorial rights.",
+  },
+  {
+    abbr: "MI", name: "Michigan", epithet: "The Third Coast",
+    hp: 106, atk: 10, def: 7, chaos: 6, doctrine: "CLIMATE", personality: "opportunist",
+    primary: { name: "LAKE EFFECT FRONT", flavor: "The lakes contribute. None of them are calm." },
+    tactical: { archetype: "rally", name: "ASSEMBLY LINE SHIFT", flavor: "Production doubles. Overtime is mandatory." },
+    special: { name: "LAKE EFFECT SLAM", flavor: "All four bordering lakes arrive at once. The fifth sends regards." },
+    intel: "Borders four Great Lakes. Considers them assets.",
+  },
+  {
+    abbr: "MN", name: "Minnesota", epithet: "The Apology",
+    hp: 100, atk: 9, def: 9, chaos: 4, doctrine: "CLIMATE", personality: "bulwark",
+    primary: { name: "SNOW EMERGENCY", flavor: "The plows advance in echelon. Politely." },
+    tactical: { archetype: "sanction", status: "SNOWBOUND", name: "WIND CHILL ADVISORY", flavor: "The advisory is sincere. So is the cold." },
+    special: { name: "OPE, SORRY", flavor: "The apology is sincere. The flanking maneuver is complete." },
+    intel: "10,000 lakes. All of them cold about it.",
+  },
+  {
+    abbr: "MS", name: "Mississippi", epithet: "The Unspellable",
+    hp: 90, atk: 9, def: 8, chaos: 5, doctrine: "PSYOPS", personality: "opportunist",
+    primary: { name: "RIVER CREST", flavor: "The river handles this personally." },
+    tactical: { archetype: "sanction", status: "DISORIENTED", name: "SPELLING REQUIREMENT", flavor: "Eleven letters. Four repeats. Zero mercy." },
+    special: { name: "SPELLING HEX", flavor: "M-I-S-S-I-S-S-I-P-P-I. Subjects report letter-based disorientation." },
+    intel: "The river does the enforcement. The state does the filing.",
+  },
+  {
+    abbr: "MO", name: "Missouri", epithet: "The Skeptic",
+    hp: 96, atk: 10, def: 7, chaos: 6, doctrine: "FORCE", personality: "aggressive",
+    primary: { name: "SHOW-ME MANDATE", flavor: "Proof is demanded. Pavement is provided." },
+    tactical: { archetype: "pierce", name: "GATEWAY BREACH", flavor: "The arch was a door the whole time." },
+    special: { name: "SHOW-ME SUPLEX", flavor: "Evidence is requested. The ground supplies it." },
+    intel: "Believes nothing it has not personally suplexed.",
+  },
+  {
+    abbr: "MT", name: "Montana", epithet: "The Big Sky",
+    hp: 94, atk: 10, def: 8, chaos: 4, doctrine: "FORCE", personality: "bulwark",
+    primary: { name: "OPEN RANGE VOLLEY", flavor: "The herd is deputized." },
+    tactical: { archetype: "rally", name: "BIG SKY MUSTER", flavor: "The horizon reports for duty." },
+    special: { name: "BIG SKY DROP", flavor: "The sky is released. It is a very big sky." },
+    intel: "More cattle than people. The cattle are aligned.",
+  },
+  {
+    abbr: "NE", name: "Nebraska", epithet: "The Gentle Roller",
+    hp: 92, atk: 9, def: 8, chaos: 4, doctrine: "CLIMATE", personality: "bulwark",
+    primary: { name: "CENTER PIVOT SWEEP", flavor: "Irrigation arms rotate to combat configuration." },
+    tactical: { archetype: "drain", name: "HUSK PROCEDURE", flavor: "Standard husking. You are the corn." },
+    special: { name: "FULL HUSK", flavor: "Complete husking achieved. Procedure notes: routine." },
+    intel: "Officially 'gently rolling.' Officially.",
+  },
+  {
+    abbr: "NV", name: "Nevada", epithet: "The House",
+    hp: 94, atk: 11, def: 5, chaos: 9, doctrine: "COMMERCE", personality: "erratic",
+    primary: { name: "HOUSE ODDS", flavor: "The odds are printed. The odds are wrong. The house knew." },
+    tactical: { archetype: "gambit", name: "ALL IN", flavor: "Everything on red. The wheel is loaded." },
+    special: { name: "HOUSE ALWAYS WINS", flavor: "Your HP is wagered without consent. The house collects." },
+    intel: "What happens there stays there. Including combatants.",
+  },
+  {
+    abbr: "NH", name: "New Hampshire", epithet: "The Granite Ultimatum",
+    hp: 88, atk: 12, def: 5, chaos: 7, doctrine: "FORCE", personality: "aggressive",
+    primary: { name: "GRANITE CHARGE", flavor: "No brakes are installed. None were requested." },
+    tactical: { archetype: "pierce", name: "LIVE FREE BREACH", flavor: "Restraints are declined on principle." },
+    special: { name: "LIVE FREE OR DIE CHARGE", flavor: "The plates were a notice. This is the follow-up." },
+    intel: "The license plates were the first warning.",
+  },
+  {
+    abbr: "NJ", name: "New Jersey", epithet: "The Exit",
+    hp: 100, atk: 11, def: 6, chaos: 7, doctrine: "COMMERCE", personality: "opportunist",
+    primary: { name: "TURNPIKE ENFORCEMENT", flavor: "Lane closures deploy around you. All lanes." },
+    tactical: { archetype: "sanction", status: "TOLLED", name: "TOLL SCHEDULE", flavor: "Fees accrue hourly. Interest compounds." },
+    special: { name: "TOLL AVALANCHE", flavor: "E-ZPass: DECLINED. The outstanding balance arrives physically." },
+    intel: "Knows which exit. Will not say.",
+  },
+  {
+    abbr: "NM", name: "New Mexico", epithet: "The Declassified",
+    hp: 90, atk: 10, def: 7, chaos: 7, doctrine: "PSYOPS", personality: "erratic",
+    primary: { name: "HIGH DESERT OPERATION", flavor: "Something bright occurs over the desert. No further questions." },
+    tactical: { archetype: "gambit", name: "WEATHER BALLOON", flavor: "It is a weather balloon. Probably. Impact pending." },
+    special: { name: "ROSWELL AIRSTRIKE", flavor: "The incident is declassified, armed, and inbound." },
+    intel: "Not new. Not Mexico. Not fully documented.",
+  },
+  {
+    abbr: "NY", name: "New York", epithet: "The Empire",
+    hp: 124, atk: 13, def: 5, chaos: 7, doctrine: "COMMERCE", personality: "opportunist",
+    primary: { name: "MARKET CORRECTION", flavor: "You are the correction." },
+    tactical: { archetype: "sabotage", name: "RENT ASSESSMENT", flavor: "Your position's rent triples." },
+    special: { name: "RAT KING SUMMON", flavor: "The rats have organized. Their demands are specific: you." },
+    intel: "Is walking here. Currently.",
+  },
+  {
+    abbr: "NC", name: "North Carolina", epithet: "The Pit Crew",
+    hp: 100, atk: 10, def: 7, chaos: 5, doctrine: "COMMERCE", personality: "opportunist",
+    primary: { name: "PIT STOP PRECISION", flavor: "Four tires. Twelve seconds. Zero sympathy." },
+    tactical: { archetype: "barrage", name: "FLIGHT TEST SERIES", flavor: "First in flight. Repeatedly. At you." },
+    special: { name: "PIT ROAD MANEUVER", flavor: "A flawless pit maneuver is executed. You were the wall." },
+    intel: "First in flight. Files the paperwork to prove it.",
+  },
+  {
+    abbr: "ND", name: "North Dakota", epithet: "The Unbothered",
+    hp: 88, atk: 8, def: 11, chaos: 3, doctrine: "CLIMATE", personality: "bulwark",
+    primary: { name: "WHITEOUT ADVANCE", flavor: "Visibility zero. Momentum unaffected." },
+    tactical: { archetype: "sanction", status: "SNOWBOUND", name: "-40 STANDARD", flavor: "Standard conditions. For them." },
+    special: { name: "BLIZZARD OF INDIFFERENCE", flavor: "It is 40 below. This is not considered news locally." },
+    intel: "Confirmed visitors: dozens.",
+  },
+  {
+    abbr: "OH", name: "Ohio", epithet: "The Inevitable",
+    hp: 104, atk: 11, def: 6, chaos: 9, doctrine: "PSYOPS", personality: "erratic",
+    primary: { name: "INTERSTATE CONVERGENCE", flavor: "All roads lead here. That was the plan." },
+    tactical: { archetype: "sanction", status: "DISORIENTED", name: "OHIO PROXIMITY", flavor: "Prolonged exposure to Ohio. Effects documented." },
+    special: { name: "BECOME OHIO", status: "BECOMING_OHIO", flavor: "The transformation begins. Officials decline to explain. It is already too late." },
+    intel: "Cannot be explained. Only survived.",
+  },
+  {
+    abbr: "OK", name: "Oklahoma", epithet: "The Premature Claim",
+    hp: 94, atk: 10, def: 6, chaos: 6, doctrine: "FORCE", personality: "aggressive",
+    primary: { name: "LAND RUSH", flavor: "Your territory is claimed twelve minutes early. Precedent cited." },
+    tactical: { archetype: "rally", name: "SOONER MUSTER", flavor: "They were ready before the signal. As usual." },
+    special: { name: "SOONER STAMPEDE", flavor: "The claim is filed before the law permits. The law adjusts." },
+    intel: "The wind comes sweeping down the plain. Armed.",
+  },
+  {
+    abbr: "OR", name: "Oregon", epithet: "The Small Batch",
+    hp: 94, atk: 10, def: 7, chaos: 6, doctrine: "PSYOPS", personality: "opportunist",
+    primary: { name: "SMALL BATCH SORTIE", flavor: "Hand-thrown. Locally sourced. Fully airborne." },
+    tactical: { archetype: "sabotage", name: "ZONING OBJECTION", flavor: "Your offensive is rezoned residential." },
+    special: { name: "ARTISANAL DRONE STRIKE", flavor: "The ordnance is single-origin. The strike is curated." },
+    intel: "Keeps it weird. Keeps records of the weirdness.",
+  },
+  {
+    abbr: "PA", name: "Pennsylvania", epithet: "The Greased Pole",
+    hp: 108, atk: 11, def: 6, chaos: 7, doctrine: "FORCE", personality: "aggressive",
+    primary: { name: "KEYSTONE ASSAULT", flavor: "The arch holds. You will not." },
+    tactical: { archetype: "barrage", name: "SNOWBALL DISCIPLINE", flavor: "Batteries included. Historically." },
+    special: { name: "PHILLY FAN FRENZY", flavor: "The poles were greased per procedure. The fans climbed them anyway." },
+    intel: "Threw batteries at Santa. The file remains open.",
+  },
+  {
+    abbr: "RI", name: "Rhode Island", epithet: "The Concentrated Rage",
+    hp: 80, atk: 13, def: 5, chaos: 7, doctrine: "PSYOPS", personality: "aggressive",
+    primary: { name: "FULL COMMITMENT", flavor: "The smallest state commits 100% of everything." },
+    tactical: { archetype: "rally", name: "SPITE RESERVES", flavor: "Spite reserves are tapped. They are deep." },
+    special: { name: "NAPOLEON COMPLEX", flavor: "Recorded rage exceeds landmass by a factor of ten." },
+    intel: "1,214 square miles. All of them furious.",
+  },
+  {
+    abbr: "SC", name: "South Carolina", epithet: "The Reoffender",
+    hp: 92, atk: 10, def: 6, chaos: 6, doctrine: "FORCE", personality: "aggressive",
+    primary: { name: "PALMETTO VOLLEY", flavor: "The palmettos were load-bearing. Were." },
+    tactical: { archetype: "sanction", status: "BURNING", name: "SWEET TEA RATION", flavor: "Sugar content exceeds munitions grade." },
+    special: { name: "SWEET TEA OVERDOSE", flavor: "One glass is administered. Cardiology is notified." },
+    intel: "Has done this before. Cites the experience.",
+  },
+  {
+    abbr: "SD", name: "South Dakota", epithet: "The Monument",
+    hp: 90, atk: 10, def: 8, chaos: 5, doctrine: "FORCE", personality: "opportunist",
+    primary: { name: "MONUMENT WATCH", flavor: "The heads have noticed you." },
+    tactical: { archetype: "siege", name: "GRANITE COMMITMENT", flavor: "Granite is committed. The recoil is geological." },
+    special: { name: "RUSHMORE HEADBUTT", flavor: "Four presidents. One granite forehead. The incident report writes itself." },
+    intel: "The heads are always watching. This is documented.",
+  },
+  {
+    abbr: "TN", name: "Tennessee", epithet: "The Medically Inadvisable",
+    hp: 98, atk: 11, def: 6, chaos: 6, doctrine: "FORCE", personality: "aggressive",
+    primary: { name: "GRAND OLE VOLLEY", flavor: "Every honky-tonk opens fire in key." },
+    tactical: { archetype: "sanction", status: "BURNING", name: "HOT CHICKEN RATION", flavor: "The heat rating is redacted." },
+    special: { name: "HOT CHICKEN NAPALM", flavor: "Nashville hot. Medically inadvisable. Militarily decisive." },
+    intel: "The chicken is classified as a weapons program.",
+  },
+  {
+    abbr: "TX", name: "Texas", epithet: "The Bigger One",
+    hp: 130, atk: 13, def: 6, chaos: 6, doctrine: "FORCE", personality: "aggressive",
+    primary: { name: "FULL MOBILIZATION", flavor: "Everything is deployed. Everything is bigger." },
+    tactical: { archetype: "siege", name: "LONE STAR SIEGE", flavor: "The siege is oversized. So is the recoil." },
+    special: { name: "EVERYTHING'S BIGGER", flavor: "Texas produces a larger attack than yours. This is policy." },
+    intel: "Was its own country. Keeps the paperwork current.",
+  },
+  {
+    abbr: "UT", name: "Utah", epithet: "The Downline",
+    hp: 92, atk: 9, def: 8, chaos: 5, doctrine: "COMMERCE", personality: "bulwark",
+    primary: { name: "DOWNLINE DEPLOYMENT", flavor: "Your defeat is a business opportunity. For them." },
+    tactical: { archetype: "drain", name: "RECRUITMENT DRIVE", flavor: "Your resources join the network." },
+    special: { name: "MLM RECRUITMENT", flavor: "You are not defeated. You are onboarded. Welcome to the team." },
+    intel: "Would like a moment of your time. It is not optional.",
+  },
+  {
+    abbr: "VT", name: "Vermont", epithet: "The Aggressively Quaint",
+    hp: 84, atk: 9, def: 9, chaos: 4, doctrine: "CLIMATE", personality: "bulwark",
+    primary: { name: "SUGARING SEASON", flavor: "The taps are driven. You are the tree." },
+    tactical: { archetype: "sanction", status: "SNOWBOUND", name: "MUD SEASON", flavor: "Mobility is revoked until further notice." },
+    special: { name: "GRADE-A QUICKSAND", flavor: "Grade A. Dark. Robust. Immobilizing. The state apologizes for nothing." },
+    intel: "Quaint by policy. Armed by tradition.",
+  },
+  {
+    abbr: "VA", name: "Virginia", epithet: "The Disappointed",
+    hp: 102, atk: 10, def: 8, chaos: 4, doctrine: "FORCE", personality: "bulwark",
+    primary: { name: "CONTINENTAL LINE", flavor: "The oldest regiment forms. The muskets are ceremonial. Mostly." },
+    tactical: { archetype: "sabotage", name: "FOUNDERS' CENSURE", flavor: "You are formally condemned in period language." },
+    special: { name: "FOUNDING SÉANCE", flavor: "The founders are consulted. They are disappointed. It lands like artillery." },
+    intel: "Is for lovers. Of precedent.",
+  },
+  {
+    abbr: "WA", name: "Washington", epithet: "The Restructure",
+    hp: 102, atk: 11, def: 6, chaos: 5, doctrine: "COMMERCE", personality: "opportunist",
+    primary: { name: "CLOUD COVERAGE", flavor: "Coverage is total. Precipitation is corporate." },
+    tactical: { archetype: "sabotage", name: "PERFORMANCE REVIEW", flavor: "Your role is deprecated." },
+    special: { name: "ORG RESTRUCTURE", flavor: "Your position is eliminated, effective immediately. A calendar invite follows." },
+    intel: "Classifies the rain as ambience. Classifies you as headcount.",
+  },
+  {
+    abbr: "WV", name: "West Virginia", epithet: "The Almost Heaven",
+    hp: 90, atk: 10, def: 8, chaos: 5, doctrine: "CLIMATE", personality: "opportunist",
+    primary: { name: "MOUNTAIN MOMENTUM", flavor: "The mountains take this personally." },
+    tactical: { archetype: "drain", name: "HOLLOW EXTRACTION", flavor: "Resources are extracted. Historically thorough." },
+    special: { name: "COUNTRY ROADS RECKONING", flavor: "The roads take you home. The destination is not negotiable." },
+    intel: "Almost heaven. The 'almost' is load-bearing.",
+  },
+  {
+    abbr: "WI", name: "Wisconsin", epithet: "The Dairy Bloc",
+    hp: 100, atk: 10, def: 7, chaos: 6, doctrine: "COMMERCE", personality: "opportunist",
+    primary: { name: "DAIRY EMBARGO", flavor: "The cheese supply halts. Withdrawal begins immediately." },
+    tactical: { archetype: "siege", name: "CURD PAYLOAD", flavor: "Fried. Squeaking. Ballistic." },
+    special: { name: "CURD AVALANCHE", flavor: "A wall of fried cheese descends. The squeaking is constant." },
+    intel: "Controls the cheese reserve. Understands what that means.",
+  },
+  {
+    abbr: "WY", name: "Wyoming", epithet: "The Alleged",
+    hp: 86, atk: 9, def: 12, chaos: 5, doctrine: "FORCE", personality: "bulwark",
+    primary: { name: "PHANTOM MANEUVER", flavor: "The attack originates from a state that may not exist." },
+    tactical: { archetype: "pierce", name: "UNVERIFIED STRIKE", flavor: "Cannot be countered. Cannot be confirmed." },
+    special: { name: "DOES NOT EXIST", flavor: "The attacking state cannot be confirmed to exist. The damage can." },
+    intel: "Population 580,000. Allegedly. Never independently verified.",
+  },
 ];
 
 export const STATE_BY_ABBR: Record<string, StateFighter> = Object.fromEntries(
   STATES.map((s) => [s.abbr, s]),
 );
 
-/** Famous grudges. Rival matchups hit 15% harder and the desk loses it. */
+/* ------------------------------------------------------------------ */
+/*  Rivalries — standing grudges on file. +15% ordnance both ways.     */
+/* ------------------------------------------------------------------ */
+
 export const RIVALRIES: [string, string][] = [
   ["OH", "MI"],
   ["TX", "OK"],
@@ -100,6 +489,10 @@ export function areRivals(a: string, b: string): boolean {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Field developments — wire copy, applied without comment            */
+/* ------------------------------------------------------------------ */
+
 export type WarEvent = {
   /** {S} is replaced with the affected state's name */
   headline: string;
@@ -109,98 +502,81 @@ export type WarEvent = {
 
 export const WAR_EVENTS: WarEvent[] = [
   { headline: "GENDER REVEAL PARTY IGNITES {S}'S WESTERN FLANK", hp: -10 },
-  { headline: "{S} DISCOVERS OIL UNDER A CRACKER BARREL", hp: 12 },
-  { headline: "MERCENARY CANADA GEESE DEFECT TO {S}", hype: 25 },
-  { headline: "{S}'S WEATHER APP NOW JUST SAYS 'REVENGE'", hype: 20 },
-  { headline: "FEMA ACCIDENTALLY SHIPS {S} 4,000 TRAMPOLINES", hp: 8 },
-  { headline: "{S} LOSES AN HOUR ARGUING ABOUT DAYLIGHT SAVING TIME", hype: -15 },
-  { headline: "INFLUENCERS OCCUPY {S}'S SUPPLY LINES FOR CONTENT", hp: -8 },
-  { headline: "{S} NATIONAL GUARD DISTRACTED BY A REALLY GOOD DOG", hype: -20 },
-  { headline: "COSTCO SAMPLES SUSTAIN {S}'S ENTIRE FRONT LINE", hp: 10 },
-  { headline: "AN HOA FINES {S}'S INVASION FOR 'UNAPPROVED STRUCTURES'", hp: -6 },
-  { headline: "{S} SIGNS A DEFENSE PACT WITH A REGIONAL WAFFLE CHAIN", hp: 9 },
-  { headline: "13-YEAR-OLDS ON SCOOTERS SEIZE A {S} SUPPLY DEPOT", hp: -9 },
-  { headline: "{S}'S GROUP CHAT LEAKS THE ENTIRE BATTLE PLAN", hype: -18 },
-  { headline: "LOCAL CRYPTID SPOTTED DOING PUSH-UPS FOR {S}", hype: 22 },
-  { headline: "{S} DECLARES A SNOW DAY IN THE MIDDLE OF THE BATTLE", hp: 7 },
-  { headline: "GAS STATION SUSHI RAVAGES {S}'S OFFICER CORPS", hp: -11 },
+  { headline: "SURVEYORS CONFIRM OIL DEPOSIT BENEATH A {S} CRACKER BARREL", hp: 12 },
+  { headline: "CANADA GOOSE UNITS DEFECT TO {S}. HANDLERS UNABLE TO INTERVENE", hype: 25 },
+  { headline: "{S} FORECAST REVISED TO 'RETALIATORY'", hype: 20 },
+  { headline: "FEMA MISROUTES 4,000 TRAMPOLINES TO {S}. USES IDENTIFIED", hp: 8 },
+  { headline: "{S} LOSES ONE HOUR TO A TIME ZONE DISPUTE", hype: -15 },
+  { headline: "CONTENT CREATORS OCCUPY {S} SUPPLY LINES. THROUGHPUT DROPS", hp: -8 },
+  { headline: "{S} GUARD UNIT REASSIGNED TO PARADE DUTY, EFFECTIVE IMMEDIATELY", hype: -20 },
+  { headline: "COSTCO SAMPLE STATIONS SUSTAIN {S} FRONT LINE", hp: 10 },
+  { headline: "{S} OFFENSIVE FINED BY HOA FOR UNAPPROVED STRUCTURES", hp: -6 },
+  { headline: "{S} RATIFIES DEFENSE PACT WITH A REGIONAL WAFFLE CHAIN", hp: 9 },
+  { headline: "MINORS ON SCOOTERS SEIZE {S} FORWARD DEPOT. DEMANDS UNCLEAR", hp: -9 },
+  { headline: "{S} BATTLE PLAN LEAKS VIA GROUP CHAT. SCREENSHOTS CIRCULATE", hype: -18 },
+  { headline: "LOCAL CRYPTID ENDORSES {S}. SIGHTINGS UP 400%", hype: 22 },
+  { headline: "{S} DECLARES A SNOW DAY MID-ENGAGEMENT. READINESS IMPROVES", hp: 7 },
+  { headline: "GAS STATION SUSHI INCAPACITATES {S} OFFICER CORPS", hp: -11 },
 ];
 
-/** Idle ticker filler between breaking news. */
+/** Idle wire between developments. */
 export const TICKER_FILLER: string[] = [
-  "CANADA ISSUES STATEMENT: 'WE'RE NOT MAD, JUST DISAPPOINTED'",
-  "PPV BUYS SURPASS EVERY PREVIOUS WAR COMBINED",
-  "VEGAS ODDS SUSPENDED AFTER OHIO DOES... WHATEVER THAT WAS",
-  "NATIONAL GUARD OF NEUTRAL STATES SELLING FORACLOSED FORTS",
-  "SMITHSONIAN PRE-ORDERS DEBRIS FROM TONIGHT'S MAIN EVENT",
-  "SCHOLARS CONFIRM: THIS IS TECHNICALLY ALLOWED UNDER VIBES",
+  "CANADA CLOSES BORDER. CITES 'ALL OF IT'",
+  "PPV BUYS EXCEED ALL PRIOR WARS COMBINED",
+  "VEGAS SUSPENDS ODDS FOLLOWING THE OHIO INCIDENT",
+  "SMITHSONIAN PLACES ADVANCE HOLD ON TONIGHT'S DEBRIS",
+  "LEGAL SCHOLARS CONFIRM: TECHNICALLY PERMITTED",
   "GEOGRAPHY TEACHERS REPORT RECORD ENGAGEMENT",
-  "MAP MANUFACTURERS BRACE FOR 'SIGNIFICANT REVISIONS'",
-  "THE OTHER 48 STATES ARE WATCHING FROM A DENNY'S",
+  "MAP MANUFACTURERS ANNOUNCE 'SIGNIFICANT REVISIONS'",
+  "NEUTRAL STATES CONVENE EMERGENCY SUMMIT AT A DENNY'S",
+  "FCC RULES THE CONFLICT 'CONTENT'",
 ];
 
-export const MOVE_FLAVOR = {
-  invade: [
-    "{A} sends the boys.",
-    "{A} crosses the border with intent and snacks.",
-    "{A} invades via the scenic route. Devastating AND charming.",
-    "{A} deploys everything in the garage.",
-    "{A} shows up uninvited, like at Thanksgiving.",
-  ],
-  fortify: [
-    "{A} passes emergency legislation. It's mostly vibes.",
-    "{A} digs in behind decorative hay bales.",
-    "{A} holds a town hall and weaponizes the potluck.",
-    "{A} sandbags the border with commemorative merchandise.",
-  ],
-  viralHit: [
-    "{A}'s post goes CATASTROPHICALLY viral. {D} is trending. Negatively.",
-    "{A} drops a diss track. Certified platinum. Certified painful.",
-    "{A} livestreams the offensive. The algorithm smiles.",
-  ],
-  viralMid: [
-    "{A} posts. Modest engagement. Mostly bots.",
-    "{A}'s campaign gets 12 likes. Three are from {D}.",
-  ],
-  viralFail: [
-    "{A} is RATIO'D by its own citizens. Morale implodes.",
-    "{A} posts cringe. The damage is self-inflicted and historic.",
-  ],
-} as const;
+/* ------------------------------------------------------------------ */
+/*  The desk — Hank (play-by-play) and Gen. Whitlock, Ret. (analysis)  */
+/* ------------------------------------------------------------------ */
 
 export const COMMENTARY = {
   hit: [
-    "HANK: That's gonna leave a mark on the census.",
-    "COL. BISCUITS: Beautiful footwork for a landmass.",
-    "HANK: The framers did NOT plan for this.",
-    "COL. BISCUITS: In all my years of state-on-state combat...",
-    "HANK: Somewhere, a cartographer just fainted.",
+    "HANK: That will appear in the census.",
+    "WHITLOCK: Sound execution. Textbook, if the textbook were legal.",
+    "HANK: The cartography desk confirms: that happened.",
+    "WHITLOCK: In thirty years of interstate combat — standard.",
+    "HANK: Infrastructure was harmed in the making of that play.",
   ],
   crit: [
-    "HANK: OH THE HUMANITY! AND THE INFRASTRUCTURE!",
-    "COL. BISCUITS: THAT'S A CONSTITUTIONAL CRISIS OF A HIT!",
-    "HANK: THE RICHTER SCALE JUST UNIONIZED!",
+    "HANK: OH! A CONSTITUTIONAL CRISIS OF A HIT!",
+    "WHITLOCK: Effective. I'll allow it.",
+    "HANK: THE RICHTER SCALE HAS BEEN NOTIFIED!",
   ],
   heal: [
-    "COL. BISCUITS: Smart. Cowardly, but smart.",
-    "HANK: Nothing heals like bureaucracy, folks.",
+    "WHITLOCK: Consolidation. Unglamorous. Correct.",
+    "HANK: Nothing restores a state like emergency powers, folks.",
+  ],
+  status: [
+    "WHITLOCK: A condition has been applied. It will run its course.",
+    "HANK: That one's going to linger.",
   ],
   special: [
-    "HANK: THEY'RE GOING FOR THE SIGNATURE MOVE!",
-    "COL. BISCUITS: I'VE ONLY SEEN THIS IN TRAINING FILMS!",
+    "HANK: SIGNATURE DOCTRINE INBOUND!",
+    "WHITLOCK: I have seen this in training films. The films were classified.",
   ],
   rival: [
-    "HANK: FOLKS, THESE TWO SHARE A BORDER AND A GRUDGE.",
-    "COL. BISCUITS: This rivalry predates several of my marriages.",
+    "HANK: These two share a border and a filing cabinet of grievances.",
+    "WHITLOCK: This grudge predates my commission.",
+  ],
+  jammed: [
+    "WHITLOCK: Signal jammed. Assume the worst.",
+    "HANK: We've lost the intercept, folks. Nobody likes that.",
   ],
   ko: [
     "HANK: AND THAT... IS... CARTOGRAPHY!",
-    "COL. BISCUITS: Somebody call the map people. All of them.",
+    "WHITLOCK: Notify the map office. All of them.",
   ],
 } as const;
 
 export const UNCIVIL_META = {
   title: "NotTyler | Uncivil War®",
   description:
-    "Two states enter. One state gets annexed. The premium pay-per-view of state-on-state combat — a $59.99 value, free because you're a patriot.",
+    "Sanctioned interstate combat, live on pay-per-view. Two states enter. One is annexed. The $59.99 broadcast fee is waived for domestic viewers.",
 };

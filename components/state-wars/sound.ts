@@ -106,8 +106,15 @@ export const sfx = {
     tone({ freq: 523, time: 0.09, type: "triangle", vol: 0.05, delay: 0.08 });
     tone({ freq: 659, time: 0.12, type: "triangle", vol: 0.05, delay: 0.16 });
   },
-  viralFail() {
+  fail() {
     tone({ freq: 300, end: 90, time: 0.35, type: "sawtooth", vol: 0.06 });
+  },
+  status() {
+    tone({ freq: 140, time: 0.18, type: "sawtooth", vol: 0.045 });
+    tone({ freq: 110, time: 0.2, type: "sawtooth", vol: 0.04, delay: 0.14 });
+  },
+  stage() {
+    tone({ freq: 330, end: 494, time: 0.14, type: "triangle", vol: 0.045 });
   },
   special() {
     tone({ freq: 80, end: 640, time: 0.4, type: "sawtooth", vol: 0.07 });

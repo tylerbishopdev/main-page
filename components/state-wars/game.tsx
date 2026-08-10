@@ -1,38 +1,36 @@
 "use client";
 
 /**
- * UNCIVIL WAR® — premium state-on-state combat, live on pay-per-view.
- * Pick a homeland, annex the other 49, become the map.
+ * UNCIVIL WAR® — sanctioned interstate combat, live on pay-per-view.
+ * The premise is the joke. The interface plays it straight.
  */
 
 import NumberFlow from "@number-flow/react";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
-  aiChoose,
+  ARCHETYPE_TAGS,
+  choosePlan,
+  DOCTRINE_BEATS,
+  DOCTRINE_GLYPH,
+  doctrineEdge,
   draftOpponent,
-  fortify,
-  gainHype,
   gauntletScale,
   HYPE_MAX,
   makeCombatant,
   pick,
+  planLabel,
+  resolveAction,
   rollEvent,
-  rollViral,
   specialReady,
-  strikeInvade,
-  strikeSpecial,
-  strikeViral,
+  STATUS_DEFS,
+  tickStatuses,
   type Combatant,
-  type MoveId,
+  type MoveSlot,
+  type Plan,
+  type Resolution,
 } from "@/components/state-wars/engine";
 import {
   isMuted,
@@ -43,7 +41,6 @@ import {
 import {
   areRivals,
   COMMENTARY,
-  MOVE_FLAVOR,
   STATES,
   TICKER_FILLER,
   type StateFighter,
@@ -64,7 +61,7 @@ type Pop = {
   side: Side;
   text: string;
   crit: boolean;
-  kind: "dmg" | "heal";
+  kind: "dmg" | "heal" | "note";
 };
 
 type Battle = {
@@ -74,6 +71,8 @@ type Battle = {
   busy: boolean;
   showVs: boolean;
   rivalMatch: boolean;
+  plan: Plan;
+  intentLabel: string;
   anims: Record<Side, FighterAnim>;
   log: LogEntry[];
   pops: Pop[];
@@ -85,8 +84,6 @@ const BEST_KEY = "uncivil-war:best";
 const MUTE_KEY = "uncivil-war:muted";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-const fill = (tpl: string, a: string, d: string) =>
-  tpl.replaceAll("{A}", a).replaceAll("{D}", d);
 
 /* ------------------------------------------------------------------ */
 /*  Root component                                                     */
@@ -119,16 +116,13 @@ export default function UncivilWar() {
     if (!m) sfx.click();
   };
 
-  const recordRun = useCallback(
-    (count: number) => {
-      setBest((prev) => {
-        const next = Math.max(prev, count);
-        localStorage.setItem(BEST_KEY, String(next));
-        return next;
-      });
-    },
-    [],
-  );
+  const recordRun = useCallback((count: number) => {
+    setBest((prev) => {
+      const next = Math.max(prev, count);
+      localStorage.setItem(BEST_KEY, String(next));
+      return next;
+    });
+  }, []);
 
   /* -------------------------------------------------------------- */
   /*  Battle lifecycle                                               */
@@ -139,17 +133,17 @@ export default function UncivilWar() {
       const player = makeCombatant(home);
       const carry = carryRef.current;
       if (carry) {
-        // between gauntlet fights: mend 65% of missing HP, keep some hype
         const healed = carry.hp + Math.round((player.maxHp - carry.hp) * 0.65);
         player.hp = Math.min(player.maxHp, healed);
         player.hype = Math.min(40, carry.hype);
       }
       const enemy = makeCombatant(foe, gauntletScale(conqueredNow.length));
       const rivalMatch = areRivals(home.abbr, foe.abbr);
+      const plan = choosePlan(enemy, player);
       const log: LogEntry[] = [
         {
           id: nextId(),
-          text: `BOUT ${conqueredNow.length + 1}: ${home.name.toUpperCase()} VS ${foe.name.toUpperCase()}`,
+          text: `ENGAGEMENT ${conqueredNow.length + 1}: ${home.name.toUpperCase()} VS ${foe.name.toUpperCase()}`,
           tone: "system",
         },
       ];
@@ -163,6 +157,8 @@ export default function UncivilWar() {
         busy: false,
         showVs: true,
         rivalMatch,
+        plan,
+        intentLabel: planLabel(enemy, plan),
         anims: { player: "idle", enemy: "idle" },
         log,
         pops: [],
@@ -183,7 +179,7 @@ export default function UncivilWar() {
     startBattle(home, draftOpponent(home.abbr, []), []);
   };
 
-  const nextVictim = () => {
+  const nextEngagement = () => {
     if (!homeland || !battle) return;
     sfx.select();
     carryRef.current = { hp: battle.player.hp, hype: battle.player.hype };
@@ -211,14 +207,14 @@ export default function UncivilWar() {
   /* -------------------------------------------------------------- */
 
   const doMove = useCallback(
-    async (move: MoveId) => {
+    async (slot: MoveSlot) => {
       if (!battle || battle.busy || battle.showVs || phase !== "battle") return;
-      if (move === "special" && !specialReady(battle.player)) return;
+      if (slot === "special" && !specialReady(battle.player)) return;
 
       const b: Battle = {
         ...battle,
-        player: { ...battle.player },
-        enemy: { ...battle.enemy },
+        player: { ...battle.player, statuses: battle.player.statuses.map((s) => ({ ...s })) },
+        enemy: { ...battle.enemy, statuses: battle.enemy.statuses.map((s) => ({ ...s })) },
         anims: { ...battle.anims },
         log: [...battle.log],
         pops: [...battle.pops],
@@ -227,8 +223,8 @@ export default function UncivilWar() {
       const commit = () =>
         setBattle({
           ...b,
-          player: { ...b.player },
-          enemy: { ...b.enemy },
+          player: { ...b.player, statuses: b.player.statuses.map((s) => ({ ...s })) },
+          enemy: { ...b.enemy, statuses: b.enemy.statuses.map((s) => ({ ...s })) },
           anims: { ...b.anims },
           log: [...b.log],
           pops: [...b.pops],
@@ -236,113 +232,124 @@ export default function UncivilWar() {
         });
       const say = (text: string, tone: LogTone) =>
         b.log.unshift({ id: nextId(), text, tone });
-      const popDmg = (side: Side, n: number, crit: boolean) =>
-        b.pops.push({ id: nextId(), side, text: `-${n}`, crit, kind: "dmg" });
-      const popHeal = (side: Side, n: number) =>
-        b.pops.push({ id: nextId(), side, text: `+${n}`, crit: false, kind: "heal" });
+      const pop = (side: Side, text: string, kind: Pop["kind"], crit = false) =>
+        b.pops.push({ id: nextId(), side, text, crit, kind });
 
       b.busy = true;
       commit();
 
-      const act = async (side: Side, chosen: MoveId) => {
-        // settle any leftover hurt/lunge pose so keyframes can re-trigger
+      const act = async (side: Side, chosen: MoveSlot) => {
         b.anims.player = "idle";
         b.anims.enemy = "idle";
         const atkSide = side;
         const defSide: Side = side === "player" ? "enemy" : "player";
         const attacker = side === "player" ? b.player : b.enemy;
         const defender = side === "player" ? b.enemy : b.player;
-        const A = attacker.state.name;
-        const D = defender.state.name;
+        const tag = `[${attacker.state.abbr}]`;
 
-        const landHit = (dmg: number, crit: boolean) => {
-          defender.hp = Math.max(0, defender.hp - dmg);
-          if (defender.shield < 1) defender.shield = 1;
-          attacker.hype = gainHype(attacker, 16 + (crit ? 8 : 0));
-          defender.hype = gainHype(defender, 12);
-          popDmg(defSide, dmg, crit);
-          b.anims[defSide] = "hurt";
-          if (crit) {
-            sfx.crit();
-            say(pick(COMMENTARY.crit), "desk");
-          } else {
-            sfx.hit();
-            if (Math.random() < 0.35) say(pick(COMMENTARY.hit), "desk");
-          }
-        };
-
-        if (chosen === "invade") {
-          attacker.fortifyStreak = 0;
+        if (chosen !== "fortify") {
           b.anims[atkSide] = "lunge";
           commit();
           await sleep(230);
-          const { dmg, crit } = strikeInvade(attacker, defender);
-          say(fill(pick(MOVE_FLAVOR.invade), A, D), "action");
-          landHit(dmg, crit);
+        }
+
+        const res: Resolution = resolveAction(attacker, defender, chosen);
+
+        if (res.failed) {
+          pop(atkSide, "NO ACTION", "note");
+          sfx.fail();
+          say(`${tag} ACTION FAILS. SUBJECT REPORTS DISORIENTATION.`, "system");
           b.anims[atkSide] = "idle";
           commit();
           await sleep(520);
-        } else if (chosen === "fortify") {
-          const { heal } = fortify(attacker);
-          attacker.fortifyStreak += 1;
-          attacker.hp = Math.min(attacker.maxHp, attacker.hp + heal);
-          attacker.shield = 0.55;
-          attacker.hype = gainHype(attacker, 8);
-          popHeal(atkSide, heal);
-          sfx.heal();
-          say(fill(pick(MOVE_FLAVOR.fortify), A, D), "action");
-          if (Math.random() < 0.3) say(pick(COMMENTARY.heal), "desk");
-          commit();
-          await sleep(600);
-        } else if (chosen === "viral") {
-          attacker.fortifyStreak = 0;
-          b.anims[atkSide] = "lunge";
-          commit();
-          await sleep(230);
-          const outcome = rollViral();
-          const { dmg, crit } = strikeViral(attacker, defender, outcome);
-          if (outcome === "fail") {
-            attacker.hp = Math.max(0, attacker.hp - dmg);
-            defender.hype = gainHype(defender, 10);
-            popDmg(atkSide, dmg, false);
-            b.anims[atkSide] = "hurt";
-            sfx.viralFail();
-            say(fill(pick(MOVE_FLAVOR.viralFail), A, D), "action");
-          } else {
-            say(
-              fill(
-                pick(outcome === "hit" ? MOVE_FLAVOR.viralHit : MOVE_FLAVOR.viralMid),
-                A,
-                D,
-              ),
-              "action",
-            );
-            landHit(dmg, crit);
-            attacker.hype = gainHype(attacker, outcome === "hit" ? 6 : 0);
-          }
-          b.anims[atkSide] = "idle";
-          commit();
-          await sleep(520);
-        } else {
-          // SPECIAL
-          attacker.fortifyStreak = 0;
+          return;
+        }
+
+        say(`${tag} ${res.moveName} — ${res.flavor}`, "action");
+        if (chosen === "special") {
+          say(pick(COMMENTARY.special), "desk");
           sfx.special();
+          commit();
+          await sleep(420);
+        }
+
+        // damage instances, staggered so a barrage reads as a barrage
+        let anyCrit = false;
+        for (let i = 0; i < res.hits.length; i++) {
+          const h = res.hits[i];
+          anyCrit = anyCrit || h.crit;
+          pop(defSide, `-${h.dmg}`, "dmg", h.crit);
+          b.anims[defSide] = "hurt";
+          if (h.crit) sfx.crit();
+          else sfx.hit();
+          commit();
+          if (i < res.hits.length - 1) {
+            await sleep(200);
+            b.anims[defSide] = "idle";
+            commit();
+            await sleep(60);
+          }
+        }
+        if (res.hits.length > 0) {
+          if (anyCrit) say(pick(COMMENTARY.crit), "desk");
+          else if (Math.random() < 0.3) say(pick(COMMENTARY.hit), "desk");
+        }
+
+        if (res.intercepted) {
+          pop(atkSide, "INTERCEPTED", "note");
+          sfx.fail();
+          say(`${tag} OPERATION INTERCEPTED. ${defender.state.name.toUpperCase()} GAINS INITIATIVE.`, "system");
+        }
+        if (res.selfDamage > 0) {
+          await sleep(220);
+          pop(atkSide, `-${res.selfDamage}`, "dmg");
+          b.anims[atkSide] = "hurt";
+          sfx.hit();
+          say(`${tag} RECOIL ABSORBED: −${res.selfDamage}.`, "system");
+          commit();
+        }
+        if (res.healSelf > 0) {
+          pop(atkSide, `+${res.healSelf}`, "heal");
+          sfx.heal();
+          if (chosen === "fortify") {
+            say(`${tag} EMERGENCY POWERS — ASSETS RESTORED, POSITION BRACED.`, "system");
+            if (Math.random() < 0.3) say(pick(COMMENTARY.heal), "desk");
+          }
+          commit();
+        }
+        if (res.cleansed) {
+          say(`${tag} CONDITION SUSPENDED: ${STATUS_DEFS[res.cleansed].label}.`, "system");
+        }
+        if (res.statusApplied) {
+          const def = STATUS_DEFS[res.statusApplied];
+          pop(defSide, def.label, "note");
+          sfx.status();
           say(
-            `${A.toUpperCase()} UNLEASHES ${attacker.state.special.name}!`,
+            `CONDITION APPLIED TO ${defender.state.name.toUpperCase()}: ${def.label} (${def.desc}).`,
+            "event",
+          );
+          if (Math.random() < 0.35) say(pick(COMMENTARY.status), "desk");
+          commit();
+        }
+        if (res.stageSelf > 0) {
+          pop(atkSide, `ATK +${res.stageSelf}`, "note");
+          sfx.stage();
+          say(`${tag} OFFENSIVE CAPACITY INCREASED (STAGE ${attacker.atkStage >= 0 ? "+" : ""}${attacker.atkStage}).`, "system");
+          commit();
+        }
+        if (res.stageEnemy < 0) {
+          pop(defSide, `ATK ${res.stageEnemy}`, "note");
+          sfx.stage();
+          say(
+            `${defender.state.name.toUpperCase()} OFFENSIVE CAPACITY REDUCED (STAGE ${defender.atkStage >= 0 ? "+" : ""}${defender.atkStage}).`,
             "system",
           );
-          say(pick(COMMENTARY.special), "desk");
-          b.anims[atkSide] = "lunge";
           commit();
-          await sleep(560);
-          const { dmg } = strikeSpecial(attacker, defender);
-          attacker.hype = 0;
-          say(attacker.state.special.flavor, "action");
-          landHit(dmg, true);
-          b.anims[atkSide] = "idle";
-          commit();
-          await sleep(620);
         }
+
+        b.anims[atkSide] = "idle";
+        commit();
+        await sleep(chosen === "special" ? 620 : 520);
       };
 
       const finish = async (winner: Side) => {
@@ -367,17 +374,44 @@ export default function UncivilWar() {
       };
 
       // --- player acts ---
-      await act("player", move);
+      await act("player", slot);
       if (b.enemy.hp <= 0) return finish("player");
-      if (b.player.hp <= 0) return finish("enemy"); // viral backfire KO
+      if (b.player.hp <= 0) return finish("enemy"); // recoil can end a campaign
 
-      // --- enemy acts ---
+      // --- enemy executes the telegraphed plan ---
       await sleep(420);
-      await act("enemy", aiChoose(b.enemy, b.player));
+      await act("enemy", b.plan.slot);
       if (b.player.hp <= 0) return finish("enemy");
       if (b.enemy.hp <= 0) return finish("player");
 
-      // --- end-of-round chaos ---
+      // --- conditions run their course ---
+      for (const side of ["player", "enemy"] as Side[]) {
+        const c = side === "player" ? b.player : b.enemy;
+        const ticks = tickStatuses(c);
+        for (const t of ticks) {
+          const def = STATUS_DEFS[t.id];
+          if (t.dmg > 0) {
+            pop(side, `-${t.dmg}`, "dmg");
+            sfx.status();
+            say(
+              t.id === "BECOMING_OHIO"
+                ? `${c.state.name.toUpperCase()} — THE TRANSFORMATION ADVANCES: −${t.dmg}.`
+                : `${c.state.name.toUpperCase()} — ${def.label}: −${t.dmg}.`,
+              "event",
+            );
+          }
+          if (t.expired) {
+            say(`${c.state.name.toUpperCase()} — ${def.label} HAS RUN ITS COURSE.`, "system");
+          }
+        }
+        if (ticks.some((t) => t.dmg > 0)) {
+          commit();
+          await sleep(480);
+        }
+        if (c.hp <= 0) return finish(side === "player" ? "enemy" : "player");
+      }
+
+      // --- field developments ---
       const rolled = rollEvent();
       if (rolled) {
         const target = rolled.onPlayer ? b.player : b.enemy;
@@ -387,14 +421,12 @@ export default function UncivilWar() {
           target.state.name.toUpperCase(),
         );
         if (rolled.event.hp) {
-          target.hp = Math.max(
-            1,
-            Math.min(target.maxHp, target.hp + rolled.event.hp),
-          );
-          if (rolled.event.hp > 0) popHeal(side, rolled.event.hp);
-          else popDmg(side, -rolled.event.hp, false);
+          target.hp = Math.max(1, Math.min(target.maxHp, target.hp + rolled.event.hp));
+          if (rolled.event.hp > 0) pop(side, `+${rolled.event.hp}`, "heal");
+          else pop(side, `${rolled.event.hp}`, "dmg");
         }
-        if (rolled.event.hype) target.hype = gainHype(target, rolled.event.hype);
+        if (rolled.event.hype)
+          target.hype = Math.min(HYPE_MAX, Math.max(0, target.hype + rolled.event.hype));
         sfx.event();
         say(headline, "event");
         b.breaking = [headline, ...b.breaking].slice(0, 6);
@@ -403,6 +435,11 @@ export default function UncivilWar() {
         await sleep(1700);
         b.toast = null;
       }
+
+      // --- next intercept ---
+      b.plan = choosePlan(b.enemy, b.player);
+      b.intentLabel = planLabel(b.enemy, b.plan);
+      if (b.plan.jammed && Math.random() < 0.4) say(pick(COMMENTARY.jammed), "desk");
 
       b.round += 1;
       b.busy = false;
@@ -415,10 +452,10 @@ export default function UncivilWar() {
   useEffect(() => {
     if (phase !== "battle") return;
     const onKey = (e: KeyboardEvent) => {
-      const map: Record<string, MoveId> = {
-        "1": "invade",
-        "2": "fortify",
-        "3": "viral",
+      const map: Record<string, MoveSlot> = {
+        "1": "primary",
+        "2": "tactical",
+        "3": "fortify",
         "4": "special",
       };
       const mv = map[e.key];
@@ -433,7 +470,7 @@ export default function UncivilWar() {
     if (!battle?.showVs) return;
     const t = setTimeout(() => {
       setBattle((prev) => (prev ? { ...prev, showVs: false } : prev));
-    }, 3400);
+    }, 3800);
     return () => clearTimeout(t);
   }, [battle?.showVs]);
 
@@ -448,9 +485,7 @@ export default function UncivilWar() {
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-16 pt-28 sm:px-6">
-      {phase === "select" && (
-        <SelectScreen best={best} onDeclare={declareWar} />
-      )}
+      {phase === "select" && <SelectScreen best={best} onDeclare={declareWar} />}
 
       {phase !== "select" && battle && homeland && (
         <BroadcastFrame
@@ -475,7 +510,7 @@ export default function UncivilWar() {
               homeland={homeland}
               conquered={conquered}
               best={best}
-              onNext={nextVictim}
+              onNext={nextEngagement}
               onRetire={newCampaign}
             />
           )}
@@ -521,6 +556,19 @@ function StatPips({ label, value, max }: { label: string; value: number; max: nu
   );
 }
 
+function DoctrineChip({ doctrine, dark }: { doctrine: StateFighter["doctrine"]; dark?: boolean }) {
+  return (
+    <span
+      title={`${doctrine} SUPPRESSES ${DOCTRINE_BEATS[doctrine]}`}
+      className={`border px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.18em] ${
+        dark ? "border-ink/40 text-ink/80" : "border-primary/50 text-primary"
+      }`}
+    >
+      {doctrine}
+    </span>
+  );
+}
+
 function SelectScreen({
   best,
   onDeclare,
@@ -545,15 +593,17 @@ function SelectScreen({
             <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-70" />
             <span className="relative inline-flex size-2 rounded-full bg-primary" />
           </span>
-          Live pay-per-view
+          Live · PPV-01 · Encrypted feed
         </p>
         <h1 className="font-marlboro text-6xl uppercase leading-[0.9] text-foreground sm:text-8xl">
           Uncivil
-          <span className="block text-primary">War<span className="align-top font-ndot text-2xl sm:text-4xl">®</span></span>
+          <span className="block text-primary">
+            War<span className="align-top font-ndot text-2xl sm:text-4xl">®</span>
+          </span>
         </h1>
         <p className="mx-auto mt-4 max-w-xl font-mono text-[11px] uppercase leading-relaxed tracking-[0.18em] text-muted-foreground">
-          Premium state-on-state combat. Two states enter, one becomes a
-          suburb. A $59.99 value — free, because you&apos;re a patriot.
+          Sanctioned interstate combat. Two states enter. One is annexed.
+          The $59.99 broadcast fee is waived for domestic viewers.
         </p>
         <p className="mt-3 font-advancedled text-xs tracking-[0.25em] text-primary led-flicker">
           MANIFEST RECORD: {best}/49 STATES ANNEXED
@@ -563,7 +613,7 @@ function SelectScreen({
       {/* dossier */}
       <div className="print-panel paper-texture relative mt-10 overflow-hidden p-5 text-ink sm:p-6">
         <div className="brand-microcopy absolute right-4 top-4 hidden text-ink/50 sm:block">
-          dept. of grudges — file 1861-B
+          bureau of interstate hostilities — file 1861-B
         </div>
         {picked ? (
           <div className="grid gap-5 lg:grid-cols-[auto_1fr_auto] lg:items-center">
@@ -572,11 +622,10 @@ function SelectScreen({
                 {picked.abbr}
               </span>
               <div>
-                <p className="font-ndot text-2xl uppercase leading-none">
-                  {picked.name}
-                </p>
-                <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-ink/60">
-                  &ldquo;{picked.epithet}&rdquo;
+                <p className="font-ndot text-2xl uppercase leading-none">{picked.name}</p>
+                <p className="mt-1 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-ink/60">
+                  <span>&ldquo;{picked.epithet}&rdquo;</span>
+                  <DoctrineChip doctrine={picked.doctrine} dark />
                 </p>
                 <div className="mt-3 space-y-1.5">
                   <StatPips label="Body" value={picked.hp} max={130} />
@@ -587,13 +636,26 @@ function SelectScreen({
               </div>
             </div>
             <div className="max-w-md">
-              <p className="brand-label mb-2 text-primary">
-                Signature: {picked.special.name}
-              </p>
-              <p className="font-mono text-xs leading-relaxed text-ink/80">
+              <div className="space-y-1 border-b border-ink/20 pb-2 font-mono text-[10px] uppercase tracking-[0.1em] text-ink/80">
+                <p>
+                  <span className="text-ink/50">Primary · </span>
+                  {picked.primary.name}
+                </p>
+                <p>
+                  <span className="text-ink/50">Tactical · </span>
+                  {picked.tactical.name}
+                  <span className="text-primary"> [{ARCHETYPE_TAGS[picked.tactical.archetype]}]</span>
+                </p>
+                <p>
+                  <span className="text-ink/50">Signature · </span>
+                  {picked.special.name}
+                  <span className="text-ink/50"> (req. 100% hype)</span>
+                </p>
+              </div>
+              <p className="mt-2 font-mono text-xs leading-relaxed text-ink/80">
                 {picked.special.flavor}
               </p>
-              <p className="mt-3 border-t border-ink/20 pt-2 font-mono text-[10px] uppercase leading-relaxed tracking-[0.14em] text-ink/60">
+              <p className="mt-2 font-mono text-[10px] uppercase leading-relaxed tracking-[0.14em] text-ink/60">
                 Intel: {picked.intel}
               </p>
             </div>
@@ -606,21 +668,21 @@ function SelectScreen({
                 Declare war →
               </span>
               <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.25em] text-primary-foreground/80">
-                No takebacks. This is law.
+                Irrevocable upon selection.
               </span>
             </button>
           </div>
         ) : (
           <div className="flex flex-wrap items-center justify-between gap-4">
             <p className="font-ndot text-2xl uppercase text-ink/80">
-              Select your homeland, patriot
+              Designate your homeland
             </p>
             <button
               type="button"
               onClick={() => choose(pick(STATES))}
               className="border-2 border-ink px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.25em] text-ink transition-colors hover:bg-ink hover:text-paper"
             >
-              Draft me randomly, coach
+              Request random assignment
             </button>
           </div>
         )}
@@ -658,7 +720,7 @@ function SelectScreen({
       </div>
 
       <p className="mt-6 text-center font-mono text-[9px] uppercase tracking-[0.25em] text-muted-foreground">
-        49 challengers. One map. Winner takes the whole thing.
+        49 challengers. One map. Total annexation.
       </p>
     </div>
   );
@@ -792,17 +854,54 @@ const fighterVariants = {
   koEnemy: { rotate: 10, y: 26, opacity: 0.5, transition: { duration: 0.5 } },
 };
 
+function ConditionChips({ c }: { c: Combatant }) {
+  return (
+    <div className="mt-3 flex min-h-[18px] flex-wrap gap-1.5">
+      {c.shield < 1 && (
+        <span className="border border-paper/40 px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.16em] text-paper/80">
+          Braced
+        </span>
+      )}
+      {c.atkStage !== 0 && (
+        <span
+          className={`border px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.16em] ${
+            c.atkStage > 0 ? "border-accent/60 text-accent" : "border-primary/60 text-primary"
+          }`}
+        >
+          ATK {c.atkStage > 0 ? `+${c.atkStage}` : c.atkStage}
+        </span>
+      )}
+      {c.statuses.map((s) => (
+        <span
+          key={s.id}
+          title={STATUS_DEFS[s.id].desc}
+          className={`border px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.16em] ${
+            s.id === "BECOMING_OHIO"
+              ? "animate-pulse border-primary bg-primary/15 text-primary"
+              : "border-primary/60 text-primary"
+          }`}
+        >
+          {STATUS_DEFS[s.id].label}
+          {Number.isFinite(s.turns) ? ` ·${s.turns}` : ""}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function FighterCard({
   c,
   side,
   anim,
   pops,
+  intent,
   onClearPop,
 }: {
   c: Combatant;
   side: Side;
   anim: FighterAnim;
   pops: Pop[];
+  intent?: { label: string; jammed: boolean; isSpecial: boolean };
   onClearPop: (id: number) => void;
 }) {
   const variant =
@@ -826,21 +925,22 @@ function FighterCard({
         variants={fighterVariants}
         animate={variant}
         className={`relative border p-4 sm:p-5 ${
-          side === "player"
-            ? "border-paper/30 bg-ink"
-            : "border-primary/40 bg-ink"
+          side === "player" ? "border-paper/30 bg-ink" : "border-primary/40 bg-ink"
         }`}
       >
         <div className="flex items-baseline justify-between gap-2">
           <p className="truncate font-ndot text-base uppercase leading-none text-foreground sm:text-lg">
             {c.state.name}
           </p>
-          <p className="shrink-0 font-mono text-[8px] uppercase tracking-[0.2em] text-muted-foreground">
+          <span className="shrink-0 font-mono text-[8px] uppercase tracking-[0.2em] text-muted-foreground">
             {side === "player" ? "You" : "Them"}
-          </p>
+          </span>
         </div>
-        <p className="mt-1 truncate font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
-          &ldquo;{c.state.epithet}&rdquo;
+        <p className="mt-1 flex items-center gap-2 truncate font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
+          <span className="truncate">&ldquo;{c.state.epithet}&rdquo;</span>
+          <span className="shrink-0 border border-border px-1 py-px text-[7px] tracking-[0.2em] text-muted-foreground">
+            {DOCTRINE_GLYPH[c.state.doctrine]}
+          </span>
         </p>
 
         <div className="my-3 text-center sm:my-4">
@@ -874,7 +974,7 @@ function FighterCard({
           </span>
           {ready && (
             <span className="animate-pulse font-mono text-[8px] uppercase tracking-[0.2em] text-primary">
-              ★ Special ready
+              ★ Signature authorized
             </span>
           )}
         </div>
@@ -882,13 +982,27 @@ function FighterCard({
           <SegBar value={c.hype} max={HYPE_MAX} segments={10} low />
         </div>
 
-        <div className="mt-3 flex min-h-[18px] flex-wrap gap-2">
-          {c.shield < 1 && (
-            <span className="border border-paper/40 px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.18em] text-paper/80">
-              Braced
+        <ConditionChips c={c} />
+
+        {/* SIGINT intercept — enemy card only */}
+        {intent && !ko && (
+          <div className="mt-3 flex items-center gap-2 border-t border-border pt-2">
+            <span className="font-mono text-[8px] uppercase tracking-[0.25em] text-muted-foreground">
+              Sigint
             </span>
-          )}
-        </div>
+            <span
+              className={`truncate font-mono text-[9px] uppercase tracking-[0.12em] ${
+                intent.jammed
+                  ? "text-muted-foreground"
+                  : intent.isSpecial
+                    ? "animate-pulse text-primary"
+                    : "text-accent"
+              }`}
+            >
+              {intent.jammed ? "██████ — SIGNAL JAMMED" : `NEXT: ${intent.label}`}
+            </span>
+          </div>
+        )}
 
         {/* KO stamp */}
         <AnimatePresence>
@@ -917,18 +1031,22 @@ function FighterCard({
               animate={{ opacity: [0, 1, 1, 0], y: -52, scale: p.crit ? 1.6 : 1 }}
               transition={{ duration: 0.95, ease: "easeOut" }}
               onAnimationComplete={() => onClearPop(p.id)}
-              className={`absolute left-1/2 top-1/3 -translate-x-1/2 font-ndot text-4xl sm:text-5xl ${
-                p.kind === "heal"
-                  ? "text-accent"
-                  : p.crit
-                    ? "text-primary drop-shadow-[0_0_18px_rgba(216,58,46,0.9)]"
-                    : "text-paper"
+              className={`absolute left-1/2 top-1/3 -translate-x-1/2 text-center ${
+                p.kind === "note"
+                  ? "whitespace-nowrap font-mono text-sm uppercase tracking-[0.2em] text-accent"
+                  : `font-ndot text-4xl sm:text-5xl ${
+                      p.kind === "heal"
+                        ? "text-accent"
+                        : p.crit
+                          ? "text-primary drop-shadow-[0_0_18px_rgba(216,58,46,0.9)]"
+                          : "text-paper"
+                    }`
               }`}
             >
               {p.text}
               {p.crit && (
                 <span className="block text-center font-mono text-[10px] uppercase tracking-[0.3em]">
-                  Critical!
+                  Critical
                 </span>
               )}
             </motion.span>
@@ -946,29 +1064,45 @@ function BattleScreen({
   onSkipVs,
 }: {
   battle: Battle;
-  onMove: (m: MoveId) => void;
+  onMove: (m: MoveSlot) => void;
   onClearPop: (id: number) => void;
   onSkipVs: () => void;
 }) {
   const { player, enemy } = battle;
   const locked = battle.busy || battle.showVs;
   const ready = specialReady(player);
+  const edge = doctrineEdge(player.state.doctrine, enemy.state.doctrine);
 
   const moves: {
-    id: MoveId;
+    slot: MoveSlot;
     name: string;
     hint: string;
     key: string;
     disabled?: boolean;
     hot?: boolean;
   }[] = [
-    { id: "invade", name: "Send the boys", hint: "Reliable violence", key: "1" },
-    { id: "fortify", name: "Emergency session", hint: "Heal + brace", key: "2" },
-    { id: "viral", name: "Go viral", hint: "High risk content", key: "3" },
     {
-      id: "special",
+      slot: "primary",
+      name: player.state.primary.name,
+      hint: `PRIMARY · ${player.state.doctrine}`,
+      key: "1",
+    },
+    {
+      slot: "tactical",
+      name: player.state.tactical.name,
+      hint: ARCHETYPE_TAGS[player.state.tactical.archetype],
+      key: "2",
+    },
+    {
+      slot: "fortify",
+      name: "EMERGENCY POWERS",
+      hint: "HEAL · BRACE · SUSPEND 1 CONDITION",
+      key: "3",
+    },
+    {
+      slot: "special",
       name: player.state.special.name,
-      hint: ready ? "It's time." : "Needs 100% hype",
+      hint: ready ? "AUTHORIZED" : "REQ. 100% HYPE",
       key: "4",
       disabled: !ready,
       hot: ready,
@@ -980,7 +1114,11 @@ function BattleScreen({
       {/* arena */}
       <div className="relative">
         <motion.div
-          animate={battle.anims.player === "hurt" || battle.anims.enemy === "hurt" ? { x: [0, -7, 6, -3, 0] } : { x: 0 }}
+          animate={
+            battle.anims.player === "hurt" || battle.anims.enemy === "hurt"
+              ? { x: [0, -7, 6, -3, 0] }
+              : { x: 0 }
+          }
           transition={{ duration: 0.35 }}
           className="grid grid-cols-[1fr_auto_1fr] items-stretch gap-2 sm:gap-4"
         >
@@ -999,7 +1137,18 @@ function BattleScreen({
               <span className="rotate-[-6deg] border border-primary px-1.5 py-0.5 text-center font-mono text-[8px] uppercase tracking-[0.18em] text-primary sm:px-2">
                 Grudge
                 <br />
-                match
+                on file
+              </span>
+            )}
+            {edge !== "neutral" && (
+              <span
+                className={`text-center font-mono text-[8px] uppercase tracking-[0.18em] ${
+                  edge === "advantage" ? "text-accent" : "text-primary"
+                }`}
+              >
+                Doctrine
+                <br />
+                {edge === "advantage" ? "favors you" : "against you"}
               </span>
             )}
           </div>
@@ -1008,11 +1157,16 @@ function BattleScreen({
             side="enemy"
             anim={battle.anims.enemy}
             pops={battle.pops.filter((p) => p.side === "enemy")}
+            intent={{
+              label: battle.intentLabel,
+              jammed: battle.plan.jammed,
+              isSpecial: battle.plan.slot === "special" && !battle.plan.jammed,
+            }}
             onClearPop={onClearPop}
           />
         </motion.div>
 
-        {/* breaking-news toast */}
+        {/* field development toast */}
         <AnimatePresence>
           {battle.toast && (
             <motion.div
@@ -1023,7 +1177,7 @@ function BattleScreen({
               className="absolute inset-x-4 top-1/3 z-30 mx-auto max-w-md border-2 border-primary bg-background/95 p-3 text-center shadow-[0_0_60px_rgba(216,58,46,0.35)]"
             >
               <p className="font-mono text-[9px] uppercase tracking-[0.35em] text-primary">
-                ⚠ Breaking news ⚠
+                Wire — field development
               </p>
               <p className="mt-1.5 font-mono text-[11px] uppercase leading-relaxed tracking-[0.1em] text-foreground">
                 {battle.toast.headline}
@@ -1061,13 +1215,20 @@ function BattleScreen({
                 <br />
                 {enemy.state.intel}
               </p>
+              <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-ink/70">
+                {edge === "neutral"
+                  ? "Doctrine analysis: neutral. Outcome rests on execution."
+                  : edge === "advantage"
+                    ? `Doctrine analysis: ${player.state.doctrine} suppresses ${enemy.state.doctrine} — advantage ${player.state.name}.`
+                    : `Doctrine analysis: ${enemy.state.doctrine} suppresses ${player.state.doctrine} — advantage ${enemy.state.name}.`}
+              </p>
               {battle.rivalMatch && (
                 <p className="animate-pulse font-ndot text-lg uppercase text-primary">
-                  ⚡ Border grudge detected: +15% violence ⚡
+                  Standing border grudge on file: +15% ordnance
                 </p>
               )}
               <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.3em] text-ink/50">
-                Tap to ring the liberty bell
+                Tap to commence hostilities
               </p>
             </motion.button>
           )}
@@ -1078,10 +1239,10 @@ function BattleScreen({
       <div className="mt-4 grid grid-cols-2 gap-2 lg:grid-cols-4">
         {moves.map((m) => (
           <button
-            key={m.id}
+            key={m.slot}
             type="button"
             disabled={locked || m.disabled}
-            onClick={() => onMove(m.id)}
+            onClick={() => onMove(m.slot)}
             className={`group relative border-2 p-3 text-left transition-all duration-150 disabled:cursor-not-allowed sm:p-4 ${
               m.hot
                 ? "animate-pulse border-primary bg-primary text-primary-foreground"
@@ -1091,11 +1252,11 @@ function BattleScreen({
             <span className="absolute right-2 top-2 font-advancedled text-[9px] opacity-50">
               {m.key}
             </span>
-            <span className="block truncate font-ndot text-sm uppercase leading-tight sm:text-base">
+            <span className="block truncate pr-4 font-ndot text-sm uppercase leading-tight sm:text-base">
               {m.name}
             </span>
             <span
-              className={`mt-1 block font-mono text-[8px] uppercase tracking-[0.2em] ${
+              className={`mt-1 block truncate font-mono text-[8px] uppercase tracking-[0.18em] ${
                 m.hot ? "text-primary-foreground/80" : "text-muted-foreground"
               }`}
             >
@@ -1109,7 +1270,7 @@ function BattleScreen({
       <div className="mt-4 border border-border bg-background/60">
         <div className="flex items-center justify-between border-b border-border px-3 py-1.5">
           <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
-            Commentary desk — Hank &amp; Col. Biscuits
+            Commentary desk — Hank &amp; Gen. Whitlock, Ret.
           </span>
           <span className="font-advancedled text-[9px] text-primary led-flicker">
             REC ●
@@ -1222,8 +1383,8 @@ function VictoryScreen({
     <ResultShell>
       <BigStamp text="Annexed" />
       <p className="max-w-md font-mono text-[11px] uppercase leading-relaxed tracking-[0.15em] text-foreground">
-        {battle.enemy.state.name} is now a suburb of {homeland.name}. Its
-        residents have been issued new, worse license plates.
+        {battle.enemy.state.name} is now a suburb of {homeland.name}. Residents
+        have been issued new, worse license plates.
       </p>
       <p className="font-advancedled text-sm tracking-[0.2em] text-primary led-flicker">
         CONQUEST: {conquered.length}/49 — RECORD: {best}/49
@@ -1235,7 +1396,7 @@ function VictoryScreen({
           onClick={onNext}
           className="btn-accent bg-primary px-8 py-4 font-ndot text-xl uppercase text-primary-foreground"
         >
-          Next victim →
+          Next engagement →
         </button>
         <button
           type="button"
@@ -1246,7 +1407,7 @@ function VictoryScreen({
         </button>
       </div>
       <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
-        Field medics restore some HP between bouts. The rest is adrenaline.
+        Field hospitals restore partial strength between engagements.
       </p>
     </ResultShell>
   );
@@ -1282,7 +1443,7 @@ function DefeatScreen({
           onClick={onRevenge}
           className="btn-accent bg-primary px-8 py-4 font-ndot text-xl uppercase text-primary-foreground"
         >
-          Revenge →
+          Retaliate →
         </button>
         <button
           type="button"
@@ -1311,20 +1472,18 @@ function DynastyScreen({
       </h2>
       <p className="max-w-md font-mono text-[11px] uppercase leading-relaxed tracking-[0.15em] text-foreground">
         {homeland.name} has annexed the entire union. The map is just you now.
-        Cartographers weep. The anthem is your ringtone.
+        The cartographers have been sent home.
       </p>
       <UnionTally
         homeland={homeland.abbr}
-        conquered={STATES.filter((s) => s.abbr !== homeland.abbr).map(
-          (s) => s.abbr,
-        )}
+        conquered={STATES.filter((s) => s.abbr !== homeland.abbr).map((s) => s.abbr)}
       />
       <button
         type="button"
         onClick={onNew}
         className="btn-accent mt-2 bg-primary px-8 py-4 font-ndot text-xl uppercase text-primary-foreground"
       >
-        Do it again, differently
+        Commence new campaign
       </button>
       <Link
         href="/"
