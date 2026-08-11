@@ -6,7 +6,7 @@
  */
 
 import NumberFlow from "@number-flow/react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -23,6 +23,7 @@ import {
   pick,
   planLabel,
   resolveAction,
+  rollActionFailure,
   rollEvent,
   specialReady,
   STATUS_DEFS,
@@ -30,8 +31,16 @@ import {
   type Combatant,
   type MoveSlot,
   type Plan,
-  type Resolution,
 } from "@/components/state-wars/engine";
+import {
+  ArenaFxLayer,
+  Debris,
+  ImpactFlash,
+  LowerThird,
+  SpecialCutIn,
+  type FxEvent,
+  type FxSide,
+} from "@/components/state-wars/fx";
 import {
   isMuted,
   setMuted,
@@ -51,7 +60,7 @@ import {
 /* ------------------------------------------------------------------ */
 
 type Phase = "select" | "battle" | "victory" | "defeat" | "dynasty";
-type Side = "player" | "enemy";
+type Side = FxSide;
 type FighterAnim = "idle" | "lunge" | "hurt" | "ko";
 type LogTone = "action" | "desk" | "event" | "system";
 
@@ -64,6 +73,13 @@ type Pop = {
   kind: "dmg" | "heal" | "note";
 };
 
+type Cinematic = {
+  abbr: string;
+  stateName: string;
+  moveName: string;
+  side: Side;
+};
+
 type Battle = {
   player: Combatant;
   enemy: Combatant;
@@ -74,8 +90,12 @@ type Battle = {
   plan: Plan;
   intentLabel: string;
   anims: Record<Side, FighterAnim>;
+  /** arena punch-scale trigger; increments on heavy impacts */
+  punch: number;
   log: LogEntry[];
   pops: Pop[];
+  fx: FxEvent[];
+  cinematic: Cinematic | null;
   breaking: string[];
   toast: { id: number; headline: string } | null;
 };
@@ -84,6 +104,15 @@ const BEST_KEY = "uncivil-war:best";
 const MUTE_KEY = "uncivil-war:muted";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** Omit that distributes over a union (plain Omit collapses FxEvent). */
+type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
+  ? Omit<T, K>
+  : never;
+
+/** Deterministic per-id jitter so simultaneous pops never overlap. */
+const jitter = (id: number, spread: number) =>
+  (((id * 2654435761) >>> 7) % (spread * 2)) - spread;
 
 /* ------------------------------------------------------------------ */
 /*  Root component                                                     */
@@ -160,8 +189,11 @@ export default function UncivilWar() {
         plan,
         intentLabel: planLabel(enemy, plan),
         anims: { player: "idle", enemy: "idle" },
+        punch: 0,
         log,
         pops: [],
+        fx: [],
+        cinematic: null,
         breaking: [],
         toast: null,
       });
@@ -218,6 +250,7 @@ export default function UncivilWar() {
         anims: { ...battle.anims },
         log: [...battle.log],
         pops: [...battle.pops],
+        fx: [...battle.fx],
         breaking: [...battle.breaking],
       };
       const commit = () =>
@@ -228,12 +261,15 @@ export default function UncivilWar() {
           anims: { ...b.anims },
           log: [...b.log],
           pops: [...b.pops],
+          fx: [...b.fx],
           breaking: [...b.breaking],
         });
       const say = (text: string, tone: LogTone) =>
         b.log.unshift({ id: nextId(), text, tone });
       const pop = (side: Side, text: string, kind: Pop["kind"], crit = false) =>
         b.pops.push({ id: nextId(), side, text, crit, kind });
+      const fx = (e: DistributiveOmit<FxEvent, "id">) =>
+        b.fx.push({ ...e, id: nextId() } as FxEvent);
 
       b.busy = true;
       commit();
@@ -246,62 +282,116 @@ export default function UncivilWar() {
         const attacker = side === "player" ? b.player : b.enemy;
         const defender = side === "player" ? b.enemy : b.player;
         const tag = `[${attacker.state.abbr}]`;
+        const arch = attacker.state.tactical.archetype;
 
-        if (chosen !== "fortify") {
+        // pre-rolled fizzle: the whole action stalls before launch
+        if (rollActionFailure(attacker, chosen)) {
+          resolveAction(attacker, defender, chosen, true);
           b.anims[atkSide] = "lunge";
           commit();
-          await sleep(230);
-        }
-
-        const res: Resolution = resolveAction(attacker, defender, chosen);
-
-        if (res.failed) {
+          await sleep(180);
+          b.anims[atkSide] = "idle";
           pop(atkSide, "NO ACTION", "note");
           sfx.fail();
           say(`${tag} ACTION FAILS. SUBJECT REPORTS DISORIENTATION.`, "system");
-          b.anims[atkSide] = "idle";
           commit();
           await sleep(520);
           return;
         }
 
-        say(`${tag} ${res.moveName} — ${res.flavor}`, "action");
-        if (chosen === "special") {
-          say(pick(COMMENTARY.special), "desk");
-          sfx.special();
+        // wind-up
+        if (chosen !== "fortify") {
+          b.anims[atkSide] = "lunge";
           commit();
-          await sleep(420);
+          await sleep(200);
         }
 
-        // damage instances, staggered so a barrage reads as a barrage
-        let anyCrit = false;
-        for (let i = 0; i < res.hits.length; i++) {
-          const h = res.hits[i];
-          anyCrit = anyCrit || h.crit;
-          pop(defSide, `-${h.dmg}`, "dmg", h.crit);
-          b.anims[defSide] = "hurt";
-          if (h.crit) sfx.crit();
-          else sfx.hit();
+        // signature cut-in cinematic
+        if (chosen === "special") {
+          say(
+            `${tag} ${attacker.state.special.name} — ${attacker.state.special.flavor}`,
+            "action",
+          );
+          say(pick(COMMENTARY.special), "desk");
+          b.cinematic = {
+            abbr: attacker.state.abbr,
+            stateName: attacker.state.name,
+            moveName: attacker.state.special.name,
+            side: atkSide,
+          };
+          sfx.special();
           commit();
-          if (i < res.hits.length - 1) {
-            await sleep(200);
-            b.anims[defSide] = "idle";
+          await sleep(1450);
+          b.cinematic = null;
+          commit();
+          await sleep(80);
+        }
+
+        // projectile choreography — fired before the books are opened
+        const isPierce = chosen === "tactical" && arch === "pierce";
+        const isBarrage = chosen === "tactical" && arch === "barrage";
+        const heavy = chosen === "special" || (chosen === "tactical" && arch === "siege");
+        const throws =
+          chosen === "fortify" || (chosen === "tactical" && arch === "rally")
+            ? 0
+            : isBarrage
+              ? 3
+              : 1;
+        if (isPierce) {
+          fx({ type: "pierce", from: atkSide });
+          commit();
+          await sleep(240);
+        } else {
+          for (let i = 0; i < throws; i++) {
+            fx({ type: "tracer", from: atkSide, doctrine: attacker.state.doctrine, heavy });
             commit();
-            await sleep(60);
+            await sleep(isBarrage ? 150 : heavy ? 330 : 230);
           }
         }
+
+        // resolve
+        const res = resolveAction(attacker, defender, chosen, false);
+        if (chosen !== "special") {
+          say(`${tag} ${res.moveName} — ${res.flavor}`, "action");
+        }
+
+        // hit-stop, then impacts land staggered
+        let anyCrit = false;
         if (res.hits.length > 0) {
+          await sleep(55);
+          for (let i = 0; i < res.hits.length; i++) {
+            const h = res.hits[i];
+            anyCrit = anyCrit || h.crit;
+            fx({ type: "impact", side: defSide, crit: h.crit || heavy });
+            pop(defSide, `-${h.dmg}`, "dmg", h.crit);
+            b.anims[defSide] = "hurt";
+            if (h.crit || heavy) b.punch += 1;
+            if (h.crit) sfx.crit();
+            else sfx.hit();
+            commit();
+            if (i < res.hits.length - 1) {
+              await sleep(170);
+              b.anims[defSide] = "idle";
+              commit();
+              await sleep(50);
+            }
+          }
           if (anyCrit) say(pick(COMMENTARY.crit), "desk");
           else if (Math.random() < 0.3) say(pick(COMMENTARY.hit), "desk");
         }
 
+        // secondary effects
         if (res.intercepted) {
           pop(atkSide, "INTERCEPTED", "note");
           sfx.fail();
-          say(`${tag} OPERATION INTERCEPTED. ${defender.state.name.toUpperCase()} GAINS INITIATIVE.`, "system");
+          say(
+            `${tag} OPERATION INTERCEPTED. ${defender.state.name.toUpperCase()} GAINS INITIATIVE.`,
+            "system",
+          );
         }
         if (res.selfDamage > 0) {
-          await sleep(220);
+          await sleep(240);
+          fx({ type: "impact", side: atkSide, crit: false });
           pop(atkSide, `-${res.selfDamage}`, "dmg");
           b.anims[atkSide] = "hurt";
           sfx.hit();
@@ -322,6 +412,7 @@ export default function UncivilWar() {
         }
         if (res.statusApplied) {
           const def = STATUS_DEFS[res.statusApplied];
+          await sleep(140);
           pop(defSide, def.label, "note");
           sfx.status();
           say(
@@ -334,7 +425,10 @@ export default function UncivilWar() {
         if (res.stageSelf > 0) {
           pop(atkSide, `ATK +${res.stageSelf}`, "note");
           sfx.stage();
-          say(`${tag} OFFENSIVE CAPACITY INCREASED (STAGE ${attacker.atkStage >= 0 ? "+" : ""}${attacker.atkStage}).`, "system");
+          say(
+            `${tag} OFFENSIVE CAPACITY INCREASED (STAGE ${attacker.atkStage >= 0 ? "+" : ""}${attacker.atkStage}).`,
+            "system",
+          );
           commit();
         }
         if (res.stageEnemy < 0) {
@@ -349,26 +443,29 @@ export default function UncivilWar() {
 
         b.anims[atkSide] = "idle";
         commit();
-        await sleep(chosen === "special" ? 620 : 520);
+        await sleep(chosen === "special" ? 560 : 480);
       };
 
       const finish = async (winner: Side) => {
         const loser: Side = winner === "player" ? "enemy" : "player";
         b.anims[loser] = "ko";
+        b.punch += 1;
+        fx({ type: "impact", side: loser, crit: true });
+        fx({ type: "debris", side: loser });
         say(pick(COMMENTARY.ko), "desk");
         commit();
-        await sleep(500);
+        await sleep(650);
         if (winner === "player") {
           sfx.win();
           const nextConquered = [...conquered, b.enemy.state.abbr];
           setConquered(nextConquered);
           recordRun(nextConquered.length);
-          await sleep(900);
+          await sleep(950);
           setPhase(nextConquered.length >= STATES.length - 1 ? "dynasty" : "victory");
         } else {
           sfx.lose();
           recordRun(conquered.length);
-          await sleep(900);
+          await sleep(950);
           setPhase("defeat");
         }
       };
@@ -379,7 +476,7 @@ export default function UncivilWar() {
       if (b.player.hp <= 0) return finish("enemy"); // recoil can end a campaign
 
       // --- enemy executes the telegraphed plan ---
-      await sleep(420);
+      await sleep(380);
       await act("enemy", b.plan.slot);
       if (b.player.hp <= 0) return finish("enemy");
       if (b.enemy.hp <= 0) return finish("player");
@@ -406,12 +503,12 @@ export default function UncivilWar() {
         }
         if (ticks.some((t) => t.dmg > 0)) {
           commit();
-          await sleep(480);
+          await sleep(460);
         }
         if (c.hp <= 0) return finish(side === "player" ? "enemy" : "player");
       }
 
-      // --- field developments ---
+      // --- field developments (lower-third) ---
       const rolled = rollEvent();
       if (rolled) {
         const target = rolled.onPlayer ? b.player : b.enemy;
@@ -432,7 +529,7 @@ export default function UncivilWar() {
         b.breaking = [headline, ...b.breaking].slice(0, 6);
         b.toast = { id: nextId(), headline };
         commit();
-        await sleep(1700);
+        await sleep(2100);
         b.toast = null;
       }
 
@@ -478,6 +575,10 @@ export default function UncivilWar() {
     setBattle((prev) =>
       prev ? { ...prev, pops: prev.pops.filter((p) => p.id !== id) } : prev,
     );
+  const clearFx = (id: number) =>
+    setBattle((prev) =>
+      prev ? { ...prev, fx: prev.fx.filter((f) => f.id !== id) } : prev,
+    );
 
   /* -------------------------------------------------------------- */
   /*  Render                                                         */
@@ -485,49 +586,70 @@ export default function UncivilWar() {
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-16 pt-28 sm:px-6">
-      {phase === "select" && <SelectScreen best={best} onDeclare={declareWar} />}
-
-      {phase !== "select" && battle && homeland && (
-        <BroadcastFrame
-          battle={battle}
-          conqueredCount={conquered.length}
-          muted={muted}
-          onToggleMute={toggleMute}
-        >
-          {phase === "battle" && (
-            <BattleScreen
+      {/* initial={false}: the select screen must be visible pre-hydration */}
+      <AnimatePresence mode="wait" initial={false}>
+        {phase === "select" ? (
+          <motion.div
+            key="select"
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.24 }}
+          >
+            <SelectScreen best={best} onDeclare={declareWar} />
+          </motion.div>
+        ) : battle && homeland ? (
+          <motion.div
+            key="broadcast"
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.24 }}
+          >
+            <BroadcastFrame
               battle={battle}
-              onMove={(m) => void doMove(m)}
-              onClearPop={clearPop}
-              onSkipVs={() =>
-                setBattle((prev) => (prev ? { ...prev, showVs: false } : prev))
-              }
-            />
-          )}
-          {phase === "victory" && (
-            <VictoryScreen
-              battle={battle}
-              homeland={homeland}
-              conquered={conquered}
-              best={best}
-              onNext={nextEngagement}
-              onRetire={newCampaign}
-            />
-          )}
-          {phase === "defeat" && (
-            <DefeatScreen
-              battle={battle}
-              conquered={conquered}
-              best={best}
-              onRevenge={revenge}
-              onNew={newCampaign}
-            />
-          )}
-          {phase === "dynasty" && (
-            <DynastyScreen homeland={homeland} onNew={newCampaign} />
-          )}
-        </BroadcastFrame>
-      )}
+              conqueredCount={conquered.length}
+              muted={muted}
+              onToggleMute={toggleMute}
+              screenKey={phase}
+            >
+              {phase === "battle" && (
+                <BattleScreen
+                  battle={battle}
+                  onMove={(m) => void doMove(m)}
+                  onClearPop={clearPop}
+                  onClearFx={clearFx}
+                  onSkipVs={() =>
+                    setBattle((prev) => (prev ? { ...prev, showVs: false } : prev))
+                  }
+                />
+              )}
+              {phase === "victory" && (
+                <VictoryScreen
+                  battle={battle}
+                  homeland={homeland}
+                  conquered={conquered}
+                  best={best}
+                  onNext={nextEngagement}
+                  onRetire={newCampaign}
+                />
+              )}
+              {phase === "defeat" && (
+                <DefeatScreen
+                  battle={battle}
+                  conquered={conquered}
+                  best={best}
+                  onRevenge={revenge}
+                  onNew={newCampaign}
+                />
+              )}
+              {phase === "dynasty" && (
+                <DynastyScreen homeland={homeland} onNew={newCampaign} />
+              )}
+            </BroadcastFrame>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 }
@@ -556,13 +678,11 @@ function StatPips({ label, value, max }: { label: string; value: number; max: nu
   );
 }
 
-function DoctrineChip({ doctrine, dark }: { doctrine: StateFighter["doctrine"]; dark?: boolean }) {
+function DoctrineChip({ doctrine }: { doctrine: StateFighter["doctrine"] }) {
   return (
     <span
       title={`${doctrine} SUPPRESSES ${DOCTRINE_BEATS[doctrine]}`}
-      className={`border px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.18em] ${
-        dark ? "border-ink/40 text-ink/80" : "border-primary/50 text-primary"
-      }`}
+      className="border border-ink/40 px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.18em] text-ink/80"
     >
       {doctrine}
     </span>
@@ -611,81 +731,111 @@ function SelectScreen({
       </div>
 
       {/* dossier */}
-      <div className="print-panel paper-texture relative mt-10 overflow-hidden p-5 text-ink sm:p-6">
-        <div className="brand-microcopy absolute right-4 top-4 hidden text-ink/50 sm:block">
-          bureau of interstate hostilities — file 1861-B
+      <div className="print-panel paper-texture mt-10 overflow-hidden text-ink">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ink/25 px-5 py-2.5">
+          <span className="brand-microcopy text-ink/60">
+            Bureau of interstate hostilities — file 1861-B
+          </span>
+          <span className="font-advancedled text-[10px] tracking-[0.2em] text-primary">
+            DOSSIER: {picked ? picked.abbr : "PENDING"}
+          </span>
         </div>
-        {picked ? (
-          <div className="grid gap-5 lg:grid-cols-[auto_1fr_auto] lg:items-center">
-            <div className="flex items-center gap-4">
-              <span className="font-ndot text-7xl leading-none text-primary">
-                {picked.abbr}
-              </span>
-              <div>
-                <p className="font-ndot text-2xl uppercase leading-none">{picked.name}</p>
-                <p className="mt-1 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-ink/60">
-                  <span>&ldquo;{picked.epithet}&rdquo;</span>
-                  <DoctrineChip doctrine={picked.doctrine} dark />
-                </p>
-                <div className="mt-3 space-y-1.5">
-                  <StatPips label="Body" value={picked.hp} max={130} />
-                  <StatPips label="Attack" value={picked.atk} max={13} />
-                  <StatPips label="Grit" value={picked.def} max={12} />
-                  <StatPips label="Chaos" value={picked.chaos} max={10} />
+        <div className="min-h-[200px] p-5 sm:p-6">
+          <AnimatePresence mode="wait">
+            {picked ? (
+              <motion.div
+                key={picked.abbr}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.18 }}
+                className="grid gap-5 lg:grid-cols-[auto_1fr_auto] lg:items-center"
+              >
+                <div className="flex items-center gap-4">
+                  <span className="font-ndot text-7xl leading-none text-primary">
+                    {picked.abbr}
+                  </span>
+                  <div>
+                    <p className="font-ndot text-2xl uppercase leading-none">{picked.name}</p>
+                    <p className="mt-1 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-ink/60">
+                      <span>&ldquo;{picked.epithet}&rdquo;</span>
+                      <DoctrineChip doctrine={picked.doctrine} />
+                    </p>
+                    <div className="mt-3 space-y-1.5">
+                      <StatPips label="Body" value={picked.hp} max={130} />
+                      <StatPips label="Attack" value={picked.atk} max={13} />
+                      <StatPips label="Grit" value={picked.def} max={12} />
+                      <StatPips label="Chaos" value={picked.chaos} max={10} />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="max-w-md">
-              <div className="space-y-1 border-b border-ink/20 pb-2 font-mono text-[10px] uppercase tracking-[0.1em] text-ink/80">
-                <p>
-                  <span className="text-ink/50">Primary · </span>
-                  {picked.primary.name}
-                </p>
-                <p>
-                  <span className="text-ink/50">Tactical · </span>
-                  {picked.tactical.name}
-                  <span className="text-primary"> [{ARCHETYPE_TAGS[picked.tactical.archetype]}]</span>
-                </p>
-                <p>
-                  <span className="text-ink/50">Signature · </span>
-                  {picked.special.name}
-                  <span className="text-ink/50"> (req. 100% hype)</span>
-                </p>
-              </div>
-              <p className="mt-2 font-mono text-xs leading-relaxed text-ink/80">
-                {picked.special.flavor}
-              </p>
-              <p className="mt-2 font-mono text-[10px] uppercase leading-relaxed tracking-[0.14em] text-ink/60">
-                Intel: {picked.intel}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => onDeclare(picked)}
-              className="btn-accent group w-full bg-primary px-8 py-5 text-left lg:w-auto"
-            >
-              <span className="block font-ndot text-2xl uppercase leading-none text-primary-foreground">
-                Declare war →
-              </span>
-              <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.25em] text-primary-foreground/80">
-                Irrevocable upon selection.
-              </span>
-            </button>
-          </div>
-        ) : (
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <p className="font-ndot text-2xl uppercase text-ink/80">
-              Designate your homeland
-            </p>
-            <button
-              type="button"
-              onClick={() => choose(pick(STATES))}
-              className="border-2 border-ink px-5 py-2.5 font-mono text-[10px] uppercase tracking-[0.25em] text-ink transition-colors hover:bg-ink hover:text-paper"
-            >
-              Request random assignment
-            </button>
-          </div>
-        )}
+                <div className="max-w-md">
+                  <div className="space-y-1 border-b border-ink/20 pb-2 font-mono text-[10px] uppercase tracking-[0.1em] text-ink/80">
+                    <p>
+                      <span className="text-ink/50">Primary · </span>
+                      {picked.primary.name}
+                    </p>
+                    <p>
+                      <span className="text-ink/50">Tactical · </span>
+                      {picked.tactical.name}
+                      <span className="text-primary"> [{ARCHETYPE_TAGS[picked.tactical.archetype]}]</span>
+                    </p>
+                    <p>
+                      <span className="text-ink/50">Signature · </span>
+                      {picked.special.name}
+                      <span className="text-ink/50"> (req. 100% hype)</span>
+                    </p>
+                  </div>
+                  <p className="mt-2 font-mono text-xs leading-relaxed text-ink/80">
+                    {picked.special.flavor}
+                  </p>
+                  <p className="mt-2 font-mono text-[10px] uppercase leading-relaxed tracking-[0.14em] text-ink/60">
+                    Intel: {picked.intel}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onDeclare(picked)}
+                  className="btn-accent group w-full bg-primary px-8 py-5 text-left lg:w-auto"
+                >
+                  <span className="block font-ndot text-2xl uppercase leading-none text-primary-foreground">
+                    Declare war →
+                  </span>
+                  <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.25em] text-primary-foreground/80">
+                    Irrevocable upon selection.
+                  </span>
+                </button>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                className="flex min-h-[160px] flex-col items-start justify-between gap-5 sm:flex-row sm:items-center"
+              >
+                <div className="max-w-lg">
+                  <p className="font-ndot text-3xl uppercase leading-none text-ink">
+                    Designate your homeland
+                  </p>
+                  <p className="mt-3 font-mono text-[10px] uppercase leading-relaxed tracking-[0.16em] text-ink/60">
+                    Select a state below to open its file — doctrine, move kit,
+                    and intel — then sign the declaration. The other 49 will be
+                    notified by mail.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => choose(pick(STATES))}
+                  className="shrink-0 border-2 border-ink px-5 py-3 font-mono text-[10px] uppercase tracking-[0.25em] text-ink transition-colors hover:bg-ink hover:text-paper"
+                >
+                  Request random assignment
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* the union */}
@@ -735,12 +885,14 @@ function BroadcastFrame({
   conqueredCount,
   muted,
   onToggleMute,
+  screenKey,
   children,
 }: {
   battle: Battle;
   conqueredCount: number;
   muted: boolean;
   onToggleMute: () => void;
+  screenKey: string;
   children: React.ReactNode;
 }) {
   const tickerItems = useMemo(
@@ -779,7 +931,37 @@ function BroadcastFrame({
         </div>
       </div>
 
-      <div className="relative p-4 sm:p-6">{children}</div>
+      <div className="relative">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={screenKey}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="p-4 sm:p-6"
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* signature cinematic takes over the stage */}
+        <AnimatePresence>
+          {battle.cinematic && (
+            <SpecialCutIn
+              abbr={battle.cinematic.abbr}
+              stateName={battle.cinematic.stateName}
+              moveName={battle.cinematic.moveName}
+              side={battle.cinematic.side}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* field developments arrive as a lower third */}
+        <AnimatePresence>
+          {battle.toast && <LowerThird key={battle.toast.id} headline={battle.toast.headline} />}
+        </AnimatePresence>
+      </div>
 
       {/* news ticker */}
       <div className="flex items-stretch border-t border-border">
@@ -845,46 +1027,75 @@ function SegBar({
   );
 }
 
-const fighterVariants = {
+const fighterVariants: Variants = {
   idle: { x: 0, y: 0, rotate: 0, opacity: 1 },
-  lungePlayer: { x: 34, transition: { duration: 0.18 } },
-  lungeEnemy: { x: -34, transition: { duration: 0.18 } },
-  hurt: { x: [0, -14, 11, -7, 4, 0], transition: { duration: 0.42 } },
-  koPlayer: { rotate: -10, y: 26, opacity: 0.5, transition: { duration: 0.5 } },
-  koEnemy: { rotate: 10, y: 26, opacity: 0.5, transition: { duration: 0.5 } },
+  lungePlayer: { x: 34, transition: { duration: 0.16 } },
+  lungeEnemy: { x: -34, transition: { duration: 0.16 } },
+  hurtPlayer: { x: [0, -22, 12, -7, 3, 0], transition: { duration: 0.45 } },
+  hurtEnemy: { x: [0, 22, -12, 7, -3, 0], transition: { duration: 0.45 } },
+  koPlayer: {
+    rotate: -11,
+    y: 30,
+    opacity: 0.5,
+    transition: { duration: 0.65, ease: [0.2, 0.8, 0.3, 1] },
+  },
+  koEnemy: {
+    rotate: 11,
+    y: 30,
+    opacity: 0.5,
+    transition: { duration: 0.65, ease: [0.2, 0.8, 0.3, 1] },
+  },
 };
 
 function ConditionChips({ c }: { c: Combatant }) {
   return (
     <div className="mt-3 flex min-h-[18px] flex-wrap gap-1.5">
-      {c.shield < 1 && (
-        <span className="border border-paper/40 px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.16em] text-paper/80">
-          Braced
-        </span>
-      )}
-      {c.atkStage !== 0 && (
-        <span
-          className={`border px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.16em] ${
-            c.atkStage > 0 ? "border-accent/60 text-accent" : "border-primary/60 text-primary"
-          }`}
-        >
-          ATK {c.atkStage > 0 ? `+${c.atkStage}` : c.atkStage}
-        </span>
-      )}
-      {c.statuses.map((s) => (
-        <span
-          key={s.id}
-          title={STATUS_DEFS[s.id].desc}
-          className={`border px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.16em] ${
-            s.id === "BECOMING_OHIO"
-              ? "animate-pulse border-primary bg-primary/15 text-primary"
-              : "border-primary/60 text-primary"
-          }`}
-        >
-          {STATUS_DEFS[s.id].label}
-          {Number.isFinite(s.turns) ? ` ·${s.turns}` : ""}
-        </span>
-      ))}
+      <AnimatePresence>
+        {c.shield < 1 && (
+          <motion.span
+            key="braced"
+            initial={{ scale: 1.6, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ type: "spring", stiffness: 500, damping: 24 }}
+            className="border border-paper/40 px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.16em] text-paper/80"
+          >
+            Braced
+          </motion.span>
+        )}
+        {c.atkStage !== 0 && (
+          <motion.span
+            key="stage"
+            initial={{ scale: 1.6, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ type: "spring", stiffness: 500, damping: 24 }}
+            className={`border px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.16em] ${
+              c.atkStage > 0 ? "border-accent/60 text-accent" : "border-primary/60 text-primary"
+            }`}
+          >
+            ATK {c.atkStage > 0 ? `+${c.atkStage}` : c.atkStage}
+          </motion.span>
+        )}
+        {c.statuses.map((s) => (
+          <motion.span
+            key={s.id}
+            initial={{ scale: 1.8, opacity: 0, rotate: -6 }}
+            animate={{ scale: 1, opacity: 1, rotate: 0 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ type: "spring", stiffness: 480, damping: 22 }}
+            title={STATUS_DEFS[s.id].desc}
+            className={`border px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.16em] ${
+              s.id === "BECOMING_OHIO"
+                ? "animate-pulse border-primary bg-primary/15 text-primary"
+                : "border-primary/60 text-primary"
+            }`}
+          >
+            {STATUS_DEFS[s.id].label}
+            {Number.isFinite(s.turns) ? ` ·${s.turns}` : ""}
+          </motion.span>
+        ))}
+      </AnimatePresence>
     </div>
   );
 }
@@ -894,21 +1105,27 @@ function FighterCard({
   side,
   anim,
   pops,
+  cardFx,
   intent,
   onClearPop,
+  onClearFx,
 }: {
   c: Combatant;
   side: Side;
   anim: FighterAnim;
   pops: Pop[];
+  cardFx: FxEvent[];
   intent?: { label: string; jammed: boolean; isSpecial: boolean };
   onClearPop: (id: number) => void;
+  onClearFx: (id: number) => void;
 }) {
   const variant =
     anim === "idle"
       ? "idle"
       : anim === "hurt"
-        ? "hurt"
+        ? side === "player"
+          ? "hurtPlayer"
+          : "hurtEnemy"
         : anim === "lunge"
           ? side === "player"
             ? "lungePlayer"
@@ -924,7 +1141,7 @@ function FighterCard({
       <motion.div
         variants={fighterVariants}
         animate={variant}
-        className={`relative border p-4 sm:p-5 ${
+        className={`relative overflow-hidden border p-4 sm:p-5 ${
           side === "player" ? "border-paper/30 bg-ink" : "border-primary/40 bg-ink"
         }`}
       >
@@ -987,10 +1204,14 @@ function FighterCard({
         {/* SIGINT intercept — enemy card only */}
         {intent && !ko && (
           <div className="mt-3 flex items-center gap-2 border-t border-border pt-2">
-            <span className="font-mono text-[8px] uppercase tracking-[0.25em] text-muted-foreground">
+            <span className="shrink-0 font-mono text-[8px] uppercase tracking-[0.25em] text-muted-foreground">
               Sigint
             </span>
-            <span
+            <motion.span
+              key={intent.label + String(intent.jammed)}
+              initial={{ clipPath: "inset(0 100% 0 0)" }}
+              animate={{ clipPath: "inset(0 0% 0 0)" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
               className={`truncate font-mono text-[9px] uppercase tracking-[0.12em] ${
                 intent.jammed
                   ? "text-muted-foreground"
@@ -1000,9 +1221,22 @@ function FighterCard({
               }`}
             >
               {intent.jammed ? "██████ — SIGNAL JAMMED" : `NEXT: ${intent.label}`}
-            </span>
+            </motion.span>
           </div>
         )}
+
+        {/* impact flashes land inside the card */}
+        <AnimatePresence>
+          {cardFx
+            .filter((f) => f.type === "impact")
+            .map((f) => (
+              <ImpactFlash
+                key={f.id}
+                crit={f.type === "impact" ? f.crit : false}
+                onDone={() => onClearFx(f.id)}
+              />
+            ))}
+        </AnimatePresence>
 
         {/* KO stamp */}
         <AnimatePresence>
@@ -1010,7 +1244,7 @@ function FighterCard({
             <motion.div
               initial={{ scale: 3, opacity: 0, rotate: -20 }}
               animate={{ scale: 1, opacity: 1, rotate: -14 }}
-              transition={{ type: "spring", stiffness: 400, damping: 18 }}
+              transition={{ type: "spring", stiffness: 400, damping: 18, delay: 0.25 }}
               className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center"
             >
               <span className="border-4 border-primary bg-background/60 px-4 py-2 font-ndot text-3xl uppercase tracking-[0.15em] text-primary sm:text-4xl">
@@ -1021,36 +1255,52 @@ function FighterCard({
         </AnimatePresence>
       </motion.div>
 
-      {/* damage pops */}
+      {/* KO debris erupts outside the card bounds */}
+      {cardFx
+        .filter((f) => f.type === "debris")
+        .map((f) => (
+          <Debris key={f.id} side={side} onDone={() => onClearFx(f.id)} />
+        ))}
+
+      {/* damage pops — jittered so simultaneous numbers never stack */}
       <div className="pointer-events-none absolute inset-0 z-20 overflow-visible">
         <AnimatePresence>
-          {pops.map((p) => (
-            <motion.span
-              key={p.id}
-              initial={{ opacity: 0, y: 8, scale: 0.6 }}
-              animate={{ opacity: [0, 1, 1, 0], y: -52, scale: p.crit ? 1.6 : 1 }}
-              transition={{ duration: 0.95, ease: "easeOut" }}
-              onAnimationComplete={() => onClearPop(p.id)}
-              className={`absolute left-1/2 top-1/3 -translate-x-1/2 text-center ${
-                p.kind === "note"
-                  ? "whitespace-nowrap font-mono text-sm uppercase tracking-[0.2em] text-accent"
-                  : `font-ndot text-4xl sm:text-5xl ${
-                      p.kind === "heal"
-                        ? "text-accent"
-                        : p.crit
-                          ? "text-primary drop-shadow-[0_0_18px_rgba(216,58,46,0.9)]"
-                          : "text-paper"
-                    }`
-              }`}
-            >
-              {p.text}
-              {p.crit && (
-                <span className="block text-center font-mono text-[10px] uppercase tracking-[0.3em]">
-                  Critical
-                </span>
-              )}
-            </motion.span>
-          ))}
+          {pops.map((p) => {
+            const dx = jitter(p.id, 36);
+            const big = p.kind === "dmg" && Math.abs(parseInt(p.text, 10) || 0) >= 24;
+            return (
+              <motion.span
+                key={p.id}
+                initial={{ opacity: 0, y: 10, x: dx, scale: 0.5 }}
+                animate={{
+                  opacity: [0, 1, 1, 0],
+                  y: -64,
+                  x: dx + jitter(p.id + 1, 18),
+                  scale: p.crit ? 1.7 : big ? 1.3 : 1,
+                }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                onAnimationComplete={() => onClearPop(p.id)}
+                className={`absolute left-1/2 top-[30%] -translate-x-1/2 text-center ${
+                  p.kind === "note"
+                    ? "whitespace-nowrap font-mono text-sm uppercase tracking-[0.2em] text-accent"
+                    : `font-ndot ${big || p.crit ? "text-5xl sm:text-6xl" : "text-4xl sm:text-5xl"} ${
+                        p.kind === "heal"
+                          ? "text-accent"
+                          : p.crit
+                            ? "text-primary drop-shadow-[0_0_18px_rgba(216,58,46,0.9)]"
+                            : "text-paper"
+                      }`
+                }`}
+              >
+                {p.text}
+                {p.crit && (
+                  <span className="block text-center font-mono text-[10px] uppercase tracking-[0.3em]">
+                    Critical
+                  </span>
+                )}
+              </motion.span>
+            );
+          })}
         </AnimatePresence>
       </div>
     </div>
@@ -1061,16 +1311,19 @@ function BattleScreen({
   battle,
   onMove,
   onClearPop,
+  onClearFx,
   onSkipVs,
 }: {
   battle: Battle;
   onMove: (m: MoveSlot) => void;
   onClearPop: (id: number) => void;
+  onClearFx: (id: number) => void;
   onSkipVs: () => void;
 }) {
   const { player, enemy } = battle;
   const locked = battle.busy || battle.showVs;
   const ready = specialReady(player);
+  const hypePct = Math.min(100, Math.round((player.hype / HYPE_MAX) * 100));
   const edge = doctrineEdge(player.state.doctrine, enemy.state.doctrine);
 
   const moves: {
@@ -1079,7 +1332,7 @@ function BattleScreen({
     hint: string;
     key: string;
     disabled?: boolean;
-    hot?: boolean;
+    special?: boolean;
   }[] = [
     {
       slot: "primary",
@@ -1102,10 +1355,10 @@ function BattleScreen({
     {
       slot: "special",
       name: player.state.special.name,
-      hint: ready ? "AUTHORIZED" : "REQ. 100% HYPE",
+      hint: ready ? "AUTHORIZED — FIRE AT WILL" : `CHARGING — ${hypePct}%`,
       key: "4",
       disabled: !ready,
-      hot: ready,
+      special: true,
     },
   ];
 
@@ -1114,22 +1367,27 @@ function BattleScreen({
       {/* arena */}
       <div className="relative">
         <motion.div
+          initial={false}
           animate={
             battle.anims.player === "hurt" || battle.anims.enemy === "hurt"
-              ? { x: [0, -7, 6, -3, 0] }
-              : { x: 0 }
+              ? { x: [0, -8, 7, -4, 0], scale: [1, 0.992, 1] }
+              : { x: 0, scale: 1 }
           }
-          transition={{ duration: 0.35 }}
-          className="grid grid-cols-[1fr_auto_1fr] items-stretch gap-2 sm:gap-4"
+          transition={{ duration: 0.38 }}
+          className="relative grid grid-cols-[1fr_auto_1fr] items-stretch gap-2 sm:gap-4"
         >
           <FighterCard
             c={player}
             side="player"
             anim={battle.anims.player}
             pops={battle.pops.filter((p) => p.side === "player")}
+            cardFx={battle.fx.filter(
+              (f) => (f.type === "impact" || f.type === "debris") && f.side === "player",
+            )}
             onClearPop={onClearPop}
+            onClearFx={onClearFx}
           />
-          <div className="flex flex-col items-center justify-center gap-2 px-0.5">
+          <div className="relative z-10 flex w-14 flex-col items-center justify-center gap-2 sm:w-24">
             <span className="font-marlboro text-2xl uppercase text-muted-foreground sm:text-4xl">
               VS
             </span>
@@ -1157,34 +1415,24 @@ function BattleScreen({
             side="enemy"
             anim={battle.anims.enemy}
             pops={battle.pops.filter((p) => p.side === "enemy")}
+            cardFx={battle.fx.filter(
+              (f) => (f.type === "impact" || f.type === "debris") && f.side === "enemy",
+            )}
             intent={{
               label: battle.intentLabel,
               jammed: battle.plan.jammed,
               isSpecial: battle.plan.slot === "special" && !battle.plan.jammed,
             }}
             onClearPop={onClearPop}
+            onClearFx={onClearFx}
+          />
+
+          {/* projectiles cross the arena above both cards */}
+          <ArenaFxLayer
+            events={battle.fx.filter((f) => f.type === "tracer" || f.type === "pierce")}
+            onDone={onClearFx}
           />
         </motion.div>
-
-        {/* field development toast */}
-        <AnimatePresence>
-          {battle.toast && (
-            <motion.div
-              key={battle.toast.id}
-              initial={{ opacity: 0, y: -18, scale: 0.94 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 12 }}
-              className="absolute inset-x-4 top-1/3 z-30 mx-auto max-w-md border-2 border-primary bg-background/95 p-3 text-center shadow-[0_0_60px_rgba(216,58,46,0.35)]"
-            >
-              <p className="font-mono text-[9px] uppercase tracking-[0.35em] text-primary">
-                Wire — field development
-              </p>
-              <p className="mt-1.5 font-mono text-[11px] uppercase leading-relaxed tracking-[0.1em] text-foreground">
-                {battle.toast.headline}
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* tale of the tape */}
         <AnimatePresence>
@@ -1200,15 +1448,30 @@ function BattleScreen({
             >
               <p className="brand-label text-primary">Tale of the tape</p>
               <div className="flex items-center gap-5 sm:gap-8">
-                <span className="font-ndot text-6xl leading-none text-ink sm:text-8xl">
+                <motion.span
+                  initial={{ x: -60, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ duration: 0.28, ease: "easeOut" }}
+                  className="font-ndot text-6xl leading-none text-ink sm:text-8xl"
+                >
                   {player.state.abbr}
-                </span>
-                <span className="font-marlboro text-3xl uppercase text-primary sm:text-5xl">
+                </motion.span>
+                <motion.span
+                  initial={{ scale: 2.4, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.16, type: "spring", stiffness: 400, damping: 18 }}
+                  className="font-marlboro text-3xl uppercase text-primary sm:text-5xl"
+                >
                   VS
-                </span>
-                <span className="font-ndot text-6xl leading-none text-primary sm:text-8xl">
+                </motion.span>
+                <motion.span
+                  initial={{ x: 60, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ duration: 0.28, ease: "easeOut" }}
+                  className="font-ndot text-6xl leading-none text-primary sm:text-8xl"
+                >
                   {enemy.state.abbr}
-                </span>
+                </motion.span>
               </div>
               <p className="max-w-md text-center font-mono text-[10px] uppercase leading-relaxed tracking-[0.15em] text-ink/70">
                 {enemy.state.name} — &ldquo;{enemy.state.epithet}&rdquo;
@@ -1243,21 +1506,31 @@ function BattleScreen({
             type="button"
             disabled={locked || m.disabled}
             onClick={() => onMove(m.slot)}
-            className={`group relative border-2 p-3 text-left transition-all duration-150 disabled:cursor-not-allowed sm:p-4 ${
-              m.hot
-                ? "animate-pulse border-primary bg-primary text-primary-foreground"
-                : "border-paper/25 bg-ink text-paper hover:enabled:-translate-y-0.5 hover:enabled:border-primary hover:enabled:text-primary disabled:opacity-40"
+            className={`group relative overflow-hidden border-2 p-3 text-left transition-all duration-150 disabled:cursor-not-allowed sm:p-4 ${
+              m.special && ready
+                ? "uw-armed border-primary bg-primary text-primary-foreground"
+                : m.special
+                  ? "border-primary/40 bg-ink text-paper/90 disabled:opacity-90"
+                  : "border-paper/25 bg-ink text-paper hover:enabled:-translate-y-0.5 hover:enabled:border-primary hover:enabled:text-primary disabled:opacity-40"
             }`}
           >
+            {/* the signature button is its own hype gauge */}
+            {m.special && !ready && (
+              <span
+                aria-hidden
+                className="absolute inset-y-0 left-0 bg-primary/25 transition-[width] duration-500"
+                style={{ width: `${hypePct}%` }}
+              />
+            )}
             <span className="absolute right-2 top-2 font-advancedled text-[9px] opacity-50">
               {m.key}
             </span>
-            <span className="block truncate pr-4 font-ndot text-sm uppercase leading-tight sm:text-base">
+            <span className="relative block pr-4 font-ndot text-sm uppercase leading-tight sm:text-base">
               {m.name}
             </span>
             <span
-              className={`mt-1 block truncate font-mono text-[8px] uppercase tracking-[0.18em] ${
-                m.hot ? "text-primary-foreground/80" : "text-muted-foreground"
+              className={`relative mt-1 block font-mono text-[8px] uppercase tracking-[0.18em] ${
+                m.special && ready ? "text-primary-foreground/80" : "text-muted-foreground"
               }`}
             >
               {m.hint}
@@ -1276,7 +1549,7 @@ function BattleScreen({
             REC ●
           </span>
         </div>
-        <ul className="h-36 space-y-1 overflow-y-auto p-3">
+        <ul className="h-32 space-y-1 overflow-y-auto p-3">
           {battle.log.map((l) => (
             <li
               key={l.id}

@@ -314,6 +314,20 @@
     text-transform: uppercase;
   }
 
+  /* Uncivil War® signature button, armed state */
+  .uw-armed {
+    animation: uw-armed 1.4s ease-in-out infinite;
+  }
+  @keyframes uw-armed {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(216, 58, 46, 0.55);
+    }
+    50% {
+      box-shadow: 0 0 26px 4px rgba(216, 58, 46, 0.85);
+    }
+  }
+
   /* Uncivil War® news wire */
   .uw-marquee {
     animation: uw-marquee 38s linear infinite;

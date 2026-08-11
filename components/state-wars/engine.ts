@@ -242,14 +242,22 @@ function baseResolution(
   };
 }
 
+/** Pre-roll a DISORIENTED fizzle so the UI can stage it before any effects. */
+export function rollActionFailure(c: Combatant, slot: MoveSlot): boolean {
+  return slot !== "fortify" && hasStatus(c, "DISORIENTED") && Math.random() < 0.25;
+}
+
 /**
  * Resolve an action. Mutates both combatants (hp, hype, shield, stages,
  * statuses) and returns the full account for presentation.
+ * Pass `failedOverride` when the fizzle was already rolled via
+ * rollActionFailure; otherwise it is rolled here.
  */
 export function resolveAction(
   a: Combatant,
   d: Combatant,
   slot: MoveSlot,
+  failedOverride?: boolean,
 ): Resolution {
   const s = a.state;
   const move =
@@ -263,7 +271,8 @@ export function resolveAction(
   const res = baseResolution(slot, move.name, move.flavor, a, d);
 
   // DISORIENTED: 25% chance the action simply does not happen
-  if (slot !== "fortify" && hasStatus(a, "DISORIENTED") && Math.random() < 0.25) {
+  const failed = failedOverride ?? rollActionFailure(a, slot);
+  if (failed) {
     res.failed = true;
     return res;
   }
