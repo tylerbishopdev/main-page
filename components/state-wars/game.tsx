@@ -3,10 +3,15 @@
 /**
  * UNCIVIL WAR® — sanctioned interstate combat, live on pay-per-view.
  * The premise is the joke. The interface plays it straight.
+ *
+ * The battle is fought on a war-room theater: real state silhouettes,
+ * city lights that go out as HP falls, and every move rendered as a
+ * visible military operation (columns, artillery arcs, supply drains,
+ * storms, broadcasts, blackouts).
  */
 
 import NumberFlow from "@number-flow/react";
-import { AnimatePresence, motion, type Variants } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -31,22 +36,22 @@ import {
   type Combatant,
   type MoveSlot,
   type Plan,
+  type Resolution,
 } from "@/components/state-wars/engine";
+import { LowerThird, SpecialCutIn } from "@/components/state-wars/fx";
 import {
-  ArenaFxLayer,
-  Debris,
-  ImpactFlash,
-  LowerThird,
-  SpecialCutIn,
-  type FxEvent,
-  type FxSide,
-} from "@/components/state-wars/fx";
+  TheaterStage,
+  type Scorch,
+  type Side,
+  type TheaterEvent,
+} from "@/components/state-wars/theater";
 import {
   isMuted,
   setMuted,
   sfx,
   unlockAudio,
 } from "@/components/state-wars/sound";
+import { STATE_SHAPES } from "@/lib/state-shapes";
 import {
   areRivals,
   COMMENTARY,
@@ -60,8 +65,6 @@ import {
 /* ------------------------------------------------------------------ */
 
 type Phase = "select" | "battle" | "victory" | "defeat" | "dynasty";
-type Side = FxSide;
-type FighterAnim = "idle" | "lunge" | "hurt" | "ko";
 type LogTone = "action" | "desk" | "event" | "system";
 
 type LogEntry = { id: number; text: string; tone: LogTone };
@@ -89,12 +92,14 @@ type Battle = {
   rivalMatch: boolean;
   plan: Plan;
   intentLabel: string;
-  anims: Record<Side, FighterAnim>;
-  /** arena punch-scale trigger; increments on heavy impacts */
-  punch: number;
+  /** increments to retrigger the stage shake; parity flips direction */
+  shake: number;
+  /** last side that took a hit, for the HUD flash */
+  hits: { player: number; enemy: number };
   log: LogEntry[];
   pops: Pop[];
-  fx: FxEvent[];
+  theater: TheaterEvent[];
+  scorches: Scorch[];
   cinematic: Cinematic | null;
   breaking: string[];
   toast: { id: number; headline: string } | null;
@@ -105,7 +110,7 @@ const MUTE_KEY = "uncivil-war:muted";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-/** Omit that distributes over a union (plain Omit collapses FxEvent). */
+/** Omit that distributes over a union. */
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown
   ? Omit<T, K>
   : never;
@@ -188,11 +193,12 @@ export default function UncivilWar() {
         rivalMatch,
         plan,
         intentLabel: planLabel(enemy, plan),
-        anims: { player: "idle", enemy: "idle" },
-        punch: 0,
+        shake: 0,
+        hits: { player: 0, enemy: 0 },
         log,
         pops: [],
-        fx: [],
+        theater: [],
+        scorches: [],
         cinematic: null,
         breaking: [],
         toast: null,
@@ -235,7 +241,7 @@ export default function UncivilWar() {
   };
 
   /* -------------------------------------------------------------- */
-  /*  Turn resolution                                                */
+  /*  Turn resolution — every move is a staged military operation    */
   /* -------------------------------------------------------------- */
 
   const doMove = useCallback(
@@ -247,10 +253,11 @@ export default function UncivilWar() {
         ...battle,
         player: { ...battle.player, statuses: battle.player.statuses.map((s) => ({ ...s })) },
         enemy: { ...battle.enemy, statuses: battle.enemy.statuses.map((s) => ({ ...s })) },
-        anims: { ...battle.anims },
+        hits: { ...battle.hits },
         log: [...battle.log],
         pops: [...battle.pops],
-        fx: [...battle.fx],
+        theater: [...battle.theater],
+        scorches: [...battle.scorches],
         breaking: [...battle.breaking],
       };
       const commit = () =>
@@ -258,25 +265,43 @@ export default function UncivilWar() {
           ...b,
           player: { ...b.player, statuses: b.player.statuses.map((s) => ({ ...s })) },
           enemy: { ...b.enemy, statuses: b.enemy.statuses.map((s) => ({ ...s })) },
-          anims: { ...b.anims },
+          hits: { ...b.hits },
           log: [...b.log],
           pops: [...b.pops],
-          fx: [...b.fx],
+          theater: [...b.theater],
+          scorches: [...b.scorches],
           breaking: [...b.breaking],
         });
       const say = (text: string, tone: LogTone) =>
         b.log.unshift({ id: nextId(), text, tone });
       const pop = (side: Side, text: string, kind: Pop["kind"], crit = false) =>
         b.pops.push({ id: nextId(), side, text, crit, kind });
-      const fx = (e: DistributiveOmit<FxEvent, "id">) =>
-        b.fx.push({ ...e, id: nextId() } as FxEvent);
+      const op = (e: DistributiveOmit<TheaterEvent, "id">) => {
+        const id = nextId();
+        b.theater.push({ ...e, id } as TheaterEvent);
+        return id;
+      };
+      const scorch = (side: Side, id: number) => {
+        b.scorches = [...b.scorches, { id, side, dx: jitter(id, 52), dy: jitter(id + 5, 24) }].slice(-14);
+      };
+      const landImpact = (
+        defSide: Side,
+        h: { dmg: number; crit: boolean },
+        big = false,
+      ) => {
+        const id = op({ kind: "burst", side: defSide, crit: h.crit, big });
+        scorch(defSide, id);
+        pop(defSide, `-${h.dmg}`, "dmg", h.crit);
+        b.hits[defSide] += 1;
+        b.shake += 1;
+        if (h.crit || big) sfx.crit();
+        else sfx.hit();
+      };
 
       b.busy = true;
       commit();
 
       const act = async (side: Side, chosen: MoveSlot) => {
-        b.anims.player = "idle";
-        b.anims.enemy = "idle";
         const atkSide = side;
         const defSide: Side = side === "player" ? "enemy" : "player";
         const attacker = side === "player" ? b.player : b.enemy;
@@ -284,26 +309,18 @@ export default function UncivilWar() {
         const tag = `[${attacker.state.abbr}]`;
         const arch = attacker.state.tactical.archetype;
 
-        // pre-rolled fizzle: the whole action stalls before launch
+        // pre-rolled fizzle: the operation stalls on the pad
         if (rollActionFailure(attacker, chosen)) {
           resolveAction(attacker, defender, chosen, true);
-          b.anims[atkSide] = "lunge";
+          op({ kind: "muster", side: atkSide });
           commit();
-          await sleep(180);
-          b.anims[atkSide] = "idle";
+          await sleep(420);
           pop(atkSide, "NO ACTION", "note");
           sfx.fail();
-          say(`${tag} ACTION FAILS. SUBJECT REPORTS DISORIENTATION.`, "system");
+          say(`${tag} OPERATION SCRUBBED. SUBJECT REPORTS DISORIENTATION.`, "system");
           commit();
-          await sleep(520);
+          await sleep(500);
           return;
-        }
-
-        // wind-up
-        if (chosen !== "fortify") {
-          b.anims[atkSide] = "lunge";
-          commit();
-          await sleep(200);
         }
 
         // signature cut-in cinematic
@@ -324,57 +341,88 @@ export default function UncivilWar() {
           await sleep(1450);
           b.cinematic = null;
           commit();
-          await sleep(80);
+          await sleep(60);
         }
 
-        // projectile choreography — fired before the books are opened
-        const isPierce = chosen === "tactical" && arch === "pierce";
-        const isBarrage = chosen === "tactical" && arch === "barrage";
-        const heavy = chosen === "special" || (chosen === "tactical" && arch === "siege");
-        const throws =
-          chosen === "fortify" || (chosen === "tactical" && arch === "rally")
-            ? 0
-            : isBarrage
-              ? 3
-              : 1;
-        if (isPierce) {
-          fx({ type: "pierce", from: atkSide });
-          commit();
-          await sleep(240);
-        } else {
-          for (let i = 0; i < throws; i++) {
-            fx({ type: "tracer", from: atkSide, doctrine: attacker.state.doctrine, heavy });
+        // ---- choreography: launch the visible operation ----
+        let resolved: Resolution | null = null;
+
+        if (chosen === "special") {
+          const doctrine = attacker.state.doctrine;
+          if (doctrine === "FORCE") {
+            for (let i = 0; i < 5; i++) {
+              op({ kind: "arc", from: atkSide, heavy: i === 2 });
+              commit();
+              await sleep(120);
+            }
+            await sleep(420);
+          } else if (doctrine === "CLIMATE") {
+            op({ kind: "storm", target: defSide });
             commit();
-            await sleep(isBarrage ? 150 : heavy ? 330 : 230);
+            await sleep(1050);
+          } else if (doctrine === "COMMERCE") {
+            op({ kind: "blackout", target: defSide });
+            commit();
+            await sleep(900);
+          } else {
+            op({ kind: "broadcast", from: atkSide });
+            commit();
+            await sleep(950);
           }
+        } else if (chosen === "fortify" || (chosen === "tactical" && arch === "rally")) {
+          op({ kind: "muster", side: atkSide });
+          commit();
+          await sleep(560);
+        } else if (chosen === "tactical" && arch === "barrage") {
+          for (let i = 0; i < 3; i++) {
+            op({ kind: "arc", from: atkSide });
+            commit();
+            await sleep(140);
+          }
+          await sleep(340);
+        } else if (chosen === "tactical" && arch === "siege") {
+          op({ kind: "arc", from: atkSide, heavy: true });
+          commit();
+          await sleep(600);
+        } else if (chosen === "tactical" && arch === "pierce") {
+          op({ kind: "pierce", target: defSide });
+          commit();
+          await sleep(340);
+        } else if (chosen === "tactical" && arch === "drain") {
+          op({ kind: "drain", from: atkSide });
+          commit();
+          await sleep(880);
+        } else if (chosen === "tactical" && arch === "gambit") {
+          // resolve first so an interception detonates mid-flight
+          resolved = resolveAction(attacker, defender, chosen, false);
+          op({ kind: "arc", from: atkSide, heavy: true, intercepted: resolved.intercepted });
+          commit();
+          await sleep(620);
+        } else if (chosen === "tactical" && arch === "sanction") {
+          op({ kind: "arc", from: atkSide });
+          commit();
+          await sleep(460);
+        } else {
+          // primary: a ground column crosses the frontier
+          op({ kind: "column", from: atkSide });
+          commit();
+          await sleep(820);
         }
 
-        // resolve
-        const res = resolveAction(attacker, defender, chosen, false);
-        if (chosen !== "special") {
-          say(`${tag} ${res.moveName} — ${res.flavor}`, "action");
-        }
+        // ---- the books open ----
+        const res = resolved ?? resolveAction(attacker, defender, chosen, false);
+        say(`${tag} ${res.moveName} — ${res.flavor}`, "action");
 
-        // hit-stop, then impacts land staggered
+        // hit-stop, then impacts land
         let anyCrit = false;
         if (res.hits.length > 0) {
-          await sleep(55);
+          await sleep(50);
           for (let i = 0; i < res.hits.length; i++) {
             const h = res.hits[i];
             anyCrit = anyCrit || h.crit;
-            fx({ type: "impact", side: defSide, crit: h.crit || heavy });
-            pop(defSide, `-${h.dmg}`, "dmg", h.crit);
-            b.anims[defSide] = "hurt";
-            if (h.crit || heavy) b.punch += 1;
-            if (h.crit) sfx.crit();
-            else sfx.hit();
+            landImpact(defSide, h, chosen === "special");
             commit();
-            if (i < res.hits.length - 1) {
-              await sleep(170);
-              b.anims[defSide] = "idle";
-              commit();
-              await sleep(50);
-            }
+            if (i < res.hits.length - 1) await sleep(190);
           }
           if (anyCrit) say(pick(COMMENTARY.crit), "desk");
           else if (Math.random() < 0.3) say(pick(COMMENTARY.hit), "desk");
@@ -385,15 +433,15 @@ export default function UncivilWar() {
           pop(atkSide, "INTERCEPTED", "note");
           sfx.fail();
           say(
-            `${tag} OPERATION INTERCEPTED. ${defender.state.name.toUpperCase()} GAINS INITIATIVE.`,
+            `${tag} ORDNANCE INTERCEPTED MID-FLIGHT. ${defender.state.name.toUpperCase()} GAINS INITIATIVE.`,
             "system",
           );
         }
         if (res.selfDamage > 0) {
-          await sleep(240);
-          fx({ type: "impact", side: atkSide, crit: false });
+          await sleep(220);
+          op({ kind: "burst", side: atkSide });
           pop(atkSide, `-${res.selfDamage}`, "dmg");
-          b.anims[atkSide] = "hurt";
+          b.hits[atkSide] += 1;
           sfx.hit();
           say(`${tag} RECOIL ABSORBED: −${res.selfDamage}.`, "system");
           commit();
@@ -402,7 +450,7 @@ export default function UncivilWar() {
           pop(atkSide, `+${res.healSelf}`, "heal");
           sfx.heal();
           if (chosen === "fortify") {
-            say(`${tag} EMERGENCY POWERS — ASSETS RESTORED, POSITION BRACED.`, "system");
+            say(`${tag} EMERGENCY POWERS — ASSETS RESTORED, BORDER HARDENED.`, "system");
             if (Math.random() < 0.3) say(pick(COMMENTARY.heal), "desk");
           }
           commit();
@@ -412,7 +460,7 @@ export default function UncivilWar() {
         }
         if (res.statusApplied) {
           const def = STATUS_DEFS[res.statusApplied];
-          await sleep(140);
+          await sleep(120);
           pop(defSide, def.label, "note");
           sfx.status();
           say(
@@ -441,31 +489,29 @@ export default function UncivilWar() {
           commit();
         }
 
-        b.anims[atkSide] = "idle";
         commit();
-        await sleep(chosen === "special" ? 560 : 480);
+        await sleep(chosen === "special" ? 560 : 460);
       };
 
       const finish = async (winner: Side) => {
         const loser: Side = winner === "player" ? "enemy" : "player";
-        b.anims[loser] = "ko";
-        b.punch += 1;
-        fx({ type: "impact", side: loser, crit: true });
-        fx({ type: "debris", side: loser });
+        op({ kind: "burst", side: loser, big: true, crit: true });
+        op({ kind: "shatter", side: loser });
+        b.shake += 1;
         say(pick(COMMENTARY.ko), "desk");
         commit();
-        await sleep(650);
+        await sleep(1000);
         if (winner === "player") {
           sfx.win();
           const nextConquered = [...conquered, b.enemy.state.abbr];
           setConquered(nextConquered);
           recordRun(nextConquered.length);
-          await sleep(950);
+          await sleep(800);
           setPhase(nextConquered.length >= STATES.length - 1 ? "dynasty" : "victory");
         } else {
           sfx.lose();
           recordRun(conquered.length);
-          await sleep(950);
+          await sleep(800);
           setPhase("defeat");
         }
       };
@@ -476,7 +522,7 @@ export default function UncivilWar() {
       if (b.player.hp <= 0) return finish("enemy"); // recoil can end a campaign
 
       // --- enemy executes the telegraphed plan ---
-      await sleep(380);
+      await sleep(360);
       await act("enemy", b.plan.slot);
       if (b.player.hp <= 0) return finish("enemy");
       if (b.enemy.hp <= 0) return finish("player");
@@ -488,6 +534,7 @@ export default function UncivilWar() {
         for (const t of ticks) {
           const def = STATUS_DEFS[t.id];
           if (t.dmg > 0) {
+            op({ kind: "burst", side });
             pop(side, `-${t.dmg}`, "dmg");
             sfx.status();
             say(
@@ -503,7 +550,7 @@ export default function UncivilWar() {
         }
         if (ticks.some((t) => t.dmg > 0)) {
           commit();
-          await sleep(460);
+          await sleep(440);
         }
         if (c.hp <= 0) return finish(side === "player" ? "enemy" : "player");
       }
@@ -575,9 +622,9 @@ export default function UncivilWar() {
     setBattle((prev) =>
       prev ? { ...prev, pops: prev.pops.filter((p) => p.id !== id) } : prev,
     );
-  const clearFx = (id: number) =>
+  const clearOp = (id: number) =>
     setBattle((prev) =>
-      prev ? { ...prev, fx: prev.fx.filter((f) => f.id !== id) } : prev,
+      prev ? { ...prev, theater: prev.theater.filter((f) => f.id !== id) } : prev,
     );
 
   /* -------------------------------------------------------------- */
@@ -618,7 +665,7 @@ export default function UncivilWar() {
                   battle={battle}
                   onMove={(m) => void doMove(m)}
                   onClearPop={clearPop}
-                  onClearFx={clearFx}
+                  onClearOp={clearOp}
                   onSkipVs={() =>
                     setBattle((prev) => (prev ? { ...prev, showVs: false } : prev))
                   }
@@ -675,17 +722,6 @@ function StatPips({ label, value, max }: { label: string; value: number; max: nu
       </div>
       <span className="font-advancedled text-[10px] text-ink/70">{value}</span>
     </div>
-  );
-}
-
-function DoctrineChip({ doctrine }: { doctrine: StateFighter["doctrine"] }) {
-  return (
-    <span
-      title={`${doctrine} SUPPRESSES ${DOCTRINE_BEATS[doctrine]}`}
-      className="border border-ink/40 px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.18em] text-ink/80"
-    >
-      {doctrine}
-    </span>
   );
 }
 
@@ -751,15 +787,18 @@ function SelectScreen({
                 transition={{ duration: 0.18 }}
                 className="grid gap-5 lg:grid-cols-[auto_1fr_auto] lg:items-center"
               >
-                <div className="flex items-center gap-4">
-                  <span className="font-ndot text-7xl leading-none text-primary">
-                    {picked.abbr}
-                  </span>
+                <div className="flex items-center gap-5">
+                  <DossierShape abbr={picked.abbr} />
                   <div>
                     <p className="font-ndot text-2xl uppercase leading-none">{picked.name}</p>
                     <p className="mt-1 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-ink/60">
                       <span>&ldquo;{picked.epithet}&rdquo;</span>
-                      <DoctrineChip doctrine={picked.doctrine} />
+                      <span
+                        title={`${picked.doctrine} SUPPRESSES ${DOCTRINE_BEATS[picked.doctrine]}`}
+                        className="border border-ink/40 px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.18em] text-ink/80"
+                      >
+                        {picked.doctrine}
+                      </span>
                     </p>
                     <div className="mt-3 space-y-1.5">
                       <StatPips label="Body" value={picked.hp} max={130} />
@@ -873,6 +912,26 @@ function SelectScreen({
         49 challengers. One map. Total annexation.
       </p>
     </div>
+  );
+}
+
+/** The state's real silhouette on its dossier. */
+function DossierShape({ abbr }: { abbr: string }) {
+  const shape = STATE_SHAPES[abbr];
+  if (!shape) return <span className="font-ndot text-7xl text-primary">{abbr}</span>;
+  const [x0, y0, x1, y1] = shape.bounds;
+  return (
+    <svg viewBox={`${x0 - 4} ${y0 - 4} ${x1 - x0 + 8} ${y1 - y0 + 8}`} className="h-24 w-24 shrink-0">
+      <path
+        d={shape.d}
+        fill="var(--primary)"
+        fillOpacity={0.16}
+        stroke="var(--primary)"
+        strokeWidth={1.6}
+        vectorEffect="non-scaling-stroke"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 
@@ -1012,7 +1071,7 @@ function SegBar({
       {Array.from({ length: segments }).map((_, i) => (
         <span
           key={i}
-          className={`h-3 flex-1 transition-colors duration-200 ${
+          className={`h-2.5 flex-1 transition-colors duration-200 ${
             i < filled
               ? danger
                 ? "animate-pulse bg-primary"
@@ -1027,156 +1086,50 @@ function SegBar({
   );
 }
 
-const fighterVariants: Variants = {
-  idle: { x: 0, y: 0, rotate: 0, opacity: 1 },
-  lungePlayer: { x: 34, transition: { duration: 0.16 } },
-  lungeEnemy: { x: -34, transition: { duration: 0.16 } },
-  hurtPlayer: { x: [0, -22, 12, -7, 3, 0], transition: { duration: 0.45 } },
-  hurtEnemy: { x: [0, 22, -12, 7, -3, 0], transition: { duration: 0.45 } },
-  koPlayer: {
-    rotate: -11,
-    y: 30,
-    opacity: 0.5,
-    transition: { duration: 0.65, ease: [0.2, 0.8, 0.3, 1] },
-  },
-  koEnemy: {
-    rotate: 11,
-    y: 30,
-    opacity: 0.5,
-    transition: { duration: 0.65, ease: [0.2, 0.8, 0.3, 1] },
-  },
-};
-
-function ConditionChips({ c }: { c: Combatant }) {
-  return (
-    <div className="mt-3 flex min-h-[18px] flex-wrap gap-1.5">
-      <AnimatePresence>
-        {c.shield < 1 && (
-          <motion.span
-            key="braced"
-            initial={{ scale: 1.6, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ type: "spring", stiffness: 500, damping: 24 }}
-            className="border border-paper/40 px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.16em] text-paper/80"
-          >
-            Braced
-          </motion.span>
-        )}
-        {c.atkStage !== 0 && (
-          <motion.span
-            key="stage"
-            initial={{ scale: 1.6, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ type: "spring", stiffness: 500, damping: 24 }}
-            className={`border px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.16em] ${
-              c.atkStage > 0 ? "border-accent/60 text-accent" : "border-primary/60 text-primary"
-            }`}
-          >
-            ATK {c.atkStage > 0 ? `+${c.atkStage}` : c.atkStage}
-          </motion.span>
-        )}
-        {c.statuses.map((s) => (
-          <motion.span
-            key={s.id}
-            initial={{ scale: 1.8, opacity: 0, rotate: -6 }}
-            animate={{ scale: 1, opacity: 1, rotate: 0 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ type: "spring", stiffness: 480, damping: 22 }}
-            title={STATUS_DEFS[s.id].desc}
-            className={`border px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-[0.16em] ${
-              s.id === "BECOMING_OHIO"
-                ? "animate-pulse border-primary bg-primary/15 text-primary"
-                : "border-primary/60 text-primary"
-            }`}
-          >
-            {STATUS_DEFS[s.id].label}
-            {Number.isFinite(s.turns) ? ` ·${s.turns}` : ""}
-          </motion.span>
-        ))}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function FighterCard({
+function HudStrip({
   c,
   side,
-  anim,
-  pops,
-  cardFx,
+  hitCount,
   intent,
-  onClearPop,
-  onClearFx,
 }: {
   c: Combatant;
   side: Side;
-  anim: FighterAnim;
-  pops: Pop[];
-  cardFx: FxEvent[];
+  hitCount: number;
   intent?: { label: string; jammed: boolean; isSpecial: boolean };
-  onClearPop: (id: number) => void;
-  onClearFx: (id: number) => void;
 }) {
-  const variant =
-    anim === "idle"
-      ? "idle"
-      : anim === "hurt"
-        ? side === "player"
-          ? "hurtPlayer"
-          : "hurtEnemy"
-        : anim === "lunge"
-          ? side === "player"
-            ? "lungePlayer"
-            : "lungeEnemy"
-          : side === "player"
-            ? "koPlayer"
-            : "koEnemy";
-  const ko = c.hp <= 0;
   const ready = specialReady(c);
-
   return (
-    <div className="relative">
+    <div
+      className={`relative overflow-hidden border p-3 ${
+        side === "player" ? "border-paper/30 bg-ink" : "border-primary/40 bg-ink"
+      }`}
+    >
+      {/* hit flash */}
       <motion.div
-        variants={fighterVariants}
-        animate={variant}
-        className={`relative overflow-hidden border p-4 sm:p-5 ${
-          side === "player" ? "border-paper/30 bg-ink" : "border-primary/40 bg-ink"
-        }`}
-      >
+        key={hitCount}
+        initial={{ opacity: hitCount > 0 ? 0.5 : 0 }}
+        animate={{ opacity: 0 }}
+        transition={{ duration: 0.35 }}
+        className="pointer-events-none absolute inset-0 bg-primary"
+      />
+      <div className="relative">
         <div className="flex items-baseline justify-between gap-2">
-          <p className="truncate font-ndot text-base uppercase leading-none text-foreground sm:text-lg">
+          <p className="truncate font-ndot text-sm uppercase leading-none text-foreground sm:text-base">
             {c.state.name}
+            <span className="ml-2 border border-border px-1 py-px align-middle font-mono text-[7px] tracking-[0.2em] text-muted-foreground">
+              {DOCTRINE_GLYPH[c.state.doctrine]}
+            </span>
           </p>
           <span className="shrink-0 font-mono text-[8px] uppercase tracking-[0.2em] text-muted-foreground">
             {side === "player" ? "You" : "Them"}
           </span>
         </div>
-        <p className="mt-1 flex items-center gap-2 truncate font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
-          <span className="truncate">&ldquo;{c.state.epithet}&rdquo;</span>
-          <span className="shrink-0 border border-border px-1 py-px text-[7px] tracking-[0.2em] text-muted-foreground">
-            {DOCTRINE_GLYPH[c.state.doctrine]}
-          </span>
-        </p>
 
-        <div className="my-3 text-center sm:my-4">
-          <motion.span
-            animate={{ y: [0, -5, 0] }}
-            transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-            className={`inline-block font-ndot text-7xl leading-none sm:text-8xl lg:text-9xl ${
-              side === "player" ? "text-paper" : "text-primary"
-            }`}
-          >
-            {c.state.abbr}
-          </motion.span>
-        </div>
-
-        <div className="flex items-center justify-between gap-2">
+        <div className="mt-2 flex items-center justify-between gap-2">
           <span className="font-mono text-[8px] uppercase tracking-[0.25em] text-muted-foreground">
             HP
           </span>
-          <span className="font-advancedled text-sm tracking-[0.1em] text-foreground">
+          <span className="font-advancedled text-xs tracking-[0.1em] text-foreground">
             <NumberFlow value={Math.max(0, c.hp)} />
             <span className="text-muted-foreground">/{c.maxHp}</span>
           </span>
@@ -1185,12 +1138,12 @@ function FighterCard({
           <SegBar value={Math.max(0, c.hp)} max={c.maxHp} segments={20} />
         </div>
 
-        <div className="mt-3 flex items-center justify-between gap-2">
+        <div className="mt-2 flex items-center justify-between gap-2">
           <span className="font-mono text-[8px] uppercase tracking-[0.25em] text-muted-foreground">
             Hype
           </span>
           {ready && (
-            <span className="animate-pulse font-mono text-[8px] uppercase tracking-[0.2em] text-primary">
+            <span className="animate-pulse font-mono text-[8px] uppercase tracking-[0.18em] text-primary">
               ★ Signature authorized
             </span>
           )}
@@ -1199,11 +1152,55 @@ function FighterCard({
           <SegBar value={c.hype} max={HYPE_MAX} segments={10} low />
         </div>
 
-        <ConditionChips c={c} />
+        <div className="mt-2 flex min-h-[16px] flex-wrap gap-1.5">
+          <AnimatePresence>
+            {c.shield < 1 && (
+              <motion.span
+                key="braced"
+                initial={{ scale: 1.6, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="border border-paper/40 px-1.5 py-0.5 font-mono text-[7px] uppercase tracking-[0.16em] text-paper/80"
+              >
+                Braced
+              </motion.span>
+            )}
+            {c.atkStage !== 0 && (
+              <motion.span
+                key="stage"
+                initial={{ scale: 1.6, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className={`border px-1.5 py-0.5 font-mono text-[7px] uppercase tracking-[0.16em] ${
+                  c.atkStage > 0 ? "border-accent/60 text-accent" : "border-primary/60 text-primary"
+                }`}
+              >
+                ATK {c.atkStage > 0 ? `+${c.atkStage}` : c.atkStage}
+              </motion.span>
+            )}
+            {c.statuses.map((s) => (
+              <motion.span
+                key={s.id}
+                initial={{ scale: 1.8, opacity: 0, rotate: -6 }}
+                animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ type: "spring", stiffness: 480, damping: 22 }}
+                title={STATUS_DEFS[s.id].desc}
+                className={`border px-1.5 py-0.5 font-mono text-[7px] uppercase tracking-[0.16em] ${
+                  s.id === "BECOMING_OHIO"
+                    ? "animate-pulse border-primary bg-primary/15 text-primary"
+                    : "border-primary/60 text-primary"
+                }`}
+              >
+                {STATUS_DEFS[s.id].label}
+                {Number.isFinite(s.turns) ? ` ·${s.turns}` : ""}
+              </motion.span>
+            ))}
+          </AnimatePresence>
+        </div>
 
-        {/* SIGINT intercept — enemy card only */}
-        {intent && !ko && (
-          <div className="mt-3 flex items-center gap-2 border-t border-border pt-2">
+        {intent && c.hp > 0 && (
+          <div className="mt-2 flex items-center gap-2 border-t border-border pt-1.5">
             <span className="shrink-0 font-mono text-[8px] uppercase tracking-[0.25em] text-muted-foreground">
               Sigint
             </span>
@@ -1224,84 +1221,6 @@ function FighterCard({
             </motion.span>
           </div>
         )}
-
-        {/* impact flashes land inside the card */}
-        <AnimatePresence>
-          {cardFx
-            .filter((f) => f.type === "impact")
-            .map((f) => (
-              <ImpactFlash
-                key={f.id}
-                crit={f.type === "impact" ? f.crit : false}
-                onDone={() => onClearFx(f.id)}
-              />
-            ))}
-        </AnimatePresence>
-
-        {/* KO stamp */}
-        <AnimatePresence>
-          {ko && (
-            <motion.div
-              initial={{ scale: 3, opacity: 0, rotate: -20 }}
-              animate={{ scale: 1, opacity: 1, rotate: -14 }}
-              transition={{ type: "spring", stiffness: 400, damping: 18, delay: 0.25 }}
-              className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center"
-            >
-              <span className="border-4 border-primary bg-background/60 px-4 py-2 font-ndot text-3xl uppercase tracking-[0.15em] text-primary sm:text-4xl">
-                {side === "player" ? "Seceded" : "Annexed"}
-              </span>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-
-      {/* KO debris erupts outside the card bounds */}
-      {cardFx
-        .filter((f) => f.type === "debris")
-        .map((f) => (
-          <Debris key={f.id} side={side} onDone={() => onClearFx(f.id)} />
-        ))}
-
-      {/* damage pops — jittered so simultaneous numbers never stack */}
-      <div className="pointer-events-none absolute inset-0 z-20 overflow-visible">
-        <AnimatePresence>
-          {pops.map((p) => {
-            const dx = jitter(p.id, 36);
-            const big = p.kind === "dmg" && Math.abs(parseInt(p.text, 10) || 0) >= 24;
-            return (
-              <motion.span
-                key={p.id}
-                initial={{ opacity: 0, y: 10, x: dx, scale: 0.5 }}
-                animate={{
-                  opacity: [0, 1, 1, 0],
-                  y: -64,
-                  x: dx + jitter(p.id + 1, 18),
-                  scale: p.crit ? 1.7 : big ? 1.3 : 1,
-                }}
-                transition={{ duration: 1, ease: "easeOut" }}
-                onAnimationComplete={() => onClearPop(p.id)}
-                className={`absolute left-1/2 top-[30%] -translate-x-1/2 text-center ${
-                  p.kind === "note"
-                    ? "whitespace-nowrap font-mono text-sm uppercase tracking-[0.2em] text-accent"
-                    : `font-ndot ${big || p.crit ? "text-5xl sm:text-6xl" : "text-4xl sm:text-5xl"} ${
-                        p.kind === "heal"
-                          ? "text-accent"
-                          : p.crit
-                            ? "text-primary drop-shadow-[0_0_18px_rgba(216,58,46,0.9)]"
-                            : "text-paper"
-                      }`
-                }`}
-              >
-                {p.text}
-                {p.crit && (
-                  <span className="block text-center font-mono text-[10px] uppercase tracking-[0.3em]">
-                    Critical
-                  </span>
-                )}
-              </motion.span>
-            );
-          })}
-        </AnimatePresence>
       </div>
     </div>
   );
@@ -1311,13 +1230,13 @@ function BattleScreen({
   battle,
   onMove,
   onClearPop,
-  onClearFx,
+  onClearOp,
   onSkipVs,
 }: {
   battle: Battle;
   onMove: (m: MoveSlot) => void;
   onClearPop: (id: number) => void;
-  onClearFx: (id: number) => void;
+  onClearOp: (id: number) => void;
   onSkipVs: () => void;
 }) {
   const { player, enemy } = battle;
@@ -1325,6 +1244,8 @@ function BattleScreen({
   const ready = specialReady(player);
   const hypePct = Math.min(100, Math.round((player.hype / HYPE_MAX) * 100));
   const edge = doctrineEdge(player.state.doctrine, enemy.state.doctrine);
+  const playerKO = player.hp <= 0;
+  const enemyKO = enemy.hp <= 0;
 
   const moves: {
     slot: MoveSlot;
@@ -1364,74 +1285,131 @@ function BattleScreen({
 
   return (
     <div>
-      {/* arena */}
       <div className="relative">
-        <motion.div
-          initial={false}
-          animate={
-            battle.anims.player === "hurt" || battle.anims.enemy === "hurt"
-              ? { x: [0, -8, 7, -4, 0], scale: [1, 0.992, 1] }
-              : { x: 0, scale: 1 }
-          }
-          transition={{ duration: 0.38 }}
-          className="relative grid grid-cols-[1fr_auto_1fr] items-stretch gap-2 sm:gap-4"
-        >
-          <FighterCard
-            c={player}
-            side="player"
-            anim={battle.anims.player}
-            pops={battle.pops.filter((p) => p.side === "player")}
-            cardFx={battle.fx.filter(
-              (f) => (f.type === "impact" || f.type === "debris") && f.side === "player",
-            )}
-            onClearPop={onClearPop}
-            onClearFx={onClearFx}
-          />
-          <div className="relative z-10 flex w-14 flex-col items-center justify-center gap-2 sm:w-24">
-            <span className="font-marlboro text-2xl uppercase text-muted-foreground sm:text-4xl">
+        {/* HUD */}
+        <div className="grid grid-cols-2 items-stretch gap-2 sm:grid-cols-[1fr_auto_1fr] sm:gap-3">
+          <HudStrip c={player} side="player" hitCount={battle.hits.player} />
+          <div className="order-first col-span-2 flex items-center justify-center gap-3 sm:order-none sm:col-span-1 sm:flex-col sm:gap-1.5 sm:px-1">
+            <span className="font-marlboro text-xl uppercase text-muted-foreground sm:text-2xl">
               VS
             </span>
             {battle.rivalMatch && (
-              <span className="rotate-[-6deg] border border-primary px-1.5 py-0.5 text-center font-mono text-[8px] uppercase tracking-[0.18em] text-primary sm:px-2">
-                Grudge
-                <br />
-                on file
+              <span className="rotate-[-4deg] border border-primary px-1.5 py-0.5 text-center font-mono text-[8px] uppercase tracking-[0.16em] text-primary">
+                Grudge on file
               </span>
             )}
             {edge !== "neutral" && (
               <span
-                className={`text-center font-mono text-[8px] uppercase tracking-[0.18em] ${
+                className={`text-center font-mono text-[8px] uppercase tracking-[0.16em] ${
                   edge === "advantage" ? "text-accent" : "text-primary"
                 }`}
               >
-                Doctrine
-                <br />
-                {edge === "advantage" ? "favors you" : "against you"}
+                Doctrine {edge === "advantage" ? "favors you" : "against you"}
               </span>
             )}
           </div>
-          <FighterCard
+          <HudStrip
             c={enemy}
             side="enemy"
-            anim={battle.anims.enemy}
-            pops={battle.pops.filter((p) => p.side === "enemy")}
-            cardFx={battle.fx.filter(
-              (f) => (f.type === "impact" || f.type === "debris") && f.side === "enemy",
-            )}
+            hitCount={battle.hits.enemy}
             intent={{
               label: battle.intentLabel,
               jammed: battle.plan.jammed,
               isSpecial: battle.plan.slot === "special" && !battle.plan.jammed,
             }}
-            onClearPop={onClearPop}
-            onClearFx={onClearFx}
+          />
+        </div>
+
+        {/* theater of operations */}
+        <motion.div
+          animate={{
+            x: battle.shake === 0 ? 0 : battle.shake % 2 === 1 ? [0, -7, 6, -3, 0] : [0, 7, -6, 3, 0],
+          }}
+          transition={{ duration: 0.38 }}
+          className="relative mt-3 overflow-hidden border border-border bg-background/70"
+        >
+          <div className="pointer-events-none absolute left-3 top-2 font-mono text-[8px] uppercase tracking-[0.3em] text-muted-foreground">
+            Theater of operations
+          </div>
+          <div className="pointer-events-none absolute right-3 top-2 font-advancedled text-[9px] tracking-[0.2em] text-primary led-flicker">
+            SAT-04 · LIVE
+          </div>
+          <TheaterStage
+            player={player}
+            enemy={enemy}
+            events={battle.theater}
+            scorches={battle.scorches}
+            onDone={onClearOp}
           />
 
-          {/* projectiles cross the arena above both cards */}
-          <ArenaFxLayer
-            events={battle.fx.filter((f) => f.type === "tracer" || f.type === "pierce")}
-            onDone={onClearFx}
-          />
+          {/* damage pops float over each territory */}
+          {(["player", "enemy"] as Side[]).map((side) => (
+            <div
+              key={side}
+              className={`pointer-events-none absolute top-[30%] z-20 ${
+                side === "player" ? "left-[22%]" : "left-[78%]"
+              }`}
+            >
+              <AnimatePresence>
+                {battle.pops
+                  .filter((p) => p.side === side)
+                  .map((p) => {
+                    const dx = jitter(p.id, 34);
+                    const big = p.kind === "dmg" && Math.abs(parseInt(p.text, 10) || 0) >= 24;
+                    return (
+                      <motion.span
+                        key={p.id}
+                        initial={{ opacity: 0, y: 8, x: dx, scale: 0.5 }}
+                        animate={{
+                          opacity: [0, 1, 1, 0],
+                          y: -56,
+                          x: dx + jitter(p.id + 1, 16),
+                          scale: p.crit ? 1.6 : big ? 1.25 : 1,
+                        }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                        onAnimationComplete={() => onClearPop(p.id)}
+                        className={`absolute -translate-x-1/2 whitespace-nowrap text-center ${
+                          p.kind === "note"
+                            ? "font-mono text-xs uppercase tracking-[0.2em] text-accent"
+                            : `font-ndot ${big || p.crit ? "text-4xl sm:text-5xl" : "text-3xl sm:text-4xl"} ${
+                                p.kind === "heal"
+                                  ? "text-accent"
+                                  : p.crit
+                                    ? "text-primary drop-shadow-[0_0_18px_rgba(216,58,46,0.9)]"
+                                    : "text-paper"
+                              }`
+                        }`}
+                      >
+                        {p.text}
+                        {p.crit && (
+                          <span className="block text-center font-mono text-[9px] uppercase tracking-[0.3em]">
+                            Critical
+                          </span>
+                        )}
+                      </motion.span>
+                    );
+                  })}
+              </AnimatePresence>
+            </div>
+          ))}
+
+          {/* annexation stamp slams over the fallen territory */}
+          <AnimatePresence>
+            {(playerKO || enemyKO) && (
+              <motion.div
+                initial={{ scale: 2.8, opacity: 0, rotate: -18 }}
+                animate={{ scale: 1, opacity: 1, rotate: -10 }}
+                transition={{ type: "spring", stiffness: 380, damping: 17, delay: 0.55 }}
+                className={`pointer-events-none absolute top-1/3 z-30 ${
+                  playerKO ? "left-[22%]" : "left-[78%]"
+                } -translate-x-1/2`}
+              >
+                <span className="border-4 border-primary bg-background/70 px-4 py-1.5 font-marlboro text-3xl uppercase tracking-[0.1em] text-primary sm:text-4xl">
+                  {playerKO ? "Seceded" : "Annexed"}
+                </span>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         {/* tale of the tape */}
@@ -1447,15 +1425,14 @@ function BattleScreen({
               className="paper-texture absolute inset-0 z-40 flex cursor-pointer flex-col items-center justify-center gap-3 p-4 text-ink"
             >
               <p className="brand-label text-primary">Tale of the tape</p>
-              <div className="flex items-center gap-5 sm:gap-8">
-                <motion.span
+              <div className="flex items-center gap-6 sm:gap-10">
+                <motion.div
                   initial={{ x: -60, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ duration: 0.28, ease: "easeOut" }}
-                  className="font-ndot text-6xl leading-none text-ink sm:text-8xl"
                 >
-                  {player.state.abbr}
-                </motion.span>
+                  <TapeShape abbr={player.state.abbr} ink />
+                </motion.div>
                 <motion.span
                   initial={{ scale: 2.4, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -1464,14 +1441,13 @@ function BattleScreen({
                 >
                   VS
                 </motion.span>
-                <motion.span
+                <motion.div
                   initial={{ x: 60, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ duration: 0.28, ease: "easeOut" }}
-                  className="font-ndot text-6xl leading-none text-primary sm:text-8xl"
                 >
-                  {enemy.state.abbr}
-                </motion.span>
+                  <TapeShape abbr={enemy.state.abbr} />
+                </motion.div>
               </div>
               <p className="max-w-md text-center font-mono text-[10px] uppercase leading-relaxed tracking-[0.15em] text-ink/70">
                 {enemy.state.name} — &ldquo;{enemy.state.epithet}&rdquo;
@@ -1499,7 +1475,7 @@ function BattleScreen({
       </div>
 
       {/* controls */}
-      <div className="mt-4 grid grid-cols-2 gap-2 lg:grid-cols-4">
+      <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-4">
         {moves.map((m) => (
           <button
             key={m.slot}
@@ -1514,7 +1490,6 @@ function BattleScreen({
                   : "border-paper/25 bg-ink text-paper hover:enabled:-translate-y-0.5 hover:enabled:border-primary hover:enabled:text-primary disabled:opacity-40"
             }`}
           >
-            {/* the signature button is its own hype gauge */}
             {m.special && !ready && (
               <span
                 aria-hidden
@@ -1540,7 +1515,7 @@ function BattleScreen({
       </div>
 
       {/* the desk */}
-      <div className="mt-4 border border-border bg-background/60">
+      <div className="mt-3 border border-border bg-background/60">
         <div className="flex items-center justify-between border-b border-border px-3 py-1.5">
           <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
             Commentary desk — Hank &amp; Gen. Whitlock, Ret.
@@ -1549,7 +1524,7 @@ function BattleScreen({
             REC ●
           </span>
         </div>
-        <ul className="h-32 space-y-1 overflow-y-auto p-3">
+        <ul className="h-28 space-y-1 overflow-y-auto p-3">
           {battle.log.map((l) => (
             <li
               key={l.id}
@@ -1570,6 +1545,32 @@ function BattleScreen({
         </ul>
       </div>
     </div>
+  );
+}
+
+/** Silhouette badge for the tale of the tape. */
+function TapeShape({ abbr, ink }: { abbr: string; ink?: boolean }) {
+  const shape = STATE_SHAPES[abbr];
+  const color = ink ? "var(--ink)" : "var(--primary)";
+  if (!shape)
+    return (
+      <span className="font-ndot text-6xl leading-none sm:text-8xl" style={{ color }}>
+        {abbr}
+      </span>
+    );
+  const [x0, y0, x1, y1] = shape.bounds;
+  return (
+    <svg viewBox={`${x0 - 4} ${y0 - 4} ${x1 - x0 + 8} ${y1 - y0 + 8}`} className="h-24 w-28 sm:h-32 sm:w-36">
+      <path
+        d={shape.d}
+        fill={color}
+        fillOpacity={0.2}
+        stroke={color}
+        strokeWidth={1.8}
+        vectorEffect="non-scaling-stroke"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 
