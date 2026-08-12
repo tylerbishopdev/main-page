@@ -395,6 +395,27 @@ export const WUT = {
   },
 };
 
+/* Cult Resources — downloadable tools for people who already know what to do
+ * with them. Assets live in /public/skills/ (zip + pipeline diagram). */
+export const CULT_RESOURCES = {
+  items: [
+    {
+      id: "trailer-forge",
+      kind: "Claude Code skill",
+      title: "Trailer-Forge",
+      tagline: "Idea in. Movie trailer out.",
+      description:
+        "An agent skill that runs a full concept-to-film assembly line on fal.ai: it plans the shots, wins the look in still images first, animates them, generates and mixes the score, voiceover, and effects, then hands back a watchable ~60 second trailer plus per-shot redo files. Roughly $25-40 in model spend per trailer.",
+      requirements:
+        "Needs: a fal.ai API key, ffmpeg, Python 3 with Pillow, and an agent that reads SKILL.md (Claude Code or similar).",
+      install: "unzip into ~/.claude/skills/ then ask your agent for a trailer",
+      diagram: "/skills/trailer-forge-pipeline.svg",
+      href: "/skills/trailer-forge.zip",
+      buttonText: "Download skill (.zip)",
+    },
+  ],
+} as const;
+
 export const CORRELATION_DATA = [
   { year: "2000", dvdSales: 70, autismRate: 15 },
   { year: "2005", dvdSales: 65, autismRate: 22 },

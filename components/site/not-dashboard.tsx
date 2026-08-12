@@ -16,6 +16,7 @@ import {
   AI_INVESTMENT_DATA,
   ART_IMAGES,
   CORRELATION_DATA,
+  CULT_RESOURCES,
   CURRENCY_DATA,
   SPACEX_GDP_DATA,
   WUT,
@@ -87,7 +88,7 @@ export default function NotDashboard() {
 
         {activeTab === "maybeTrue" && <KindaFacts />}
         {activeTab === "notArt" && <MostlyArts />}
-        {activeTab === "notOriginals" && <Placeholder />}
+        {activeTab === "notOriginals" && <CultResources />}
       </main>
     </div>
   );
@@ -510,15 +511,72 @@ function MostlyArts() {
   );
 }
 
-function Placeholder() {
+/* Downloadable tools for the initiated. Each item: brief pitch on the left,
+ * pipeline diagram on the right, zip download below. */
+function CultResources() {
   return (
-    <div className="flex min-h-[440px] items-center justify-center">
-      <div className="max-w-md space-y-3 rounded-2xl border border-primary/30 bg-primary/10 p-10 text-center">
-        <span className="font-ndot text-3xl uppercase text-primary">
+    <div className="space-y-4">
+      {CULT_RESOURCES.items.map((item) => (
+        <motion.div
+          key={item.id}
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.5 }}
+          className="rounded-2xl border border-foreground/10 bg-card p-6 sm:p-8"
+        >
+          <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
+            <div className="flex flex-col gap-5">
+              <div>
+                <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                  {item.kind}
+                </span>
+                <h3 className="mt-1 font-ndot text-3xl uppercase tracking-tight text-primary">
+                  {item.title}
+                </h3>
+                <p className="led-flicker mt-2 font-advancedled text-[11px] uppercase tracking-[0.25em] text-secondary">
+                  {item.tagline}
+                </p>
+              </div>
+              <p className="font-mono text-xs leading-relaxed text-foreground/80">
+                {item.description}
+              </p>
+              <div className="space-y-2 border-l-2 border-primary/40 pl-4">
+                <p className="font-mono text-[10px] leading-relaxed text-muted-foreground">
+                  {item.requirements}
+                </p>
+                <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                  install: {item.install}
+                </p>
+              </div>
+              <a
+                href={item.href}
+                download
+                className="mt-auto inline-flex w-fit items-center gap-3 rounded-xl border border-primary bg-primary px-5 py-3 font-ndot text-sm uppercase tracking-wide text-primary-foreground transition-opacity hover:opacity-85"
+              >
+                {item.buttonText}
+              </a>
+            </div>
+            <div className="rounded-2xl border border-foreground/10 bg-background p-4">
+              <Image
+                src={item.diagram}
+                alt={`${item.title} pipeline diagram`}
+                width={680}
+                height={576}
+                unoptimized
+                className="h-auto w-full"
+              />
+            </div>
+          </div>
+        </motion.div>
+      ))}
+
+      <div className="rounded-2xl border border-primary/30 bg-primary/10 p-6 text-center">
+        <span className="font-ndot text-lg uppercase text-primary">
           {WUT.placeholder.heading}
         </span>
-        <p className="font-mono text-sm text-foreground/75">
-          {WUT.placeholder.body}
+        <p className="mt-1 font-mono text-[11px] text-foreground/75">
+          More resources incoming. {WUT.placeholder.body}
         </p>
       </div>
     </div>
