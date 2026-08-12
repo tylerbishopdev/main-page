@@ -232,10 +232,10 @@ export default function SiteNav() {
                     Contact
                   </Link>
                   <Link
-                    href="/mario-cart"
+                    href="/docs"
                     className="text-ink/70 transition-colors hover:text-primary"
                   >
-                    Mario Cart®
+                    Docs
                   </Link>
                 </div>
                 <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-ink/60">

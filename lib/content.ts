@@ -211,18 +211,6 @@ export const PROJECTS: Project[] = [
     external: true,
   },
   {
-    company: "Mario Cart® The Movie",
-    year: "I direct and star in this future summer blockbuster",
-    title: "Trailer for Future Blockbuster",
-    position: "Mario Cart® The Movie",
-    imgSrc: "/mariomovie.png",
-    projectLink: "/mario-cart",
-    buttonText: "Watch Now",
-    answer:
-      "A live action trailer for Mario Cart. A movie that could totally be made. Get at me Hollywood, Ninendo, whoever. Give me 8-10 hours and it's ready to go.",
-    external: false,
-  },
-  {
     company: "Sound Frequency Generator",
     year: "Generate waves by freq. type, enveope, and more",
     title: "So THEY can't read your thoughts, or whateve",
@@ -491,12 +479,87 @@ export const MUSIC = {
   },
 };
 
-export const MARIO = {
-  title: "NotTyler | Mario Cart",
-  description:
-    "A live action trailer for Mario Cart. A movie that could totally be made. Get at me Hollywood.",
-  videoId: "QKRNJjg6PBu",
+/* Docs — the movie/documentary trailer wing of the empire. Each entry powers
+ * a card on /docs (same exhibit-card config as the index) plus its own video
+ * embed page at /docs/[slug]. Card copy extends the Project shape so the
+ * shuffle deck renders it unchanged. Descriptions come verbatim from the
+ * videos.nottyler.org channel metadata. */
+export type DocEntry = Project & {
+  slug: string;
+  videoId: string;
+  pageTitle: string;
+  marquee: string;
+  marqueeNote: string;
+  blurb: string;
 };
+
+export const DOCS_INTRO = {
+  title: "NotTyler | Docs",
+  description:
+    "Trailers for films and documentaries so important that Hollywood is afraid to admit they don't exist yet.",
+  heading: "Docs",
+  bio: "The film and documentary division. Trailers for future blockbusters and suppressed documentaries that the establishment refuses to greenlight. Watch them now so you can say you knew before everyone else.",
+};
+
+export const DOCS: DocEntry[] = [
+  {
+    slug: "mario-cart",
+    videoId: "QKRNJjg6PBu",
+    pageTitle: "NotTyler | Mario Cart",
+    marquee: "Mario Cart® The Movie",
+    marqueeNote: "/// Trailer for Future Blockbuster ///",
+    blurb:
+      "A live action trailer for Mario Cart. A movie that could totally be made. Get at me Hollywood.",
+    company: "Mario Cart® The Movie",
+    year: "I direct and star in this future summer blockbuster",
+    title: "Trailer for Future Blockbuster",
+    position: "Mario Cart® The Movie",
+    imgSrc: "/mariomovie.png",
+    projectLink: "/docs/mario-cart",
+    buttonText: "Watch Now",
+    answer:
+      "A live action trailer for Mario Cart. A movie that could totally be made. Get at me Hollywood, Ninendo, whoever. Give me 8-10 hours and it's ready to go.",
+    external: false,
+  },
+  {
+    slug: "not-birds",
+    videoId: "g1NNVrpkGsu",
+    pageTitle: "NotTyler | not Birds",
+    marquee: "not Birds",
+    marqueeNote: "/// Banned 1979 Documentary ///",
+    blurb:
+      "A 1979 film about the genius scientist who uncovered a terrible truth about birds; only his research was suppressed. Now, the population is slowly realizing he was right all along.",
+    company: "not Birds",
+    year: "banned 1979 documentary",
+    title: "A Terrible Truth About Birds",
+    position: "not Birds® The Documentary",
+    imgSrc: "/notbirds.jpg",
+    projectLink: "/docs/not-birds",
+    buttonText: "Watch Now",
+    answer:
+      "A 1979 film about the genius scientist who uncovered a terrible truth about birds; only his research was suppressed. Now, the population is slowly realizing he was right all along.",
+    external: false,
+  },
+  {
+    slug: "the-florida-hypothesis",
+    videoId: "kjRZl8MtGAu",
+    pageTitle: "NotTyler | The Florida Hypothesis",
+    marquee: "The Florida Hypothesis",
+    marqueeNote: "/// The Truth Is In Florida ///",
+    blurb:
+      "A documentary investigation into the true age of the pyramids, and into the extraordinary claims of the one man willing to say what the establishment won't: that the pyramids were built recently, by himself and another man named Chomps. Experts disagree. Chomps could not be reached for comment.",
+    company: "The Florida Hypothesis",
+    year: "documentary investigation",
+    title: "Egyptology Is Off By Roughly 4,500 Years",
+    position: "The Florida Hypothesis® A Documentary",
+    imgSrc: "/floridahypothesis.jpg",
+    projectLink: "/docs/the-florida-hypothesis",
+    buttonText: "Watch Now",
+    answer:
+      "For over a century, Egyptology has agreed on one thing: the Great Pyramids of Giza were completed around 2560 BC. One man says the field is off by roughly 4,500 years — because he was there.",
+    external: false,
+  },
+];
 
 /* notMusik releases — the documented catalog selection from the site (Spotify artist 4BhWvEo85DhqdhG8An3x3n).
  * This is the real list that was previously rendered in the music page discography.

@@ -16,17 +16,18 @@ import { BRAND_ASSETS, PROJECTS, WORKS_INTRO, type Project } from "@/lib/content
 /* Compact shuffle deck adapted from skiper-ui Skiper16 (StickyCard_001):
  * one uniform charcoal plate per project; each card pins and scales back
  * as the next shuffles on top, so the deck stays tight instead of a
- * long run of full-screen sections. */
-
-const total = PROJECTS.length;
+ * long run of full-screen sections. Defaults to the index PROJECTS deck;
+ * pass props to reuse the same card config elsewhere (e.g. /docs). */
 
 function ExhibitCard({
   project,
   i,
+  total,
   progress,
 }: {
   project: Project;
   i: number;
+  total: number;
   progress: MotionValue<number>;
 }) {
   const targetScale = Math.max(0.86, 1 - (total - i - 1) * 0.018);
@@ -119,7 +120,18 @@ function ExhibitCard({
   );
 }
 
-export default function Exhibits() {
+export default function Exhibits({
+  projects = PROJECTS,
+  heading = WORKS_INTRO.heading,
+  bio = WORKS_INTRO.bio,
+  countNoun = "works",
+}: {
+  projects?: Project[];
+  heading?: string;
+  bio?: string;
+  countNoun?: string;
+} = {}) {
+  const total = projects.length;
   const deckRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: deckRef,
@@ -145,26 +157,27 @@ export default function Exhibits() {
             staggerFrom="first"
             transition={{ type: "spring", stiffness: 200, damping: 21 }}
           >
-            {WORKS_INTRO.heading}
+            {heading}
           </VerticalCutReveal>
         </h2>
         <div className="max-w-sm space-y-3">
           <div className="h-[5px] w-full bg-primary" />
           <p className="font-mono text-xs leading-relaxed text-foreground/80">
-            {WORKS_INTRO.bio}
+            {bio}
           </p>
           <p className="brand-label text-primary">
-            {String(total).padStart(3, "0")} works
+            {String(total).padStart(3, "0")} {countNoun}
           </p>
         </div>
       </div>
 
       <div ref={deckRef} className="relative pb-16">
-        {PROJECTS.map((project, i) => (
+        {projects.map((project, i) => (
           <ExhibitCard
             key={`${project.company}-${i}`}
             project={project}
             i={i}
+            total={total}
             progress={scrollYProgress}
           />
         ))}
