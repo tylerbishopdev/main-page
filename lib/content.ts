@@ -67,7 +67,7 @@ export const DESTINATIONS: Destination[] = [
     external: true,
   },
   { name: "Wut?", href: "/not", note: "Blow your mind" },
-  { name: "Contact", href: "/contact", note: "I'd rather you dont" },
+  { name: "Docs", href: "/docs", note: "suppressed cinematic genius" },
 ];
 
 export const WORKS_INTRO = {
