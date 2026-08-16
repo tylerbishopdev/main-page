@@ -237,6 +237,12 @@ export default function SiteNav() {
                   >
                     Docs
                   </Link>
+                  <Link
+                    href="/uncivil-war"
+                    className="text-ink/70 transition-colors hover:text-primary"
+                  >
+                    Uncivil War®
+                  </Link>
                 </div>
                 <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-ink/60">
                   {IDENTITY.copyrightShort}

@@ -314,6 +314,53 @@
     text-transform: uppercase;
   }
 
+  /* Uncivil War® theater: city lights + map labels */
+  .uw-twinkle {
+    animation: uw-twinkle 2.1s ease-in-out infinite;
+  }
+  @keyframes uw-twinkle {
+    0%,
+    100% {
+      opacity: 0.95;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
+  .uw-map-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  /* Uncivil War® signature button, armed state */
+  .uw-armed {
+    animation: uw-armed 1.4s ease-in-out infinite;
+  }
+  @keyframes uw-armed {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(216, 58, 46, 0.55);
+    }
+    50% {
+      box-shadow: 0 0 26px 4px rgba(216, 58, 46, 0.85);
+    }
+  }
+
+  /* Uncivil War® news wire */
+  .uw-marquee {
+    animation: uw-marquee 38s linear infinite;
+  }
+  @keyframes uw-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
   /* Music page */
   .pixel-heading {
     letter-spacing: 0.12em;
