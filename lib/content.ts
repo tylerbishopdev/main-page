@@ -479,6 +479,22 @@ export const MUSIC = {
   },
 };
 
+/* ARTicifical Originals — the album poster page at /articifical-originals.
+ * Neither destination is invented: "listen" is the same Spotify artist profile
+ * the rest of the site links to, and "artist site" is the nottyler.org portal
+ * this page hangs off. The misspelling in the title is the album's own. */
+export const ALBUM = {
+  slug: "articifical-originals",
+  title: "ARTicifical Originals",
+  byline: "by/not Tyler",
+  pageTitle: "NotTyler | ARTicifical Originals",
+  description:
+    "ARTicifical Originals by /not Tyler. Stream the album, visit the artist portal, and get on the list for the vinyl pressing.",
+  cover: "/articifical/cover.png",
+  spotifyHref: MUSIC.projectLink,
+  artistHref: "/",
+} as const;
+
 /* Docs — the movie/documentary trailer wing of the empire. Each entry powers
  * a card on /docs (same exhibit-card config as the index) plus its own video
  * embed page at /docs/[slug]. Card copy extends the Project shape so the

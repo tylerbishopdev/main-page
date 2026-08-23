@@ -1,10 +1,13 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { useEffect } from "react";
 
 import NotMusik from "@/components/site/not-musik";
 import SiteFooter from "@/components/site/site-footer";
 import SiteNav from "@/components/site/site-nav";
+import { ALBUM } from "@/lib/content";
 
 const SPOTIFY_ARTIST = "https://open.spotify.com/artist/4BhWvEo85DhqdhG8An3x3n";
 
@@ -126,6 +129,36 @@ export default function MusicPage() {
             </a>
           </div>
         </div>
+      </section>
+
+      {/* The album poster page — the vinyl waitlist lives there, not here. */}
+      <section className="max-w-7xl mx-auto px-6 pt-20">
+        <Link
+          href={`/${ALBUM.slug}`}
+          className="reveal group grid gap-8 rounded-xl border border-border bg-card/50 p-6 transition-colors hover:border-primary/60 sm:grid-cols-[minmax(0,220px)_1fr] sm:items-center sm:p-8"
+        >
+          <Image
+            src={ALBUM.cover}
+            alt={`${ALBUM.title} album artwork`}
+            width={512}
+            height={512}
+            className="h-auto w-full rounded-lg"
+          />
+          <div>
+            <p className="font-mono text-primary text-xs tracking-[0.3em] uppercase mb-3">
+              On the press
+            </p>
+            <h2 className="pixel-heading font-ndot text-3xl sm:text-4xl md:text-5xl text-foreground mb-4">
+              {ALBUM.title.toUpperCase()}
+            </h2>
+            <p className="text-muted-foreground text-base sm:text-lg leading-relaxed">
+              {ALBUM.description}
+            </p>
+            <span className="mt-6 inline-block font-mono text-sm uppercase tracking-[0.2em] text-foreground/85 transition-colors group-hover:text-primary">
+              Open the poster →
+            </span>
+          </div>
+        </Link>
       </section>
 
       {/* Featured Tracks — Spotify Embeds */}

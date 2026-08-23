@@ -54,6 +54,27 @@
   font-style: normal;
   font-display: swap;
 }
+/* Condensed gothic used across the ARTicifical Originals poster page. */
+@font-face {
+  font-family: "Oswald";
+  src: url("/fonts/oswald-latin-var.woff2") format("woff2");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Oswald";
+  src: url("/fonts/oswald-latin-ext-var.woff2") format("woff2");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -74,6 +95,7 @@
   --font-lcd: "AdvancedLCD", monospace;
   --font-advancedled: "AdvancedLed", monospace;
   --font-marlboro: "Marlboro", sans-serif;
+  --font-oswald: "Oswald", "Arial Narrow", sans-serif;
 
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
@@ -404,4 +426,702 @@
   .reveal-stagger.visible > *:nth-child(10) { transition-delay: 720ms; }
   .reveal-stagger.visible > *:nth-child(11) { transition-delay: 800ms; }
   .reveal-stagger.visible > *:nth-child(12) { transition-delay: 880ms; }
+}
+
+/* ------------------------------------------------------------------ */
+/*  ARTicifical Originals — album poster page (/articifical-originals) */
+/*                                                                     */
+/*  The whole poster is sized in container-query units so every        */
+/*  element keeps the mockup's proportions at any column width.        */
+/*  1cqw === 1% of the poster width.                                   */
+/* ------------------------------------------------------------------ */
+
+.ao-page {
+  --ao-ink: #14120f;
+  --ao-cream: #fceed3;
+  --ao-green: #8fa775;
+  --ao-tan: #e8c8a5;
+  --ao-paper-tex: url("/brand/black-paper-texture.png");
+
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  background: #0a0908;
+  padding-block: 0;
+}
+
+@media (min-width: 720px) {
+  .ao-page {
+    padding-block: 3.5rem;
+  }
+}
+
+/* Out-of-frame surround: the cover art, blown up and thrown out of focus. */
+.ao-backdrop {
+  position: fixed;
+  inset: -12%;
+  z-index: -1;
+  background: url("/articifical/cover.png") center / cover no-repeat;
+  filter: blur(72px) saturate(1.2) brightness(0.4);
+  pointer-events: none;
+}
+
+.ao-poster {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin-inline: auto;
+  background: var(--ao-cream);
+  color: var(--ao-ink);
+  font-family: var(--font-oswald);
+  box-shadow:
+    0 50px 130px -34px rgba(0, 0, 0, 0.92),
+    0 0 0 1px rgba(0, 0, 0, 0.55);
+}
+
+/* --- hero ---------------------------------------------------------- */
+
+.ao-hero {
+  position: relative;
+  aspect-ratio: 571 / 598;
+  overflow: hidden;
+  background: #2b1e11;
+}
+
+.ao-hero-art {
+  object-fit: cover;
+  object-position: 50% 0%;
+}
+
+.ao-ufo {
+  position: absolute;
+  top: 24%;
+  left: -16%;
+  z-index: 2;
+  width: 10%;
+  height: auto;
+  filter: drop-shadow(0 5px 9px rgba(0, 0, 0, 0.4));
+  animation: ao-ufo-drift 38s linear infinite;
+}
+
+@keyframes ao-ufo-drift {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(-6deg);
+  }
+  10% {
+    opacity: 0.95;
+  }
+  55% {
+    transform: translate3d(640%, -46%, 0) rotate(4deg);
+  }
+  88% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(1180%, -12%, 0) rotate(-3deg);
+  }
+}
+
+/* --- torn paper edges ---------------------------------------------- */
+
+/* Only the ragged lip of the strip is wanted; the rest is faded out so the
+ * band's own paper shows through instead of a second, darker slab. */
+.ao-torn {
+  position: absolute;
+  left: -2%;
+  z-index: 1;
+  width: 104%;
+  height: 8cqw;
+  object-fit: cover;
+  object-position: 50% 0;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0 52%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0 52%, transparent 100%);
+}
+
+.ao-torn--top {
+  top: 0;
+  transform: translateY(-38%);
+}
+
+.ao-torn--bottom {
+  bottom: 0;
+  transform: scaleY(-1) translateY(-38%);
+}
+
+/* --- ticket band --------------------------------------------------- */
+
+.ao-band-tickets {
+  position: relative;
+  padding: 5.6cqw 4cqw 5.8cqw;
+  background: var(--ao-cream);
+}
+
+.ao-band-tickets::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--ao-paper-tex);
+  background-size: cover;
+  mix-blend-mode: multiply;
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+.ao-tickets {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.6cqw;
+}
+
+.ao-ticket {
+  --ao-notch: 2.3cqw;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 256 / 106;
+  overflow: hidden;
+  color: var(--ao-ink);
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.3, 1),
+    filter 0.28s ease;
+  -webkit-mask-image: radial-gradient(
+      circle var(--ao-notch) at left center,
+      transparent 97%,
+      #000 100%
+    ),
+    radial-gradient(
+      circle var(--ao-notch) at right center,
+      transparent 97%,
+      #000 100%
+    );
+  -webkit-mask-composite: source-in;
+  mask-image: radial-gradient(
+      circle var(--ao-notch) at left center,
+      transparent 97%,
+      #000 100%
+    ),
+    radial-gradient(
+      circle var(--ao-notch) at right center,
+      transparent 97%,
+      #000 100%
+    );
+  mask-composite: intersect;
+}
+
+/* halftone + fibre grain so the flat fills read as printed stock */
+/* Two passes: neutral halftone dots carry the print texture, and a much
+ * lighter pass of the paper scan adds the age. Keeping them apart stops the
+ * scan's grey cast from draining the ticket stock colour. */
+.ao-ticket::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--ao-paper-tex);
+  background-size: cover;
+  mix-blend-mode: multiply;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.ao-ticket::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    rgba(20, 18, 15, 0.42) 0.55px,
+    transparent 0.65px
+  );
+  background-size: 2.4px 2.4px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Ink rides above the halftone so the ticket can carry a printed texture
+ * without the lettering going grey. */
+.ao-ticket > * {
+  position: relative;
+  z-index: 1;
+}
+
+.ao-ticket:hover,
+.ao-ticket:focus-visible {
+  transform: translateY(-3px) rotate(0deg) scale(1.015);
+  filter: brightness(1.05);
+}
+
+.ao-ticket:focus-visible {
+  outline: 2px solid var(--ao-ink);
+  outline-offset: 3px;
+}
+
+.ao-ticket--spotify {
+  border-radius: 2.2cqw;
+  background: var(--ao-green);
+  transform: rotate(-1.1deg);
+}
+
+.ao-ticket--artist {
+  border-radius: 0.8cqw;
+  background: var(--ao-tan);
+  transform: rotate(0.9deg);
+}
+
+.ao-ticket-title {
+  font-size: 5cqw;
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+}
+
+.ao-ticket--artist .ao-ticket-title {
+  font-size: 5.9cqw;
+}
+
+.ao-ticket-sub {
+  font-size: 2.44cqw;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.ao-ticket-brand {
+  display: flex;
+  align-items: center;
+  gap: 1cqw;
+  margin-block: 0.75cqw;
+}
+
+.ao-ticket-brand svg {
+  width: 5.6cqw;
+  height: 5.6cqw;
+}
+
+.ao-ticket-brand span {
+  font-family: var(--font-sans);
+  font-size: 5.3cqw;
+  font-weight: 700;
+  letter-spacing: -0.012em;
+  text-transform: none;
+  line-height: 1;
+}
+
+.ao-ticket-portal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5cqw;
+  width: 100%;
+  margin-top: 1.2cqw;
+}
+
+.ao-ticket-portal .ao-ticket-sub {
+  font-size: 2.5cqw;
+}
+
+.ao-ticket-icon {
+  width: 6.2cqw;
+  height: auto;
+}
+
+.ao-ticket-icon--camera {
+  width: 7cqw;
+}
+
+/* --- waitlist band ------------------------------------------------- */
+
+.ao-band-waitlist {
+  position: relative;
+  overflow: hidden;
+  padding: 0.35cqw 3cqw 4.9cqw 10.7cqw;
+  background: #2b1e11 url("/articifical/cover.png") 50% 100% / 100% auto
+    no-repeat;
+}
+
+.ao-band-waitlist::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    120% 90% at 50% 40%,
+    transparent 45%,
+    rgba(20, 14, 6, 0.22) 100%
+  );
+  pointer-events: none;
+}
+
+.ao-vinyl {
+  position: absolute;
+  right: 9cqw;
+  bottom: 4.6cqw;
+  z-index: 1;
+  width: 42cqw;
+  height: auto;
+  filter: drop-shadow(0 3cqw 3cqw rgba(0, 0, 0, 0.55));
+  /* Parked so the label stays readable, exactly as printed. It only turns
+   * while the visitor is over the band, and keeps its place when they leave. */
+  animation: ao-spin 16s linear infinite;
+  animation-play-state: paused;
+}
+
+.ao-band-waitlist:hover .ao-vinyl,
+.ao-band-waitlist:focus-within .ao-vinyl {
+  animation-play-state: running;
+}
+
+@keyframes ao-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- waitlist card ------------------------------------------------- */
+
+.ao-card {
+  position: relative;
+  z-index: 2;
+  width: 52.7cqw;
+  padding: 0.3cqw 2.4cqw 1.1cqw;
+  border-radius: 1.2cqw;
+  background: radial-gradient(
+    130% 120% at 30% 20%,
+    #f1d6b4 0%,
+    #e9c9a8 65%,
+    #e0c1a0 100%
+  );
+  transform: rotate(-0.7deg);
+  box-shadow:
+    0 2.6cqw 4cqw -1.4cqw rgba(0, 0, 0, 0.62),
+    inset 0 0 0 0.16cqw rgba(20, 18, 15, 0.12);
+}
+
+.ao-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: var(--ao-paper-tex);
+  background-size: cover;
+  mix-blend-mode: multiply;
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.ao-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* The poster is lettered in a face narrower than Oswald. Rather than ship a
+ * second webfont, each line is set a size up and squeezed back to the printed
+ * width, which lands on the same cap height and column measure. */
+.ao-card-title {
+  display: block;
+  margin-top: -0.85cqw;
+  font-size: 8.7cqw;
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.012em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: scaleX(0.86);
+}
+
+.ao-card-lede {
+  display: block;
+  margin-top: 0.25cqw;
+  font-size: 3.3cqw;
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: scaleX(0.8);
+}
+
+/* One nowrap line rather than flex items: the horizontal squeeze below can
+ * overrun the card, and flex would eat the gap instead of letting it hang. */
+/* Sized to its own content, then squeezed back under the card width — a block
+ * box would let the second bullet paint past the torn edge. */
+.ao-card-bullets {
+  position: relative;
+  left: 50%;
+  display: block;
+  width: max-content;
+  margin-top: 0.7cqw;
+  padding: 0;
+  font-size: 2.4cqw;
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: 0.004em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  list-style: none;
+  transform: translateX(-50%) scaleX(0.79);
+}
+
+.ao-card-bullets li {
+  display: inline-block;
+}
+
+.ao-card-bullets li + li {
+  margin-left: 3.2cqw;
+}
+
+.ao-fieldset {
+  min-inline-size: 0;
+  margin-top: 0.9cqw;
+  padding: 2.3cqw 1.9cqw 0.5cqw;
+  border: 0.24cqw solid var(--ao-ink);
+  border-radius: 0.5cqw;
+}
+
+.ao-legend {
+  margin-inline: auto;
+  padding-inline: 1.6cqw;
+  font-size: 4.4cqw;
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  transform: scaleX(0.9);
+}
+
+.ao-field {
+  display: block;
+  width: 100%;
+  padding: 0.35cqw 1.4cqw;
+  border: 0.3cqw solid var(--ao-ink);
+  border-radius: 0.35cqw;
+  background: #e8dbc2;
+  color: var(--ao-ink);
+  font-family: var(--font-oswald);
+  font-size: 2.45cqw;
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: 0.012em;
+  text-transform: uppercase;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ao-field::placeholder {
+  color: rgba(20, 18, 15, 0.9);
+  opacity: 1;
+}
+
+.ao-field:focus {
+  outline: none;
+  background: #f6efe0;
+  box-shadow: 0 0 0 0.34cqw rgba(20, 18, 15, 0.22);
+}
+
+.ao-field[aria-invalid="true"] {
+  border-color: #a3241a;
+  box-shadow: 0 0 0 0.3cqw rgba(163, 36, 26, 0.2);
+}
+
+.ao-field + .ao-field {
+  margin-top: 0.7cqw;
+}
+
+.ao-submit {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin-top: 2.6cqw;
+  padding: 0.5cqw 1cqw 0.7cqw;
+  border: 0.3cqw solid var(--ao-ink);
+  border-radius: 0.35cqw;
+  background-image: radial-gradient(
+      rgba(90, 55, 5, 0.5) 0.55px,
+      transparent 0.65px
+    ),
+    linear-gradient(96deg, #c78d2a 0%, #d9a63f 34%, #cf9a33 62%, #bd8121 100%);
+  background-size: 2.4px 2.4px, cover;
+  color: var(--ao-ink);
+  font-family: var(--font-oswald);
+  font-size: 4.7cqw;
+  font-weight: 700;
+  letter-spacing: -0.006em;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.14s ease;
+}
+
+.ao-submit-label {
+  display: block;
+  transform: scaleX(0.83);
+}
+
+.ao-submit:hover:not(:disabled) {
+  filter: brightness(1.09) saturate(1.06);
+}
+
+.ao-submit:active:not(:disabled) {
+  transform: translateY(0.3cqw);
+}
+
+.ao-submit:disabled {
+  cursor: progress;
+  filter: grayscale(0.35) brightness(0.95);
+}
+
+.ao-note {
+  margin-top: 1.1cqw;
+  font-size: 2cqw;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.ao-note:empty {
+  display: none;
+}
+
+.ao-note--error {
+  color: #97231a;
+}
+
+.ao-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1cqw;
+  margin-top: 1.5cqw;
+  padding: 3cqw 2cqw;
+  border: 0.24cqw dashed var(--ao-ink);
+  border-radius: 0.5cqw;
+  text-align: center;
+}
+
+.ao-done-stamp {
+  padding: 0.6cqw 1.6cqw;
+  border: 0.4cqw solid #97231a;
+  border-radius: 0.5cqw;
+  color: #97231a;
+  font-size: 3.4cqw;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  transform: rotate(-3deg);
+}
+
+.ao-done-body {
+  font-size: 2.4cqw;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.ao-hp {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- page chrome outside the poster -------------------------------- */
+
+.ao-colophon {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 1.6rem;
+  max-width: 640px;
+  margin: 1.5rem auto 2.5rem;
+  padding-inline: 1rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(238, 227, 205, 0.55);
+}
+
+.ao-colophon a {
+  color: rgba(238, 227, 205, 0.78);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.ao-colophon a:hover {
+  color: var(--color-primary);
+}
+
+/* --- entrance ------------------------------------------------------ */
+
+.ao-rise {
+  animation: ao-rise 0.85s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.ao-rise--2 {
+  animation-delay: 0.18s;
+}
+
+@keyframes ao-rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Narrow screens: the form has to stay usable, so the card grows and the
+ * record slides further behind it instead of shrinking with the column. */
+@container (max-width: 480px) {
+  .ao-band-waitlist {
+    padding-left: 5cqw;
+    padding-right: 2cqw;
+  }
+
+  .ao-card {
+    width: 74cqw;
+  }
+
+  .ao-field {
+    font-size: 3.4cqw;
+    padding-block: 1.2cqw;
+  }
+
+  .ao-vinyl {
+    right: 2cqw;
+    width: 38cqw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ao-ufo,
+  .ao-vinyl,
+  .ao-rise {
+    animation: none;
+  }
+
+  .ao-ticket {
+    transition: none;
+  }
 }

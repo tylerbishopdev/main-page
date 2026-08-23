@@ -7,7 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { IDENTITY, PROJECTS } from "@/lib/content";
+import { ALBUM, IDENTITY, PROJECTS } from "@/lib/content";
 
 /* The header brand. Swap the mark by setting IDENTITY.logoSrc in
  * lib/content.ts to an image path in /public — nothing else to touch. */
@@ -187,7 +187,7 @@ export default function SiteNav() {
                     <Link
                       href="/#music"
                       onClick={jumpTo("#music")}
-                      className="group flex items-baseline gap-3 py-2 transition-colors hover:text-primary"
+                      className="group flex items-baseline gap-3 border-b border-ink/15 py-2 transition-colors hover:text-primary"
                     >
                       <span className="font-advancedled text-[10px] text-primary/60">
                         LP
@@ -197,6 +197,26 @@ export default function SiteNav() {
                       </span>
                       <span className="hidden text-right font-mono text-[9px] uppercase tracking-[0.1em] text-ink/55 sm:block">
                         audio project
+                      </span>
+                    </Link>
+                  </motion.li>
+                  <motion.li
+                    initial={{ opacity: 0, x: 24 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.14 + PROJECTS.length * 0.02 }}
+                  >
+                    <Link
+                      href={`/${ALBUM.slug}`}
+                      className="group flex items-baseline gap-3 py-2 transition-colors hover:text-primary"
+                    >
+                      <span className="font-advancedled text-[10px] text-primary/60">
+                        45
+                      </span>
+                      <span className="flex-1 font-ndot text-lg uppercase leading-tight tracking-tight">
+                        {ALBUM.title}
+                      </span>
+                      <span className="hidden text-right font-mono text-[9px] uppercase tracking-[0.1em] text-ink/55 sm:block">
+                        vinyl waitlist
                       </span>
                     </Link>
                   </motion.li>
