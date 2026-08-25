@@ -53,17 +53,13 @@ export default function Advocate() {
                 ? undefined
                 : { opacity: copyOpacity, y: copyY }
             }
-            className="adv-copy pointer-events-none absolute inset-x-0 z-20 px-4 sm:top-[42svh] sm:px-8 lg:top-auto lg:bottom-[38%] lg:left-8 lg:right-auto lg:max-w-md"
+            className="adv-copy pointer-events-none absolute inset-x-0 z-20 px-4 sm:top-[42svh] sm:px-8 lg:top-auto lg:bottom-[36%] lg:left-8 lg:right-auto lg:max-w-2xl"
           >
-            <p className="adv-eyebrow">{ADVOCATE.kicker}</p>
-            <h2 className="mt-3 font-ndot text-[clamp(2.4rem,7vw,5.5rem)] uppercase leading-[0.8] tracking-[-0.04em]">
-              {ADVOCATE.heading}
+            <h2 className="font-ndot text-[clamp(1.7rem,5vw,3.6rem)] uppercase leading-[0.82] tracking-[-0.04em]">
+              {ADVOCATE.sceneHeading}
             </h2>
-            <p className="mt-4 max-w-[36ch] font-oswald text-[clamp(1.05rem,2.1vw,1.45rem)] font-medium uppercase leading-[1.15] tracking-wide text-paper">
-              {ADVOCATE.lede}
-            </p>
-            <p className="mt-3 max-w-[42ch] font-mono text-[11px] leading-relaxed tracking-[0.04em] text-paper/70 sm:text-xs">
-              {ADVOCATE.body}
+            <p className="mt-4 max-w-[46ch] font-mono text-[11px] leading-relaxed tracking-[0.04em] text-paper/85 sm:text-xs">
+              {ADVOCATE.sceneLede}
             </p>
           </motion.div>
 
@@ -94,17 +90,18 @@ export default function Advocate() {
             <div className="adv-crt-screen">
               <Image
                 src={ADVOCATE.offices}
-                alt="Genius in-progress — notTyler career broadcast"
+                alt="Ezoic and Open.Video — the two rooms"
                 fill
                 sizes="(max-width: 1400px) 92vw, 1160px"
-                className="adv-crt-feed object-cover object-top"
+                unoptimized
+                className="adv-crt-feed object-cover"
               />
               <span aria-hidden className="adv-crt-glitch" />
               <div className="adv-crt-copy">
-                <h2 className="font-ndot text-[clamp(1.55rem,4.2vw,3.4rem)] uppercase leading-[0.8] tracking-[-0.04em]">
-                  {ADVOCATE.careerTitle}
-                </h2>
-                <p className="adv-crt-lede">{ADVOCATE.careerLede}</p>
+                <p className="adv-crt-kicker">{ADVOCATE.kicker}</p>
+                <h2 className="adv-crt-heading">{ADVOCATE.heading}</h2>
+                <p className="adv-crt-lede">{ADVOCATE.lede}</p>
+                <p className="adv-crt-body">{ADVOCATE.body}</p>
               </div>
             </div>
             <Image

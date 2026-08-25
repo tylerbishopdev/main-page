@@ -315,7 +315,7 @@
     filter: grayscale(1) sepia(1) hue-rotate(-18deg) saturate(9) contrast(1.35);
     transform: translate3d(3px, 0, 0);
     clip-path: inset(22% 0 63% 0);
-    animation: hero-stamp-glitch 6.4s infinite;
+    animation: hero-stamp-glitch 4.4s infinite;
   }
 
   .hero-stamp-ghost::before {
@@ -325,7 +325,7 @@
     filter: grayscale(1) contrast(1.4);
     transform: translate3d(-4px, 1px, 0);
     clip-path: inset(58% 0 18% 0);
-    animation: hero-stamp-glitch-ink 7.1s infinite;
+    animation: hero-stamp-glitch-ink 4.9s infinite;
   }
 
   .hero-stamp-ghost::after {
@@ -336,7 +336,7 @@
     opacity: 0.28;
     height: 2px;
     inset: 36% -6% auto;
-    animation: hero-stamp-bar 6.4s infinite;
+    animation: hero-stamp-bar 4.4s infinite;
   }
 
   .hero-stamp-veil {
@@ -625,27 +625,57 @@
 
   .adv-crt-copy {
     position: absolute;
-    left: 0.85rem;
-    top: 0.85rem;
+    left: 0.7rem;
+    top: 0.7rem;
     z-index: 3;
-    max-width: min(34ch, 78%);
-    text-shadow: 0 2px 16px rgba(9, 9, 9, 0.9);
+    max-width: min(38ch, 74%);
+    padding: 0.85rem 0.95rem 1rem;
+    background: #2b2d2a;
+    border: 1px solid #e23b2f;
+    color: #f3efe4;
+    text-shadow: none;
+  }
+
+  .adv-crt-kicker {
+    display: inline-block;
+    border: 1px solid #e23b2f;
+    padding: 0.28rem 0.45rem;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: #f3efe4;
+  }
+
+  .adv-crt-heading {
+    margin-top: 0.65rem;
+    font-family: var(--font-ndot);
+    font-size: clamp(2rem, 5.4vw, 4.2rem);
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    color: #f3efe4;
   }
 
   .adv-crt-lede {
-    display: inline-block;
-    margin-top: 0.7rem;
-    max-width: 36ch;
-    background: #2b2d2a;
-    border: 1px solid #e23b2f;
-    padding: 0.38rem 0.55rem;
+    display: block;
+    margin-top: 0.75rem;
     font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.16em;
-    line-height: 1.35;
+    font-size: clamp(12px, 1.15vw, 14px);
+    letter-spacing: 0.08em;
+    line-height: 1.4;
     text-transform: uppercase;
     color: #f3efe4;
-    text-shadow: none;
+  }
+
+  .adv-crt-body {
+    margin-top: 0.55rem;
+    font-family: var(--font-mono);
+    font-size: clamp(12px, 1.05vw, 13px);
+    line-height: 1.45;
+    letter-spacing: 0.02em;
+    color: #d8d2c6;
   }
 
   @keyframes adv-crt-tear {
@@ -739,8 +769,9 @@
     }
 
     .adv-crt-copy {
-      left: 1.25rem;
-      top: 1.15rem;
+      left: 1.15rem;
+      top: 1.05rem;
+      padding: 1rem 1.1rem 1.15rem;
     }
   }
 
