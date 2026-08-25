@@ -37,7 +37,7 @@ export default function MusicCatalog() {
                 alt={MUSIC.position}
                 fill
                 sizes="(max-width: 1024px) 90vw, 420px"
-                className="object-contain p-3"
+                className="object-cover"
               />
             </div>
             <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-paper/70">

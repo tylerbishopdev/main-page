@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Link001 } from "@/components/ui/skiper-ui/skiper40";
-import { ALBUM, BRAND_ASSETS, DESTINATIONS, IDENTITY } from "@/lib/content";
+import { ADVOCATE, ALBUM, BRAND_ASSETS, DESTINATIONS, IDENTITY } from "@/lib/content";
 
 export default function SiteFooter() {
   return (
@@ -58,6 +58,12 @@ export default function SiteFooter() {
               {item.name}
             </Link001>
           ))}
+          <Link001
+            href={`/#${ADVOCATE.id}`}
+            className="font-mono text-xs uppercase tracking-[0.25em] text-paper/85 transition-colors hover:text-primary"
+          >
+            {ADVOCATE.heading}
+          </Link001>
           <Link001
             href={`/${ALBUM.slug}`}
             className="font-mono text-xs uppercase tracking-[0.25em] text-paper/85 transition-colors hover:text-primary"

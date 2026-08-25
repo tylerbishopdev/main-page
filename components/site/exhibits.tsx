@@ -102,6 +102,7 @@ function ExhibitCard({
               alt={project.company}
               fill
               sizes="(max-width: 1024px) 0px, 42vw"
+              unoptimized
               className="object-contain p-5"
             />
           </div>
@@ -111,6 +112,7 @@ function ExhibitCard({
               alt={project.company}
               fill
               sizes="100vw"
+              unoptimized
               className="object-contain p-3"
             />
           </div>

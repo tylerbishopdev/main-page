@@ -27,7 +27,7 @@ export const BRAND_ASSETS = {
   },
   hero: {
     backdrop: "/brand/collage-three-panel.png",
-    figure: "/brand/hero-helmet.png",
+    figure: "/tylerherostamp.png",
     secondaryFigure: "/brand/helmet-sun.png",
   },
   collages: [
@@ -70,6 +70,41 @@ export const DESTINATIONS: Destination[] = [
   { name: "Docs", href: "/docs", note: "suppressed cinematic genius" },
 ];
 
+/* The advocate plate — same person as the music, also the one who runs
+ * marketing at Ezoic and Open.Video. Titles stay at what was given: no
+ * invented ranks, no stats. The office graphic already carries both marks. */
+export const ADVOCATE = {
+  id: "advocate",
+  kicker: "also the day job",
+  heading: "Advocate",
+  lede: "Executive and board member. In charge of marketing at Ezoic and Open.Video. Former founder of Pubtelligence at Google.",
+  body: "The same person who presses vinyl and writes songs also sits on the board of two companies that actually print money. The personas are not a costume change. They are the job.",
+  plate: "/assetbacktyler.png",
+  figures: "/tylersassets.png",
+  offices: "/gpt-image_20260712_1691718a.png",
+  crtBezel: "/crt-bezel.png",
+  careerTitle: "Genius In-Progress",
+  careerLede:
+    "Brilliant businesses with professional genius currently deployed",
+  credits: [
+    {
+      label: "Ezoic",
+      role: "executive · board · marketing",
+      href: "https://www.ezoic.com",
+    },
+    {
+      label: "Open.Video",
+      role: "executive · board · marketing",
+      href: "https://open.video",
+    },
+    {
+      label: "Pubtelligence",
+      role: "founder · then Google",
+      href: null,
+    },
+  ],
+} as const;
+
 export const WORKS_INTRO = {
   heading: "Creative works",
   bio: "Described as painfully creative, I believe myself to be better at articulating my thoughts, opinions, and ideas through artistic works. This is a incomplete list that I feel currently represent some component of my vision of the world, humanity, and absurd.",
@@ -98,10 +133,22 @@ export type Project = {
 
 /* NOTE: /siktok.png was referenced by the original site but the file never
  * existed in public/, so that entry falls back to a real asset.
- * Xheba is the periodic table sample pad (first in list).
- * notAuth secret lab is the mysterious "if you know..." version (placed as item 4).
- * The original notAuth cloner was moved to the end per request. */
+ * Music leads the deck. Xheba follows. notAuth secret lab is the mysterious
+ * "if you know..." version (placed as item 4). The original notAuth cloner
+ * was moved to the end per request. */
 export const PROJECTS: Project[] = [
+  {
+    company: "Music",
+    year: "audio project",
+    title: "People Are Saying I Saved Soul Music",
+    position: "Spotify® verified artist",
+    imgSrc: "/musicthumbty.png",
+    projectLink: "https://open.spotify.com/artist/4BhWvEo85DhqdhG8An3x3n",
+    buttonText: "Listen on Spotify",
+    answer:
+      "I'm a singer-songwriter and producer who creates soulful music that is surging in popularity for it's universal acclaim. People with good taste say its better than all music before it.",
+    external: true,
+  },
   {
     company: "Xheba",
     year: "xheba.com",
@@ -112,18 +159,6 @@ export const PROJECTS: Project[] = [
     buttonText: "Play the Elements",
     answer:
       "A sample pad built on the periodic table. Every element produces scientifically accurate sounds mapped directly from real spectral line frequencies. Real physics, turned into playable tones.",
-    external: true,
-  },
-  {
-    company: "Music",
-    year: "audio project",
-    title: "People Are Saying I Saved Soul Music",
-    position: "Spotify® verified artist",
-    imgSrc: "/promo.png",
-    projectLink: "https://open.spotify.com/artist/4BhWvEo85DhqdhG8An3x3n",
-    buttonText: "Listen on Spotify",
-    answer:
-      "I'm a singer-songwriter and producer who creates soulful music that is surging in popularity for it's universal acclaim. People with good taste say its better than all music before it.",
     external: true,
   },
   {
@@ -458,7 +493,7 @@ export const MUSIC = {
   year: "audio project",
   title: "People Are Saying I Saved Soul Music",
   position: "Spotify® verified artist",
-  imgSrc: "/promo.png",
+  imgSrc: "/musicthumbty.png",
   projectLink: "https://open.spotify.com/artist/4BhWvEo85DhqdhG8An3x3n",
   buttonText: "Listen on Spotify",
   answer:
@@ -493,6 +528,96 @@ export const ALBUM = {
   cover: "/articifical/cover.png",
   spotifyHref: MUSIC.projectLink,
   artistHref: "/",
+  videoChannelHref: "https://videos.nottyler.org",
+  /* Official album order from the ARTificial Originals playlist on the
+   * videos.nottyler.org channel. Each href is that song's watch page.
+   * Karaoke cuts stay off this list — they live on the channel. */
+  tracks: [
+    {
+      title: "Pass the Courvoisier, Part II",
+      note: "soul version of Busta Rhymes feat. P. Diddy & Pharrell",
+      duration: "4:04",
+      href: "https://videos.nottyler.org/video/NWQBJugtjBu",
+    },
+    {
+      title: "Disco Inferno",
+      note: "soul version of 50 Cent",
+      duration: "4:02",
+      href: "https://videos.nottyler.org/video/oGklIuMJPlu",
+    },
+    {
+      title: "Still Tippin'",
+      note: "soul version of Mike Jones feat. Slim Thug & Paul Wall",
+      duration: "4:07",
+      href: "https://videos.nottyler.org/video/UXlRIKNsPBu",
+    },
+    {
+      title: "a lot",
+      note: "soul version of 21 Savage feat. J. Cole",
+      duration: "5:33",
+      href: "https://videos.nottyler.org/video/VaQ6dKNZPlu",
+    },
+    {
+      title: "Hard in Da Paint",
+      note: "soul version of Waka Flocka Flame",
+      duration: "3:22",
+      href: "https://videos.nottyler.org/video/VbRAJugIjBu",
+    },
+    {
+      title: "Wat Da Hook Gon Be",
+      note: "soul version of Murphy Lee feat. Jermaine Dupri",
+      duration: "4:40",
+      href: "https://videos.nottyler.org/video/pXkQdfgIOlu",
+    },
+    {
+      title: "Aww, You Think I'm Magic",
+      note: "original",
+      duration: "3:05",
+      href: "https://videos.nottyler.org/video/oaQQJLhZjRu",
+    },
+    {
+      title: "Ms. New Booty",
+      note: "soul version of Bubba Sparxxx feat. Ying Yang Twins & Mr. ColliPark",
+      duration: "5:00",
+      href: "https://videos.nottyler.org/video/UaR6c0gtO7u",
+    },
+    {
+      title: "The Way I Live",
+      note: "soul version of Baby Boy Da Prince feat. Lil Boosie",
+      duration: "5:09",
+      href: "https://videos.nottyler.org/video/oXRQdehsjRu",
+    },
+    {
+      title: "Backin' It Up",
+      note: "soul version of Pardison Fontaine feat. Cardi B",
+      duration: "3:38",
+      href: "https://videos.nottyler.org/video/obRkJ1hsO6u",
+    },
+    {
+      title: "Freak on a Leash",
+      note: "soul version of Korn",
+      duration: "3:18",
+      href: "https://videos.nottyler.org/video/VGQQJ0hdi6u",
+    },
+    {
+      title: "Plain Jane",
+      note: "soul version of A$AP Ferg",
+      duration: "4:00",
+      href: "https://videos.nottyler.org/video/pqRkdfhIjRu",
+    },
+    {
+      title: "Hot in Herre",
+      note: "soul version of Nelly",
+      duration: "3:02",
+      href: "https://videos.nottyler.org/video/VaQAILNYPQu",
+    },
+    {
+      title: "Get Low",
+      note: "soul version of Lil Jon & The East Side Boyz feat. Ying Yang Twins",
+      duration: "5:46",
+      href: "https://videos.nottyler.org/video/VrQBdeMdj6u",
+    },
+  ],
 } as const;
 
 /* Docs — the movie/documentary trailer wing of the empire. Each entry powers
@@ -577,31 +702,6 @@ export const DOCS: DocEntry[] = [
   },
 ];
 
-/* notMusik releases — the documented catalog selection from the site (Spotify artist 4BhWvEo85DhqdhG8An3x3n).
- * This is the real list that was previously rendered in the music page discography.
- * No tracks fabricated. If a fuller track list exists, replace this array with it.
- * Images default to soundwave.png; swap per-item for real art when available. */
-export type MusikRelease = {
-  id: number;
-  title: string;
-  type: string;
-  plays?: number;
-  image: string;
-  bgColor: string;
-  description?: string;
-};
-
-export const NOT_MUSIK_RELEASES: MusikRelease[] = [
-  { id: 1, title: "The Original", type: "Single", plays: 1247460, image: "/soundwave.png", bgColor: "#d83a2e", description: "Signature single" },
-  { id: 2, title: "Ridin Dirty", type: "Single", plays: 950950, image: "/soundwave.png", bgColor: "#111211", description: "Southern heat" },
-  { id: 3, title: "We Get Down", type: "Single", plays: 239170, image: "/soundwave.png", bgColor: "#eee3cd", description: "Low end theory" },
-  { id: 4, title: "Grindin'", type: "Single", plays: 121100, image: "/soundwave.png", bgColor: "#a12a21", description: "Hustle anthem" },
-  { id: 5, title: "Back Then", type: "Single", plays: 671540, image: "/soundwave.png", bgColor: "#25211c", description: "Reflective" },
-  { id: 6, title: "Hood", type: "Single", plays: 121000, image: "/soundwave.png", bgColor: "#d83a2e", description: "Street narrative" },
-  { id: 7, title: "Batter Up", type: "Single", plays: 50730, image: "/soundwave.png", bgColor: "#342e25", description: "Game time" },
-  { id: 8, title: "Oh, I Think They Like Me", type: "Single", plays: 451760, image: "/soundwave.png", bgColor: "#eee3cd", description: "Crowd favorite" },
-  { id: 9, title: "In My Projects", type: "Single", plays: 239170, image: "/soundwave.png", bgColor: "#111211", description: "Block life" },
-  { id: 10, title: "White Tee", type: "Single", plays: 105030220, image: "/soundwave.png", bgColor: "#a12a21", description: "Timeless" },
-  { id: 11, title: "Erryday Im Hustin", type: "Single", plays: 101001930, image: "/soundwave.png", bgColor: "#d83a2e", description: "Daily grind" },
-  { id: 12, title: "St Louie", type: "Single", plays: 34100, image: "/soundwave.png", bgColor: "#25211c", description: "Midwest soul" },
-];
+/* The homepage music archive used to list older soul-cover singles. That
+ * catalog now lives on /music and the channel. The homepage block reads
+ * ALBUM.tracks instead — the current record, in playlist order. */

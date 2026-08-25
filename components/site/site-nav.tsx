@@ -7,7 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { ALBUM, IDENTITY, PROJECTS } from "@/lib/content";
+import { ADVOCATE, ALBUM, IDENTITY, PROJECTS } from "@/lib/content";
 
 /* The header brand. Swap the mark by setting IDENTITY.logoSrc in
  * lib/content.ts to an image path in /public — nothing else to touch. */
@@ -155,6 +155,27 @@ export default function SiteNav() {
 
               <nav className="-mr-2 flex-1 overflow-y-auto py-4 pr-2">
                 <ul>
+                  <motion.li
+                    initial={{ opacity: 0, x: 24 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1, duration: 0.3 }}
+                  >
+                    <Link
+                      href={`/#${ADVOCATE.id}`}
+                      onClick={jumpTo(`#${ADVOCATE.id}`)}
+                      className="group flex items-baseline gap-3 border-b border-ink/15 py-2 transition-colors hover:text-primary"
+                    >
+                      <span className="font-advancedled text-[10px] text-primary/60">
+                        BD
+                      </span>
+                      <span className="flex-1 font-ndot text-lg uppercase leading-tight tracking-tight">
+                        {ADVOCATE.heading}
+                      </span>
+                      <span className="hidden text-right font-mono text-[9px] uppercase tracking-[0.1em] text-ink/55 sm:block">
+                        board / marketing
+                      </span>
+                    </Link>
+                  </motion.li>
                   {PROJECTS.map((project, i) => (
                     <motion.li
                       key={`${project.company}-${i}`}

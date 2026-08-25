@@ -1,3 +1,4 @@
+import Advocate from "@/components/site/advocate";
 import Exhibits from "@/components/site/exhibits";
 import GalleryStrip from "@/components/site/gallery-strip";
 import Hero from "@/components/site/hero";
@@ -15,6 +16,7 @@ export default function Page() {
       <main>
         <Hero />
         <WarningMarquee />
+        <Advocate />
         <Exhibits />
         <Madness />
         <GalleryStrip />

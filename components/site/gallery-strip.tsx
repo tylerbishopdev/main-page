@@ -3,12 +3,12 @@
 import Link from "next/link";
 
 import { HoverExpand_001 } from "@/components/ui/skiper-ui/skiper52";
-import { BRAND_ASSETS, WUT } from "@/lib/content";
+import { ART_IMAGES, WUT } from "@/lib/content";
 
-const stripImages = BRAND_ASSETS.collages.map((src, i) => ({
+const stripImages = ART_IMAGES.slice(0, 8).map((src, i) => ({
   src,
-  alt: "notTyler retro-futurist brand collage",
-  code: `SIGNAL ${String(i + 1).padStart(2, "0")}`,
+  alt: `Artwork ${i + 1}`,
+  code: `№ ${String(i + 1).padStart(2, "0")}`,
 }));
 
 export default function GalleryStrip() {

@@ -8,7 +8,7 @@ import {
 } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 
 import { BRAND_ASSETS, DESTINATIONS, IDENTITY } from "@/lib/content";
 
@@ -120,20 +120,25 @@ export default function Hero() {
         </div>
 
         <div className="relative mx-auto hidden w-full max-w-[400px] lg:block">
-          <div className="print-panel relative overflow-hidden bg-paper p-3">
-            <Image
-              src={BRAND_ASSETS.hero.figure}
-              alt="notTyler helmet figure"
-              width={355}
-              height={599}
-              priority
-              className="relative z-10 h-auto w-full"
-            />
-            <div className="brand-microcopy absolute left-5 top-5 z-20 max-w-[180px] text-ink/70">
-              not tyler. not normal. not tomorrow.
-            </div>
-            <div className="absolute bottom-5 left-5 z-20 rounded-full border-2 border-paper bg-ink px-3 py-1 font-ndot text-2xl text-paper">
-              69
+          <div className="hero-stamp print-panel relative overflow-hidden bg-paper p-3">
+            <div
+              className="hero-stamp-plate relative overflow-hidden"
+              style={
+                {
+                  "--hero-stamp": `url(${BRAND_ASSETS.hero.figure})`,
+                } as CSSProperties
+              }
+            >
+              <Image
+                src={BRAND_ASSETS.hero.figure}
+                alt="notTyler — astronaut stamp, status genius"
+                width={1043}
+                height={1650}
+                priority
+                className="hero-stamp-img relative z-10 h-auto w-full"
+              />
+              <span aria-hidden className="hero-stamp-ghost" />
+              <span aria-hidden className="hero-stamp-veil" />
             </div>
           </div>
         </div>

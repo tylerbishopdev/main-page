@@ -284,6 +284,174 @@
       inset 0 0 0 1px rgba(255, 255, 255, 0.035);
   }
 
+  /* Hero ID plate — veiled print, analog red-channel dropout.
+   * Not cyan/magenta cyberpunk: brand red + ink, mostly still. */
+  .hero-stamp-img {
+    filter: contrast(1.04) saturate(0.92) brightness(0.93);
+  }
+
+  .hero-stamp-ghost,
+  .hero-stamp-ghost::before,
+  .hero-stamp-ghost::after,
+  .hero-stamp-veil,
+  .hero-stamp-veil::after {
+    pointer-events: none;
+  }
+
+  .hero-stamp-ghost,
+  .hero-stamp-ghost::before,
+  .hero-stamp-ghost::after {
+    position: absolute;
+    inset: 0;
+    background-image: var(--hero-stamp);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+  }
+
+  .hero-stamp-ghost {
+    z-index: 15;
+    mix-blend-mode: screen;
+    opacity: 0.5;
+    filter: grayscale(1) sepia(1) hue-rotate(-18deg) saturate(9) contrast(1.35);
+    transform: translate3d(3px, 0, 0);
+    clip-path: inset(22% 0 63% 0);
+    animation: hero-stamp-glitch 6.4s infinite;
+  }
+
+  .hero-stamp-ghost::before {
+    content: "";
+    mix-blend-mode: multiply;
+    opacity: 0.55;
+    filter: grayscale(1) contrast(1.4);
+    transform: translate3d(-4px, 1px, 0);
+    clip-path: inset(58% 0 18% 0);
+    animation: hero-stamp-glitch-ink 7.1s infinite;
+  }
+
+  .hero-stamp-ghost::after {
+    content: "";
+    background-image: none;
+    background-color: var(--primary);
+    mix-blend-mode: screen;
+    opacity: 0.28;
+    height: 2px;
+    inset: 36% -6% auto;
+    animation: hero-stamp-bar 6.4s infinite;
+  }
+
+  .hero-stamp-veil {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        rgba(9, 9, 9, 0.1) 0 1px,
+        transparent 1px 3px
+      ),
+      linear-gradient(
+        180deg,
+        rgba(9, 9, 9, 0.06) 0%,
+        rgba(9, 9, 9, 0.16) 100%
+      ),
+      linear-gradient(
+        90deg,
+        rgba(216, 58, 46, 0.1),
+        transparent 26%,
+        transparent 76%,
+        rgba(216, 58, 46, 0.07)
+      );
+  }
+
+  @keyframes hero-stamp-glitch {
+    0%,
+    79%,
+    100% {
+      transform: translate3d(3px, 0, 0);
+      clip-path: inset(22% 0 63% 0);
+      opacity: 0.5;
+      animation-timing-function: step-end;
+    }
+    81% {
+      transform: translate3d(-8px, 1px, 0);
+      clip-path: inset(8% 0 54% 0);
+      opacity: 0.7;
+      animation-timing-function: step-end;
+    }
+    84% {
+      transform: translate3d(11px, -3px, 0);
+      clip-path: inset(46% 0 16% 0);
+      opacity: 0.58;
+      animation-timing-function: step-end;
+    }
+    87% {
+      transform: translate3d(-5px, 2px, 0);
+      clip-path: inset(71% 0 6% 0);
+      opacity: 0.5;
+      animation-timing-function: step-end;
+    }
+    90%,
+    100% {
+      transform: translate3d(3px, 0, 0);
+      clip-path: inset(22% 0 63% 0);
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes hero-stamp-glitch-ink {
+    0%,
+    74%,
+    100% {
+      transform: translate3d(-4px, 1px, 0);
+      clip-path: inset(58% 0 18% 0);
+      animation-timing-function: step-end;
+    }
+    76% {
+      transform: translate3d(7px, -2px, 0);
+      clip-path: inset(14% 0 62% 0);
+      animation-timing-function: step-end;
+    }
+    79% {
+      transform: translate3d(-9px, 0, 0);
+      clip-path: inset(40% 0 28% 0);
+      animation-timing-function: step-end;
+    }
+    83%,
+    100% {
+      transform: translate3d(-4px, 1px, 0);
+      clip-path: inset(58% 0 18% 0);
+    }
+  }
+
+  @keyframes hero-stamp-bar {
+    0%,
+    79%,
+    100% {
+      top: 36%;
+      opacity: 0.28;
+      animation-timing-function: step-end;
+    }
+    81% {
+      top: 17%;
+      opacity: 0.7;
+      animation-timing-function: step-end;
+    }
+    84% {
+      top: 61%;
+      opacity: 0.5;
+      animation-timing-function: step-end;
+    }
+    88%,
+    100% {
+      top: 36%;
+      opacity: 0.28;
+    }
+  }
+
+  .hero-stamp.print-panel::after {
+    opacity: 0.28;
+  }
+
   .print-panel::after {
     content: "";
     position: absolute;
@@ -334,6 +502,262 @@
     letter-spacing: 0.24em;
     line-height: 1;
     text-transform: uppercase;
+  }
+
+  /* Advocate poster theater — height is the scroll runway; the sticky
+   * viewport inside holds the wordmark plate and the rising personas.
+   * #2b2d2a is sampled from the plate so object-contain letterboxing
+   * and the short mobile plate don't flash a different black. */
+  .adv-scene {
+    height: 220vh;
+  }
+
+  .adv-sticky {
+    background-color: #2b2d2a;
+  }
+
+  .adv-copy {
+    text-shadow: 0 2px 18px rgba(9, 9, 9, 0.85);
+  }
+
+  /* Filled so the kicker still reads when it sits on the red wordmark. */
+  .adv-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    background: #2b2d2a;
+    border: 1px solid #e23b2f;
+    padding: 0.32rem 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.24em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: #f3efe4;
+    text-shadow: none;
+  }
+
+  /* Career collage lives inside the OP-7 set — the provided CRT
+   * with its screen punched out, plus a CSS glass/glitch stack. */
+  .adv-crt-set {
+    position: relative;
+    width: 100%;
+    background: #c4b8a2;
+    border-radius: 1.15rem;
+    padding: 0.65rem 0.65rem 1.7rem;
+    box-shadow:
+      0 22px 50px -28px rgba(0, 0, 0, 0.75),
+      inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  }
+
+  .adv-crt-screen {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+    border-radius: 0.72rem;
+    background: #08090a;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.45);
+  }
+
+  .adv-crt-bezel {
+    display: none;
+  }
+
+  .adv-crt-feed {
+    filter: contrast(1.06) saturate(0.94) brightness(0.9);
+    animation: adv-crt-flicker 7.2s infinite;
+  }
+
+  .adv-crt-glitch,
+  .adv-crt-glitch::before,
+  .adv-crt-glitch::after {
+    pointer-events: none;
+  }
+
+  .adv-crt-glitch {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        rgba(8, 10, 12, 0.2) 0 1px,
+        transparent 1px 3px
+      ),
+      radial-gradient(ellipse at center, transparent 48%, rgba(0, 0, 0, 0.42) 100%);
+    mix-blend-mode: multiply;
+    opacity: 0.7;
+  }
+
+  .adv-crt-glitch::before,
+  .adv-crt-glitch::after {
+    content: "";
+    position: absolute;
+    left: -4%;
+    right: -4%;
+  }
+
+  .adv-crt-glitch::before {
+    top: 18%;
+    height: 9px;
+    background: linear-gradient(
+      90deg,
+      transparent 0 6%,
+      rgba(216, 58, 46, 0.55) 6% 14%,
+      transparent 14% 48%,
+      rgba(56, 196, 210, 0.28) 48% 52%,
+      transparent 52% 78%,
+      rgba(232, 140, 48, 0.32) 78% 86%,
+      transparent 86%
+    );
+    mix-blend-mode: screen;
+    opacity: 0.55;
+    animation: adv-crt-tear 5.6s infinite;
+  }
+
+  .adv-crt-glitch::after {
+    top: 62%;
+    height: 3px;
+    background: var(--primary);
+    mix-blend-mode: screen;
+    opacity: 0.35;
+    animation: adv-crt-bar 5.6s infinite;
+  }
+
+  .adv-crt-copy {
+    position: absolute;
+    left: 0.85rem;
+    top: 0.85rem;
+    z-index: 3;
+    max-width: min(34ch, 78%);
+    text-shadow: 0 2px 16px rgba(9, 9, 9, 0.9);
+  }
+
+  .adv-crt-lede {
+    display: inline-block;
+    margin-top: 0.7rem;
+    max-width: 36ch;
+    background: #2b2d2a;
+    border: 1px solid #e23b2f;
+    padding: 0.38rem 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    line-height: 1.35;
+    text-transform: uppercase;
+    color: #f3efe4;
+    text-shadow: none;
+  }
+
+  @keyframes adv-crt-tear {
+    0%,
+    76%,
+    100% {
+      top: 18%;
+      transform: translateX(0);
+      opacity: 0.45;
+      animation-timing-function: step-end;
+    }
+    78% {
+      top: 8%;
+      transform: translateX(-3%);
+      opacity: 0.75;
+      animation-timing-function: step-end;
+    }
+    82% {
+      top: 44%;
+      transform: translateX(4%);
+      opacity: 0.6;
+      animation-timing-function: step-end;
+    }
+    86% {
+      top: 71%;
+      transform: translateX(-2%);
+      opacity: 0.5;
+    }
+  }
+
+  @keyframes adv-crt-bar {
+    0%,
+    76%,
+    100% {
+      top: 62%;
+      opacity: 0.3;
+      animation-timing-function: step-end;
+    }
+    78% {
+      top: 27%;
+      opacity: 0.7;
+      animation-timing-function: step-end;
+    }
+    83% {
+      top: 81%;
+      opacity: 0.45;
+    }
+  }
+
+  @keyframes adv-crt-flicker {
+    0%,
+    92%,
+    100% {
+      filter: contrast(1.06) saturate(0.94) brightness(0.9);
+    }
+    93% {
+      filter: contrast(1.12) saturate(1.05) brightness(1.02);
+    }
+    95% {
+      filter: contrast(1.04) saturate(0.88) brightness(0.82);
+    }
+  }
+
+  @media (min-width: 700px) {
+    .adv-crt-set {
+      background: transparent;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
+      aspect-ratio: 1088 / 608;
+    }
+
+    .adv-crt-screen {
+      position: absolute;
+      top: 4.93%;
+      left: 4.41%;
+      width: 82.72%;
+      height: 89.14%;
+      aspect-ratio: auto;
+      border-radius: 3.49% / 7.01%;
+    }
+
+    .adv-crt-bezel {
+      display: block;
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      height: 100%;
+      width: 100%;
+      pointer-events: none;
+    }
+
+    .adv-crt-copy {
+      left: 1.25rem;
+      top: 1.15rem;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .adv-plate {
+      bottom: auto;
+      height: 46%;
+    }
+
+    .adv-figures {
+      height: 58%;
+    }
+
+    .adv-copy {
+      top: auto;
+      bottom: 46%;
+    }
   }
 
   /* Music page */
@@ -1123,5 +1547,18 @@
 
   .ao-ticket {
     transition: none;
+  }
+
+  .adv-scene {
+    height: 100svh;
+  }
+
+  .hero-stamp-ghost,
+  .hero-stamp-ghost::before,
+  .hero-stamp-ghost::after,
+  .adv-crt-feed,
+  .adv-crt-glitch::before,
+  .adv-crt-glitch::after {
+    animation: none;
   }
 }
