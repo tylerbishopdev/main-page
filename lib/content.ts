@@ -77,6 +77,7 @@ export const ADVOCATE = {
   id: "advocate",
   kicker: "also the day job",
   heading: "Advocate",
+  screenTitle: "Certified Genius Businesses",
   lede: "Executive and board member. In charge of marketing at Ezoic and Open.Video. Former founder of Pubtelligence at Google.",
   body: "The same person who presses vinyl and writes songs also sits on the board of two companies that actually print money. The personas are not a costume change. They are the job.",
   sceneHeading: "A 1-Man Multimedia Conglomerate",

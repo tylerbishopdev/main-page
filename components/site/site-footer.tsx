@@ -32,16 +32,17 @@ export default function SiteFooter() {
             break patterns.
           </p>
         </div>
-        <div className="print-panel paper-texture relative overflow-hidden p-4 text-ink">
+        <div className="print-panel relative overflow-hidden bg-ink">
           <Image
-            src={BRAND_ASSETS.elements[3]}
+            src={ADVOCATE.offices}
             alt=""
-            width={362}
-            height={493}
+            width={1024}
+            height={553}
+            unoptimized
             aria-hidden
-            className="mx-auto h-auto max-h-[420px] w-auto object-contain mix-blend-multiply"
+            className="h-auto w-full object-cover"
           />
-          <div className="brand-microcopy absolute left-5 top-5 max-w-[180px] text-ink/70">
+          <div className="brand-microcopy absolute left-5 top-5 max-w-[180px] text-paper">
             not a person. not a brand. a feeling.
           </div>
         </div>

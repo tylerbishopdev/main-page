@@ -97,12 +97,7 @@ export default function Advocate() {
                 className="adv-crt-feed object-cover"
               />
               <span aria-hidden className="adv-crt-glitch" />
-              <div className="adv-crt-copy">
-                <p className="adv-crt-kicker">{ADVOCATE.kicker}</p>
-                <h2 className="adv-crt-heading">{ADVOCATE.heading}</h2>
-                <p className="adv-crt-lede">{ADVOCATE.lede}</p>
-                <p className="adv-crt-body">{ADVOCATE.body}</p>
-              </div>
+              <h2 className="adv-crt-heading">{ADVOCATE.screenTitle}</h2>
             </div>
             <Image
               src={ADVOCATE.crtBezel}
